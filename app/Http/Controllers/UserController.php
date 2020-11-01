@@ -34,7 +34,7 @@ class UserController extends Controller
                 ->addIndexColumn()
                 ->make(true);
         }
-        return view('admin\users\index', Compact('roles'));
+        return view('master-data.users.index', Compact('roles'));
     }
 
     /**

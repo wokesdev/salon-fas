@@ -27,7 +27,7 @@ class CustomerController extends Controller
                 ->addIndexColumn()
                 ->make(true);
         }
-        return view('admin/customers/index');
+        return view('master-data.customers.index');
     }
 
     /**

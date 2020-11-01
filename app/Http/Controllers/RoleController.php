@@ -26,7 +26,7 @@ class RoleController extends Controller
                 ->rawColumns(['action'])
                 ->make(true);
         }
-        return view('admin/roles/index');
+        return view('master-data.roles.index');
     }
 
     /**

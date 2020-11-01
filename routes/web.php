@@ -22,13 +22,19 @@ Route::middleware(['auth'])->group(function () {
 });
 
 Route::middleware(['auth.one', 'auth'])->group(function () {
+    Route::resource('account', 'AccountController');
     Route::resource('user', 'UserController');
     Route::resource('role', 'RoleController');
     Route::resource('customer', 'CustomerController');
+    Route::resource('package', 'PackageController');
+    Route::resource('supplier', 'SupplierController');
 
+    Route::post('account/update', 'AccountController@update')->name('account.update');
     Route::post('user/update', 'UserController@update')->name('user.update');
     Route::post('role/update', 'RoleController@update')->name('role.update');
     Route::post('customer/update', 'CustomerController@update')->name('customer.update');
+    Route::post('package/update', 'PackageController@update')->name('package.update');
+    Route::post('supplier/update', 'SupplierController@update')->name('supplier.update');
 });
 
 Route::middleware(['auth.two', 'auth'])->group(function () {

@@ -15,8 +15,11 @@
 			<x-header></x-header>
 			<x-navbar></x-navbar>
         </div>
-		<x-sidebar></x-sidebar>
-		@yield('content')
+        <x-sidebar></x-sidebar>
+        <div class="main-panel">
+            @yield('content')
+            <x-footer></x-footer>
+        </div>
 	</div>
     @include('scripts.baseScripts')
     @yield('contentScripts')

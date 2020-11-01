@@ -6,26 +6,33 @@ $(document).ready(function () {
         },
     });
 
-    $('#rolesTable').DataTable({
+    $('#table').DataTable({
         processing: true,
         serverSide: true,
         ajax: {
-            url: "{{ route('role.index') }}"
+            url: "{{ route('user.index') }}"
         },
         columns: [
+            { data: 'DT_RowIndex', name: 'id' },
             { data: 'name', name: 'name' },
-            { data: 'level', name: 'level' },
+            { data: 'username', name: 'username' },
+            { data: 'email', name: 'email' },
+            { data: 'role', name: 'role.name' },
             { data: 'action', name: 'action', orderable: false, searchable: false }
         ],
         order: [
-            [1, 'asc']
+            [0, 'asc']
         ],
     });
 
     $('#addButton').click(function(){
-        $('.modal-title').text('Tambah Jabatan');
+        $('.modal-title').text('Tambah Admin');
         $('#saveButton').val('Add');
         $('#action').val('Add');
+        $('#passwordFields').prop('disabled', false);
+        $('#passwordFields').prop('hidden', false);
+        $('#dataFields').prop('disabled', false);
+        $('#dataFields').prop('hidden', false);
         $('#addEditForm').trigger("reset");
         $('#addEditForm').validate().resetForm();
 
@@ -42,15 +49,27 @@ $(document).ready(function () {
         return this.optional( element ) || /^[a-zA-Z\s]+$/.test( value );
     }, "Please enter letters only." );
 
+    $.validator.addMethod( "nowhitespace", function( value, element ) {
+        return this.optional( element ) || /^\S+$/i.test( value );
+    }, "Any spaces are not allowed." );
+
+    $.validator.addMethod( "alphanumeric", function( value, element ) {
+        return this.optional( element ) || /^\w+$/i.test( value );
+    }, "Please enter letters, numbers, and underscores only." );
+
     if ($("#addEditForm").length > 0) {
         $("#addEditForm").validate({
             rules: {
                 name: { lettersOnly: true, maxlength: 255, },
+                username: { nowhitespace: true, alphanumeric: true, maxlength: 255, },
+                email: { maxlength: 255, },
+                password: { minlength: 8, },
+                password_confirmation: { equalTo: '#password', },
             },
 
             submitHandler: function (form) {
                 if($('#action').val() == 'Add') {
-                    action_url = "{{ route('role.store') }}";
+                    action_url = "{{ route('user.store') }}";
                     swal_title = "Berhasil!";
                     swal_text = "Data berhasil ditambahkan!";
                     swal_fail_title = "Gagal!";
@@ -58,11 +77,19 @@ $(document).ready(function () {
                 }
 
                 if($('#action').val() == 'Edit') {
-                    action_url = "{{ route('role.update') }}";
+                    action_url = "{{ route('user.update') }}";
                     swal_title = "Berhasil!";
                     swal_text = "Data berhasil diperbarui!";
                     swal_fail_title = "Gagal!";
                     swal_fail_text = "Data gagal diperbarui!";
+                }
+
+                if($('#action').val() == 'ChangePass') {
+                    action_url = "{{ route('user.update') }}";
+                    swal_title = "Berhasil!";
+                    swal_text = "Password berhasil diperbarui!";
+                    swal_fail_title = "Gagal!";
+                    swal_fail_text = "Password gagal diperbarui!";
                 }
 
                 var actionType = $('#saveButton').val();
@@ -76,7 +103,7 @@ $(document).ready(function () {
                         $('#addEditForm').trigger("reset");
                         $('#addEditModal').modal('hide');
                         $('#saveButton').html('Submit');
-                        var oTable = $('#rolesTable').DataTable();
+                        var oTable = $('#table').DataTable();
                         oTable.draw(false);
                         swal({
                             title: swal_title,
@@ -121,23 +148,54 @@ $(document).ready(function () {
     $(document).on('click', '.edit', function(){
         var id = $(this).data('id');
         $.ajax({
-            url :"role/"+ id +"/edit",
+            url :"user/"+ id +"/edit",
             dataType:"json",
             success: function(data)
             {
                 $('#id').val(data.id);
                 $('#name').val(data.name);
-                $('#level').val(data.level);
+                $('#username').val(data.username);
                 $('#email').val(data.email);
                 $('#role').val(data.role_id);
                 $('#saveButton').val('Update');
                 $('#action').val('Edit');
-                $('.modal-title').text('Edit Jabatan');
+                $('#passwordFields').prop('disabled', true);
+                $('#passwordFields').prop('hidden', true);
+                $('#dataFields').prop('disabled', false);
+                $('#dataFields').prop('hidden', false);
+                $('.modal-title').text('Edit Admin');
                 $('#addEditModal').modal('show');
                 $('#addEditForm').validate().resetForm();
 
                 $('#addEditModal').on('shown.bs.modal', function() {
                     $('#name').trigger('focus');
+                });
+            },
+        })
+    });
+
+    $(document).on('click', '.change-pass', function(){
+        var id = $(this).data('id');
+        $.ajax({
+            url :"user/"+ id +"/edit",
+            dataType:"json",
+            success: function(data)
+            {
+                $('#id').val(data.id);
+                $('.modal-title').text('Change Password');
+                $('#label-password').text('New Password');
+                $('#label-confirm-password').text('Confirm New Password');
+                $('#saveButton').val('ChangePass');
+                $('#action').val('ChangePass');
+                $('#addEditModal').modal('show');
+                $('#passwordFields').prop('disabled', false);
+                $('#passwordFields').prop('hidden', false);
+                $('#dataFields').prop('disabled', true);
+                $('#dataFields').prop('hidden', true);
+                $('#addEditForm').validate().resetForm();
+
+                $('#addEditModal').on('shown.bs.modal', function() {
+                    $('#password').trigger('focus');
                 });
             },
         })
@@ -162,11 +220,11 @@ $(document).ready(function () {
         }).then((willDelete) => {
             if (willDelete) {
                 $.ajax({
-                    url: "role/" + dataId,
+                    url: "user/" + dataId,
                     type: 'DELETE',
                     success: function (data) {
                         setTimeout(function () {
-                            var oTable = $('#rolesTable').DataTable();
+                            var oTable = $('#table').DataTable();
                             oTable.draw(false);
                         });
                         swal({
