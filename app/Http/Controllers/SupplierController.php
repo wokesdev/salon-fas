@@ -57,11 +57,11 @@ class SupplierController extends Controller
         ]);
 
         $store = Supplier::create([
-            'nama' => $request->name,
+            'nama' => $request->nama,
             'email' => $request->email,
-            'jenis_kelamin' => $request->gender,
-            'alamat' => $request->address,
-            'telp' => $request->phone,
+            'jenis_kelamin' => $request->jenis_kelamin,
+            'alamat' => $request->alamat,
+            'telp' => $request->telp,
         ]);
 
         return response()->json($store);
