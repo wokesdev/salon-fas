@@ -2,7 +2,7 @@
 
 **Framework PHP: Laravel 8**<br>
 **Framework CSS: Bootstrap 4**<br>
-**Database: MySQL**
+**Database: MySQL**<br>
 **Template: Atlantis Lite Bootstrap Dashboard**
 
 Library:
