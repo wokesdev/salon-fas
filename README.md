@@ -13,8 +13,10 @@ Fitur:
 1. Multilevel user
 2. Master data lengkap
 3. CRUD dengan AJAX
-4. Transaksi berdasarkan ketentuan akuntansi
-5. Laporan
+4. Insert nomor rincian akuntansi otomatis berdasarkan nomor akuntansi yang dipilih
+5. Insert kode supplier dan kode pelanggan otomatis
+6. Transaksi berdasarkan ketentuan akuntansi
+7. Laporan
 
 Fitur Multilevel:<br>
 Level 1:
