@@ -16,8 +16,8 @@ class CreatePackagesTable extends Migration
         Schema::create('packages', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->enum('kategori', ['Laki-laki', 'Perempuan']);
-            $table->integer('harga');
+            $table->enum('category', ['Laki-laki', 'Perempuan']);
+            $table->integer('price');
             $table->timestamps();
         });
     }

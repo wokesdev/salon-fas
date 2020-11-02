@@ -49,12 +49,12 @@ class RoleController extends Controller
     {
         request()->validate([
             'name' => 'required|string|max:255|unique:roles,name',
-            'level' => 'required',
+            'level' => 'required|numeric',
         ]);
 
         $store = Role::create([
-            'name' => request('name'),
-            'level' => request('level'),
+            'name' => $request->name,
+            'level' => $request->level,
         ]);
 
         return response()->json($store);
@@ -96,12 +96,12 @@ class RoleController extends Controller
     {
         request()->validate([
             'name' => 'required|string|max:255|unique:roles,name,' . $request->id,
-            'level' => 'required',
+            'level' => 'required|numeric',
         ]);
 
         $update = Role::where('id', $request->id)->update([
-            'name' => request('name'),
-            'level' => request('level'),
+            'name' => $request->name,
+            'level' => $request->level,
         ]);
 
          return response()->json($update);

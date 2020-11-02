@@ -24,7 +24,6 @@ class AccountController extends Controller
                     return $button;
                 })
                 ->rawColumns(['action'])
-                ->addIndexColumn()
                 ->make(true);
         }
         return view('master-data.accounts.index');
@@ -49,17 +48,13 @@ class AccountController extends Controller
     public function store(Request $request)
     {
         request()->validate([
-            'no' => 'required|numeric|digits_between:1,4',
-            'name' => 'required|string|max:255',
-            'no_rincian' => 'required|numeric|digits_between:1,4',
-            'name_rincian' => 'required|string|max:255',
+            'nomor_akun' => 'required|numeric|digits_between:1,4|unique:accounts,nomor_akun',
+            'nama_akun' => 'required|string|max:255|unique:accounts,nama_akun',
         ]);
 
         $store = Account::create([
-            'nomor_akun' => $request->no,
-            'nama_akun' => $request->name,
-            'nomor_rincian_akun' => $request->no_rincian,
-            'nama_rincian_akun' => $request->name_rincian,
+            'nomor_akun' => $request->nomor_akun,
+            'nama_akun' => $request->nama_akun,
         ]);
 
         return response()->json($store);
@@ -100,17 +95,13 @@ class AccountController extends Controller
     public function update(Request $request, Account $account)
     {
         request()->validate([
-            'no' => 'required|numeric|digits_between:1,4',
-            'name' => 'required|string|max:255',
-            'no_rincian' => 'required|numeric|digits_between:1,4',
-            'name_rincian' => 'required|string|max:255',
+            'nomor_akun' => 'required|numeric|digits_between:1,4|unique:accounts,nomor_akun,' . $request->id,
+            'nama_akun' => 'required|string|max:255|unique:accounts,nama_akun,' . $request->id,
         ]);
 
         $update = Account::where('id', $request->id)->update([
-            'nomor_akun' => $request->no,
-            'nama_akun' => $request->name,
-            'nomor_rincian_akun' => $request->no_rincian,
-            'nama_rincian_akun' => $request->name_rincian,
+            'nomor_akun' => $request->nomor_akun,
+            'nama_akun' => $request->nama_akun,
         ]);
 
         return response()->json($update);

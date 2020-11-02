@@ -8,15 +8,10 @@
                     <div class="card-header">
                         <div class="d-flex align-items-center">
                             <h4 class="card-title">Data Admin</h4>
-                            <button type="button" class="btn btn-primary btn-round ml-auto text-white" id="addButton" data-toggle="modal" data-target="#addEditModal"><i class="fa fa-plus"></i>Tambah Admin</button>
+                            <button type="button" class="btn btn-primary btn-round ml-auto text-white" id="addButton" data-toggle="modal" data-target="#addEditModal"><i class="fa fa-plus"></i> Tambah Admin</button>
                         </div>
                     </div>
                     <div class="card-body">
-                        @if (session('status'))
-                            <div class="alert alert-success" role="alert">
-                                {{ session('status') }}
-                            </div>
-                        @endif
                         <div class="table-responsive">
                             <table id="table" class="display table table-striped table-hover" >
                                 <thead>
@@ -38,8 +33,7 @@
     </div>
 </div>
 @include('master-data.users.createModal')
-@include('master-data.users.deleteModal')
 @endsection
 @section('contentScripts')
-    @include('master-data.users.usersScripts')
+    @include('master-data.users.scripts')
 @endsection

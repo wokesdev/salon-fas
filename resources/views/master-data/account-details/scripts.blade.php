@@ -10,34 +10,33 @@ $(document).ready(function () {
         processing: true,
         serverSide: true,
         ajax: {
-            url: "{{ route('user.index') }}"
+            url: "{{ route('account-detail.index') }}"
         },
         columns: [
-            { data: 'DT_RowIndex', name: 'id' },
-            { data: 'name', name: 'name' },
-            { data: 'username', name: 'username' },
-            { data: 'email', name: 'email' },
-            { data: 'role', name: 'role.name' },
+            { data: 'nomor_akun' },
+            { data: 'nama_akun' },
+            { data: 'nomor_rincian_akun' },
+            { data: 'nama_rincian_akun' },
             { data: 'action', name: 'action', orderable: false, searchable: false }
         ],
         order: [
-            [0, 'asc']
+            [2, 'asc']
         ],
     });
 
     $('#addButton').click(function(){
-        $('.modal-title').text('Tambah Admin');
+        $('.modal-title').text('Tambah Rincian Akun');
         $('#saveButton').val('Add');
         $('#action').val('Add');
-        $('#passwordFields').prop('disabled', false);
-        $('#passwordFields').prop('hidden', false);
-        $('#dataFields').prop('disabled', false);
-        $('#dataFields').prop('hidden', false);
+        $('#no_rincian').prop('disabled', true);
+        $('#no_rincian').prop('hidden', true);
+        $('#akun').prop('disabled', false);
+        $('#akun').prop('hidden', false);
         $('#addEditForm').trigger("reset");
         $('#addEditForm').validate().resetForm();
 
         $('#addEditModal').on('shown.bs.modal', function() {
-            $('#name').trigger('focus');
+            $('#account_id').trigger('focus');
         });
     });
 
@@ -49,27 +48,16 @@ $(document).ready(function () {
         return this.optional( element ) || /^[a-zA-Z\s]+$/.test( value );
     }, "Please enter letters only." );
 
-    $.validator.addMethod( "nowhitespace", function( value, element ) {
-        return this.optional( element ) || /^\S+$/i.test( value );
-    }, "Any spaces are not allowed." );
-
-    $.validator.addMethod( "alphanumeric", function( value, element ) {
-        return this.optional( element ) || /^\w+$/i.test( value );
-    }, "Please enter letters, numbers, and underscores only." );
-
     if ($("#addEditForm").length > 0) {
         $("#addEditForm").validate({
             rules: {
-                name: { lettersOnly: true, maxlength: 255, },
-                username: { nowhitespace: true, alphanumeric: true, maxlength: 255, },
-                email: { maxlength: 255, },
-                password: { minlength: 8, },
-                password_confirmation: { equalTo: '#password', },
+                nomor_rincian_akun: { maxlength: 4, },
+                nama_rincian_akun: { lettersOnly: true, maxlength: 255, },
             },
 
             submitHandler: function (form) {
                 if($('#action').val() == 'Add') {
-                    action_url = "{{ route('user.store') }}";
+                    action_url = "{{ route('account-detail.store') }}";
                     swal_title = "Berhasil!";
                     swal_text = "Data berhasil ditambahkan!";
                     swal_fail_title = "Gagal!";
@@ -77,22 +65,13 @@ $(document).ready(function () {
                 }
 
                 if($('#action').val() == 'Edit') {
-                    action_url = "{{ route('user.update') }}";
+                    action_url = "{{ route('account-detail.update') }}";
                     swal_title = "Berhasil!";
                     swal_text = "Data berhasil diperbarui!";
                     swal_fail_title = "Gagal!";
                     swal_fail_text = "Data gagal diperbarui!";
                 }
 
-                if($('#action').val() == 'ChangePass') {
-                    action_url = "{{ route('user.update') }}";
-                    swal_title = "Berhasil!";
-                    swal_text = "Password berhasil diperbarui!";
-                    swal_fail_title = "Gagal!";
-                    swal_fail_text = "Password gagal diperbarui!";
-                }
-
-                var actionType = $('#saveButton').val();
                 $('#saveButton').html('Processing..');
                 $.ajax({
                     data: $('#addEditForm').serialize(),
@@ -111,7 +90,7 @@ $(document).ready(function () {
                             icon: "success",
                             buttons: {
                                 confirm: {
-                                    text: "OK",
+                                    text: "Oke",
                                     value: true,
                                     visible: true,
                                     className: "btn btn-success",
@@ -124,11 +103,11 @@ $(document).ready(function () {
                     error: function (data) {
                         swal({
                             title: swal_fail_title,
-                            text: "Periksa kembali inputan Anda!",
+                            text: swal_fail_text,
                             icon: "error",
                             buttons: {
                                 confirm: {
-                                    text: "OK",
+                                    text: "Oke",
                                     value: true,
                                     visible: true,
                                     className: "btn btn-danger",
@@ -148,54 +127,26 @@ $(document).ready(function () {
     $(document).on('click', '.edit', function(){
         var id = $(this).data('id');
         $.ajax({
-            url :"user/"+ id +"/edit",
+            url :"account-detail/"+ id +"/edit",
             dataType:"json",
             success: function(data)
             {
                 $('#id').val(data.id);
-                $('#name').val(data.name);
-                $('#username').val(data.username);
-                $('#email').val(data.email);
-                $('#role').val(data.role_id);
+                $('#account_id').val(data.account_id);
+                $('#nomor_rincian_akun').val(data.nomor_rincian_akun);
+                $('#nama_rincian_akun').val(data.nama_rincian_akun);
                 $('#saveButton').val('Update');
                 $('#action').val('Edit');
-                $('#passwordFields').prop('disabled', true);
-                $('#passwordFields').prop('hidden', true);
-                $('#dataFields').prop('disabled', false);
-                $('#dataFields').prop('hidden', false);
-                $('.modal-title').text('Edit Admin');
+                $('#no_rincian').prop('disabled', false);
+                $('#no_rincian').prop('hidden', false);
+                $('#akun').prop('disabled', true);
+                $('#akun').prop('hidden', true);
+                $('.modal-title').text('Edit Akun');
                 $('#addEditModal').modal('show');
                 $('#addEditForm').validate().resetForm();
 
                 $('#addEditModal').on('shown.bs.modal', function() {
-                    $('#name').trigger('focus');
-                });
-            },
-        })
-    });
-
-    $(document).on('click', '.change-pass', function(){
-        var id = $(this).data('id');
-        $.ajax({
-            url :"user/"+ id +"/edit",
-            dataType:"json",
-            success: function(data)
-            {
-                $('#id').val(data.id);
-                $('.modal-title').text('Change Password');
-                $('#label-password').text('New Password');
-                $('#label-confirm-password').text('Confirm New Password');
-                $('#saveButton').val('ChangePass');
-                $('#action').val('ChangePass');
-                $('#addEditModal').modal('show');
-                $('#passwordFields').prop('disabled', false);
-                $('#passwordFields').prop('hidden', false);
-                $('#dataFields').prop('disabled', true);
-                $('#dataFields').prop('hidden', true);
-                $('#addEditForm').validate().resetForm();
-
-                $('#addEditModal').on('shown.bs.modal', function() {
-                    $('#password').trigger('focus');
+                    $('#nomor_rincian_akun').trigger('focus');
                 });
             },
         })
@@ -220,7 +171,7 @@ $(document).ready(function () {
         }).then((willDelete) => {
             if (willDelete) {
                 $.ajax({
-                    url: "user/" + dataId,
+                    url: "account-detail/" + dataId,
                     type: 'DELETE',
                     success: function (data) {
                         setTimeout(function () {
@@ -233,7 +184,7 @@ $(document).ready(function () {
                             icon: "success",
                             buttons: {
                                 confirm: {
-                                    text: "OK",
+                                    text: "Oke",
                                     value: true,
                                     visible: true,
                                     className: "btn btn-success",
@@ -250,7 +201,7 @@ $(document).ready(function () {
                             icon: "error",
                             buttons: {
                                 confirm: {
-                                    text: "OK",
+                                    text: "Oke",
                                     value: true,
                                     visible: true,
                                     className: "btn btn-danger",

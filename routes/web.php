@@ -23,6 +23,7 @@ Route::middleware(['auth'])->group(function () {
 
 Route::middleware(['auth.one', 'auth'])->group(function () {
     Route::resource('account', 'AccountController');
+    Route::resource('account-detail', 'AccountDetailController');
     Route::resource('user', 'UserController');
     Route::resource('role', 'RoleController');
     Route::resource('customer', 'CustomerController');
@@ -30,6 +31,7 @@ Route::middleware(['auth.one', 'auth'])->group(function () {
     Route::resource('supplier', 'SupplierController');
 
     Route::post('account/update', 'AccountController@update')->name('account.update');
+    Route::post('account-detail/update', 'AccountDetailController@update')->name('account-detail.update');
     Route::post('user/update', 'UserController@update')->name('user.update');
     Route::post('role/update', 'RoleController@update')->name('role.update');
     Route::post('customer/update', 'CustomerController@update')->name('customer.update');

@@ -8,7 +8,7 @@
                     <div class="card-header">
                         <div class="d-flex align-items-center">
                             <h4 class="card-title">Daftar Akun</h4>
-                            <button type="button" class="btn btn-primary btn-round ml-auto text-white" id="addButton" data-toggle="modal" data-target="#addEditModal"><i class="fa fa-plus"></i>Tambah Akun</button>
+                            <button type="button" class="btn btn-primary btn-round ml-auto text-white" id="addButton" data-toggle="modal" data-target="#addEditModal"><i class="fa fa-plus"></i> Tambah Akun</button>
                         </div>
                     </div>
                     <div class="card-body">
@@ -18,8 +18,6 @@
                                     <tr>
                                         <th>Nomor Akun</th>
                                         <th>Nama Akun</th>
-                                        <th>Nomor Rincian Akun</th>
-                                        <th>Nama Rincian Akun</th>
                                         <th style="width: 10%">Action</th>
                                     </tr>
                                 </thead>
@@ -32,8 +30,7 @@
     </div>
 </div>
 @include('master-data.accounts.createModal')
-@include('master-data.accounts.deleteModal')
 @endsection
 @section('contentScripts')
-    @include('master-data.accounts.accountsScripts')
+    @include('master-data.accounts.scripts')
 @endsection

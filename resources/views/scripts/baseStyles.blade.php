@@ -11,5 +11,6 @@
 </script>
 
 <!-- CSS Files -->
+<link rel="stylesheet" href="{{ asset('self-assets/style.css') }}">
 <link rel="stylesheet" href="{{ asset('atlantis-assets/css/bootstrap.min.css') }}">
 <link rel="stylesheet" href="{{ asset('atlantis-assets/css/atlantis.min.css') }}">

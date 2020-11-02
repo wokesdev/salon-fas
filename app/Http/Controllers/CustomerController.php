@@ -24,7 +24,6 @@ class CustomerController extends Controller
                     return $button;
                 })
                 ->rawColumns(['action'])
-                ->addIndexColumn()
                 ->make(true);
         }
         return view('master-data.customers.index');
@@ -48,6 +47,8 @@ class CustomerController extends Controller
      */
     public function store(Request $request)
     {
+        $number = Customer::count() + 1;
+
         request()->validate([
             'name' => 'required|string|max:255|unique:customers,name',
             'email' => 'required|string|max:255|email|unique:customers,email',
@@ -57,6 +58,7 @@ class CustomerController extends Controller
         ]);
 
         $store = Customer::create([
+            'code' => 'CT' . str_pad($number, 5, '0', STR_PAD_LEFT),
             'name' => $request->name,
             'email' => $request->email,
             'gender' => $request->gender,

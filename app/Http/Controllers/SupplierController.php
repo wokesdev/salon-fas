@@ -24,10 +24,9 @@ class SupplierController extends Controller
                     return $button;
                 })
                 ->rawColumns(['action'])
-                ->addIndexColumn()
                 ->make(true);
         }
-        return view('master-data.supplier.index');
+        return view('master-data.suppliers.index');
     }
 
     /**
@@ -48,20 +47,23 @@ class SupplierController extends Controller
      */
     public function store(Request $request)
     {
+        $number = Supplier::count() + 1;
+
         request()->validate([
-            'nama' => 'required|string|max:255|unique:suppliers,nama',
+            'name' => 'required|string|max:255|unique:suppliers,name',
             'email' => 'required|string|max:255|email|unique:suppliers,email',
-            'jenis_kelamin' => 'required',
-            'alamat' => 'required|string|max:500',
-            'telp' => 'required|numeric',
+            'gender' => 'required',
+            'address' => 'required|string|max:500',
+            'phone' => 'required|numeric',
         ]);
 
         $store = Supplier::create([
-            'nama' => $request->nama,
+            'code' => 'SP' . str_pad($number, 5, '0', STR_PAD_LEFT),
+            'name' => $request->name,
             'email' => $request->email,
-            'jenis_kelamin' => $request->jenis_kelamin,
-            'alamat' => $request->alamat,
-            'telp' => $request->telp,
+            'gender' => $request->gender,
+            'address' => $request->address,
+            'phone' => $request->phone,
         ]);
 
         return response()->json($store);
@@ -86,7 +88,10 @@ class SupplierController extends Controller
      */
     public function edit(Supplier $supplier)
     {
-        //
+        if(request()->ajax()) {
+            $edit = Supplier::findOrFail($supplier->id);
+            return response()->json($edit);
+        }
     }
 
     /**
@@ -98,7 +103,23 @@ class SupplierController extends Controller
      */
     public function update(Request $request, Supplier $supplier)
     {
-        //
+        request()->validate([
+            'name' => 'required|string|max:255|unique:suppliers,name,'  . $request->id,
+            'email' => 'required|string|max:255|email|unique:suppliers,email,' . $request->id,
+            'gender' => 'required',
+            'address' => 'required|string|max:500',
+            'phone' => 'required|numeric',
+        ]);
+
+        $update = Supplier::where('id', $request->id)->update([
+            'name' => $request->name,
+            'email' => $request->email,
+            'gender' => $request->gender,
+            'address' => $request->address,
+            'phone' => $request->phone,
+        ]);
+
+        return response()->json($update);
     }
 
     /**
@@ -109,6 +130,7 @@ class SupplierController extends Controller
      */
     public function destroy(Supplier $supplier)
     {
-        //
+        $destroy = Supplier::where('id', $supplier->id)->delete();
+        return response()->json($destroy);
     }
 }

@@ -13,12 +13,12 @@ $(document).ready(function () {
             url: "{{ route('supplier.index') }}"
         },
         columns: [
-            { data: 'kode' },
-            { data: 'nama' },
+            { data: 'code' },
+            { data: 'name' },
             { data: 'email' },
-            { data: 'jenis_kelamin' },
-            { data: 'alamat' },
-            { data: 'telp' },
+            { data: 'gender' },
+            { data: 'address' },
+            { data: 'phone' },
             { data: 'action', name: 'action', orderable: false, searchable: false }
         ],
         order: [
@@ -49,11 +49,10 @@ $(document).ready(function () {
     if ($("#addEditForm").length > 0) {
         $("#addEditForm").validate({
             rules: {
-                nama: { lettersOnly: true, maxlength: 255, },
+                name: { lettersOnly: true, maxlength: 255, },
                 email: { maxlength: 255, },
-                jenis_kelamin: { maxlength: 255, },
-                alamat: { maxlength: 500, },
-                telp: { maxlength: 50, },
+                address: { maxlength: 500, },
+                phone: { maxlength: 50, },
             },
 
             submitHandler: function (form) {
@@ -73,7 +72,6 @@ $(document).ready(function () {
                     swal_fail_text = "Data gagal diperbarui!";
                 }
 
-                var actionType = $('#saveButton').val();
                 $('#saveButton').html('Processing..');
                 $.ajax({
                     data: $('#addEditForm').serialize(),
@@ -92,7 +90,7 @@ $(document).ready(function () {
                             icon: "success",
                             buttons: {
                                 confirm: {
-                                    text: "OK",
+                                    text: "Oke",
                                     value: true,
                                     visible: true,
                                     className: "btn btn-success",
@@ -105,11 +103,11 @@ $(document).ready(function () {
                     error: function (data) {
                         swal({
                             title: swal_fail_title,
-                            text: "Periksa kembali inputan Anda!",
+                            text: swal_fail_text,
                             icon: "error",
                             buttons: {
                                 confirm: {
-                                    text: "OK",
+                                    text: "Oke",
                                     value: true,
                                     visible: true,
                                     className: "btn btn-danger",
@@ -134,17 +132,17 @@ $(document).ready(function () {
             success: function(data)
             {
                 $('#id').val(data.id);
-                $('#kode').val(data.kode);
-                $('#nama').val(data.name);
+                $('#name').val(data.name);
                 $('#email').val(data.email);
-                if(data.jenis_kelamin == 'Laki-laki'){
+
+                if(data.gender == 'Laki-laki'){
                     $("#men").prop("checked", true);
-                }
-                else if(data.jenis_kelamin == 'Perempuan'){
+                } else if(data.gender == 'Perempuan'){
                     $("#women").prop("checked", true);
                 }
-                $('#alamat').val(data.alamat);
-                $('#telp').val(data.telp);
+
+                $('#address').val(data.address);
+                $('#phone').val(data.phone);
                 $('#saveButton').val('Update');
                 $('#action').val('Edit');
                 $('.modal-title').text('Edit Supplier');
@@ -190,7 +188,7 @@ $(document).ready(function () {
                             icon: "success",
                             buttons: {
                                 confirm: {
-                                    text: "OK",
+                                    text: "Oke",
                                     value: true,
                                     visible: true,
                                     className: "btn btn-success",
@@ -207,7 +205,7 @@ $(document).ready(function () {
                             icon: "error",
                             buttons: {
                                 confirm: {
-                                    text: "OK",
+                                    text: "Oke",
                                     value: true,
                                     visible: true,
                                     className: "btn btn-danger",

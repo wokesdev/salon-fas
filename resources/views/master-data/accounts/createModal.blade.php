@@ -9,20 +9,12 @@
                             <input type="hidden" name="id" id="id">
                             <input type="hidden" name="action" id="action" value="Add">
                             <div class="form-group">
-                                <label for="no" class="col-sm-12 control-label">Nomor Akun</label>
-                                <div class="col-sm-12"><input type="number" class="form-control" id="no" name="no" placeholder="Contoh: 100" required></div>
+                                <label for="nomor_akun" class="col-sm-12 control-label">Nomor Akun</label>
+                                <div class="col-sm-12"><input type="number" class="form-control" id="nomor_akun" name="nomor_akun" placeholder="Contoh: 100" required></div>
                             </div>
                             <div class="form-group">
-                                <label for="name" class="col-sm-12 control-label">Nama Akun</label>
-                                <div class="col-sm-12"><input type="text" class="form-control" id="name" name="name" placeholder="Contoh: Aktiva Lancar" required></div>
-                            </div>
-                            <div class="form-group">
-                                <label for="no_rincian" class="col-sm-12 control-label">Nomor Rincian Akun</label>
-                                <div class="col-sm-12"><input type="number" class="form-control" id="no_rincian" name="no_rincian" placeholder="Contoh: 101" required></div>
-                            </div>
-                            <div class="form-group">
-                                <label for="name_rincian" class="col-sm-12 control-label">Nama Rincian Akun</label>
-                                <div class="col-sm-12"><input type="text" class="form-control" id="name_rincian" name="name_rincian" placeholder="Contoh: Kas" required></div>
+                                <label for="nama_akun" class="col-sm-12 control-label">Nama Akun</label>
+                                <div class="col-sm-12"><input type="text" class="form-control" id="nama_akun" name="nama_akun" placeholder="Contoh: Aktiva Lancar" required></div>
                             </div>
                         </div>
                     </div>

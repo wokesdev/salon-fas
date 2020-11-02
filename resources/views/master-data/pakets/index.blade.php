@@ -8,7 +8,7 @@
                     <div class="card-header">
                         <div class="d-flex align-items-center">
                             <h4 class="card-title">Data Paket</h4>
-                            <button type="button" class="btn btn-primary btn-round ml-auto text-white" id="addButton" data-toggle="modal" data-target="#addEditModal"><i class="fa fa-plus"></i>Tambah Paket</button>
+                            <button type="button" class="btn btn-primary btn-round ml-auto text-white" id="addButton" data-toggle="modal" data-target="#addEditModal"><i class="fa fa-plus"></i> Tambah Paket</button>
                         </div>
                     </div>
                     <div class="card-body">
@@ -30,9 +30,8 @@
         </div>
     </div>
 </div>
-@include('master-data.paket.createModal')
-@include('master-data.paket.deleteModal')
+@include('master-data.pakets.createModal')
 @endsection
 @section('contentScripts')
-    @include('master-data.paket.paketScripts')
+    @include('master-data.pakets.scripts')
 @endsection

@@ -24,10 +24,9 @@ class PackageController extends Controller
                     return $button;
                 })
                 ->rawColumns(['action'])
-                ->addIndexColumn()
                 ->make(true);
         }
-        return view('master-data.paket.index');
+        return view('master-data.pakets.index');
     }
 
     /**
@@ -48,18 +47,16 @@ class PackageController extends Controller
      */
     public function store(Request $request)
     {
-        $request->harga = str_replace('.', '', $request->harga);
-
         request()->validate([
             'name' => 'required|string|max:255|unique:packages,name',
-            'kategori' => 'required|string|max:255',
-            'harga' => 'required|numeric',
+            'category' => 'required|string|max:255',
+            'price' => 'required|numeric',
         ]);
 
         $store = Package::create([
             'name' => $request->name,
-            'kategori' => $request->kategori,
-            'harga' => $request->harga,
+            'category' => $request->category,
+            'price' => $request->price,
         ]);
 
         return response()->json($store);
@@ -99,19 +96,21 @@ class PackageController extends Controller
      */
     public function update(Request $request, Package $package)
     {
+        $price = str_replace('.', '', $request->price);
+
         request()->validate([
             'name' => 'required|string|max:255|unique:packages,name,' . $request->id,
-            'kategori' => 'required|string|max:255',
-            'harga' => 'required|numeric|digits_between:1,9',
+            'category' => 'required|string|max:255',
+            'price' => 'required|numeric',
         ]);
 
         $update = Package::where('id', $request->id)->update([
             'name' => $request->name,
-            'kategori' => $request->kategori,
-            'harga' => $request->harga,
+            'category' => $request->category,
+            'price' => $price,
         ]);
 
-        return response()->json($request);
+        return response()->json($update);
     }
 
     /**

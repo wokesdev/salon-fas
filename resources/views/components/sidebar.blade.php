@@ -42,12 +42,13 @@
                 @switch(Auth::user()->role->level)
                     @case('1')
                         <li class="nav-section"><span class="sidebar-mini-icon"><i class="fa fa-ellipsis-h"></i></span><h4 class="text-section">Master Data</h4></li>
-                        <li class="nav-item"><a href="{{ route('account.index') }}"><i class="fas fa-book"></i><p>Data Daftar Akuntansi</p></a></li>
+                        <li class="nav-item"><a href="{{ route('account.index') }}"><i class="fas fa-book"></i><p>Daftar Akuntansi</p></a></li>
+                        <li class="nav-item"><a href="{{ route('account-detail.index') }}"><i class="fas fa-book"></i><p>Rincian Daftar Akuntansi</p></a></li>
                         <li class="nav-item"><a href="{{ route('user.index') }}"><i class="fas fa-user"></i><p>Data Admin</p></a></li>
                         <li class="nav-item"><a href="{{ route('role.index') }}"><i class="fas fa-user-circle"></i><p>Data Jabatan</p></a></li>
                         <li class="nav-item"><a href="{{ route('customer.index') }}"><i class="fas fa-users"></i><p>Data Pelanggan</p></a></li>
-                        <li class="nav-item"><a href="{{ route('package.index') }}"><i class="fas fa-archive"></i><p>Data Paket</p></a></li>
                         <li class="nav-item"><a href="{{ route('supplier.index') }}"><i class="fas fa-user-secret"></i><p>Data Supplier</p></a></li>
+                        <li class="nav-item"><a href="{{ route('package.index') }}"><i class="fas fa-archive"></i><p>Data Paket</p></a></li>
 
                         <li class="nav-section"><span class="sidebar-mini-icon"><i class="fa fa-ellipsis-h"></i></span><h4 class="text-section">Transaksi</h4></li>
                         <li class="nav-item"><a href="{{ route('account.index') }}"><i class="fas fa-money-bill-wave"></i><p>Pembelian</p></a></li>

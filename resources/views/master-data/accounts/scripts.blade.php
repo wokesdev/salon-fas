@@ -10,27 +10,27 @@ $(document).ready(function () {
         processing: true,
         serverSide: true,
         ajax: {
-            url: "{{ route('role.index') }}"
+            url: "{{ route('account.index') }}"
         },
         columns: [
-            { data: 'name', name: 'name' },
-            { data: 'level', name: 'level' },
+            { data: 'nomor_akun' },
+            { data: 'nama_akun' },
             { data: 'action', name: 'action', orderable: false, searchable: false }
         ],
         order: [
-            [1, 'asc']
+            [0, 'asc']
         ],
     });
 
     $('#addButton').click(function(){
-        $('.modal-title').text('Tambah Jabatan');
+        $('.modal-title').text('Tambah Akun');
         $('#saveButton').val('Add');
         $('#action').val('Add');
         $('#addEditForm').trigger("reset");
         $('#addEditForm').validate().resetForm();
 
         $('#addEditModal').on('shown.bs.modal', function() {
-            $('#name').trigger('focus');
+            $('#nomor_akun').trigger('focus');
         });
     });
 
@@ -45,12 +45,13 @@ $(document).ready(function () {
     if ($("#addEditForm").length > 0) {
         $("#addEditForm").validate({
             rules: {
-                name: { lettersOnly: true, maxlength: 255, },
+                nomor_akun: { maxlength: 4, },
+                nama_akun: { lettersOnly: true, maxlength: 255, },
             },
 
             submitHandler: function (form) {
                 if($('#action').val() == 'Add') {
-                    action_url = "{{ route('role.store') }}";
+                    action_url = "{{ route('account.store') }}";
                     swal_title = "Berhasil!";
                     swal_text = "Data berhasil ditambahkan!";
                     swal_fail_title = "Gagal!";
@@ -58,14 +59,13 @@ $(document).ready(function () {
                 }
 
                 if($('#action').val() == 'Edit') {
-                    action_url = "{{ route('role.update') }}";
+                    action_url = "{{ route('account.update') }}";
                     swal_title = "Berhasil!";
                     swal_text = "Data berhasil diperbarui!";
                     swal_fail_title = "Gagal!";
                     swal_fail_text = "Data gagal diperbarui!";
                 }
 
-                var actionType = $('#saveButton').val();
                 $('#saveButton').html('Processing..');
                 $.ajax({
                     data: $('#addEditForm').serialize(),
@@ -84,7 +84,7 @@ $(document).ready(function () {
                             icon: "success",
                             buttons: {
                                 confirm: {
-                                    text: "OK",
+                                    text: "Oke",
                                     value: true,
                                     visible: true,
                                     className: "btn btn-success",
@@ -97,11 +97,11 @@ $(document).ready(function () {
                     error: function (data) {
                         swal({
                             title: swal_fail_title,
-                            text: "Periksa kembali inputan Anda!",
+                            text: swal_fail_text,
                             icon: "error",
                             buttons: {
                                 confirm: {
-                                    text: "OK",
+                                    text: "Oke",
                                     value: true,
                                     visible: true,
                                     className: "btn btn-danger",
@@ -121,23 +121,21 @@ $(document).ready(function () {
     $(document).on('click', '.edit', function(){
         var id = $(this).data('id');
         $.ajax({
-            url :"role/"+ id +"/edit",
+            url :"account/"+ id +"/edit",
             dataType:"json",
             success: function(data)
             {
                 $('#id').val(data.id);
-                $('#name').val(data.name);
-                $('#level').val(data.level);
-                $('#email').val(data.email);
-                $('#role').val(data.role_id);
+                $('#nomor_akun').val(data.nomor_akun);
+                $('#nama_akun').val(data.nama_akun);
                 $('#saveButton').val('Update');
                 $('#action').val('Edit');
-                $('.modal-title').text('Edit Jabatan');
+                $('.modal-title').text('Edit Akun');
                 $('#addEditModal').modal('show');
                 $('#addEditForm').validate().resetForm();
 
                 $('#addEditModal').on('shown.bs.modal', function() {
-                    $('#name').trigger('focus');
+                    $('#no').trigger('focus');
                 });
             },
         })
@@ -147,14 +145,15 @@ $(document).ready(function () {
         var dataId = $(this).attr('id');
         swal({
             title: 'Apa Anda yakin?',
-            text: "Data akan terhapus permanen!",
+            text: "Data rincian akuntansi yang berkaitan juga akan terhapus permanen!",
             icon: 'warning',
             buttons:{
                 confirm: {
-                    text : 'Ya, saya yakin!',
-                    className : 'btn btn-success'
+                    text: 'Ya, saya yakin!',
+                    className: 'btn btn-success'
                 },
                 cancel: {
+                    text: 'Batal!',
                     visible: true,
                     className: 'btn btn-danger'
                 }
@@ -162,7 +161,7 @@ $(document).ready(function () {
         }).then((willDelete) => {
             if (willDelete) {
                 $.ajax({
-                    url: "role/" + dataId,
+                    url: "account/" + dataId,
                     type: 'DELETE',
                     success: function (data) {
                         setTimeout(function () {
@@ -175,7 +174,7 @@ $(document).ready(function () {
                             icon: "success",
                             buttons: {
                                 confirm: {
-                                    text: "OK",
+                                    text: "Oke",
                                     value: true,
                                     visible: true,
                                     className: "btn btn-success",
@@ -192,7 +191,7 @@ $(document).ready(function () {
                             icon: "error",
                             buttons: {
                                 confirm: {
-                                    text: "OK",
+                                    text: "Oke",
                                     value: true,
                                     visible: true,
                                     className: "btn btn-danger",

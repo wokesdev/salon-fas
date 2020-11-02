@@ -7,7 +7,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     @include('scripts.baseStyles')
 </head>
-<body>
+<body style="background-color: gray">
     @yield('content')
     @include('scripts.baseScripts')
 </body>

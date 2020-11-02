@@ -27,7 +27,7 @@ class UserController extends Controller
                     $button .= '&nbsp;&nbsp;&nbsp;<button type="button" name="delete" id="'.$users->id.'" class="delete btn btn-danger btn-sm">Delete</button></div>';
                     return $button;
                 })
-                ->editColumn('role', function($users) {
+                ->editColumn('role_name', function($users) {
                     return $users->role->name;
                 })
                 ->rawColumns(['action'])
@@ -55,33 +55,26 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
+        $explode = explode(' ', $request->name)[0];
+        $first_name = strtolower($explode);
+
         request()->validate([
             'name' => 'required|string|max:255|unique:users,name',
-            'username' => 'required|string|max:255|alpha_dash|unique:users,username',
+            'username' => 'nullable|string|max:255|alpha_dash|unique:users,username',
             'email' => 'required|string|max:255|email|unique:users,email',
-            'role' => 'required|integer',
+            'role' => 'required|numeric',
             'password' => 'required|string|min:8|confirmed',
         ]);
 
         $store = User::create([
             'name' => $request->name,
-            'username' => $request->username,
+            'username' => $request->username ?? $first_name,
             'email' => $request->email,
             'role_id' => $request->role,
             'password' => Hash::make($request->password),
         ]);
 
         return response()->json($store);
-
-        // User::create([
-        //     'name' => request('name'),
-        //     'username' => request('username'),
-        //     'email' => request('email'),
-        //     'role' => request('role'),
-        //     'password' => Hash::make(request('password')),
-        //  ]);
-
-        // return redirect('user')->with('status', 'User Created!');
     }
 
     /**
@@ -107,9 +100,6 @@ class UserController extends Controller
             $edit = User::findOrFail($user->id);
             return response()->json($edit);
         }
-
-        // $users = User::where('id', $user->id)->first();
-        // return view('admin\users\edit', Compact('users'));
     }
 
     /**
@@ -126,7 +116,7 @@ class UserController extends Controller
                 'name' => 'required|string|max:255|unique:users,name,' . $request->id,
                 'username' => 'required|string|max:255|alpha_dash|unique:users,username,' . $request->id,
                 'email' => 'required|string|max:255|email|unique:users,email,' . $request->id,
-                'role' => 'required|integer',
+                'role' => 'required|numeric',
             ]);
 
             $update = User::where('id', $request->id)->update([
@@ -150,15 +140,6 @@ class UserController extends Controller
 
             return response()->json($updatePass);
         }
-
-        // User::where('id', $user->id)->update([
-        //     'name' => request('name'),
-        //     'username' => request('username'),
-        //     'email' => request('email'),
-        //     'role' => request('role'),
-        //  ]);
-
-        // return redirect('user')->with('status', 'User Updated!');
     }
 
     /**
@@ -171,8 +152,5 @@ class UserController extends Controller
     {
         $destroy = User::where('id', $user->id)->delete();
         return response()->json($destroy);
-
-        // User::where('id', $user->id)->delete();
-        // return back()->with('status', 'User Deleted!');
     }
 }
