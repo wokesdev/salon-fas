@@ -16,7 +16,7 @@ class AccountDetailController extends Controller
      */
     public function index(Request $request)
     {
-        $accounts = Account::all();
+        $accounts = Account::select('id', 'nomor_akun', 'nama_akun')->get();
         if ($request->ajax()) {
             $accountDetail = AccountDetail::query();
             return DataTables::of($accountDetail)

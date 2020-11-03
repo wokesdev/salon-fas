@@ -29,6 +29,8 @@ Route::middleware(['auth.one', 'auth'])->group(function () {
     Route::resource('customer', 'CustomerController');
     Route::resource('package', 'PackageController');
     Route::resource('supplier', 'SupplierController');
+    Route::resource('purchase', 'PurchaseController');
+    Route::resource('purchase-detail', 'PurchaseDetailController');
 
     Route::post('account/update', 'AccountController@update')->name('account.update');
     Route::post('account-detail/update', 'AccountDetailController@update')->name('account-detail.update');
@@ -37,6 +39,8 @@ Route::middleware(['auth.one', 'auth'])->group(function () {
     Route::post('customer/update', 'CustomerController@update')->name('customer.update');
     Route::post('package/update', 'PackageController@update')->name('package.update');
     Route::post('supplier/update', 'SupplierController@update')->name('supplier.update');
+    Route::post('purchase/update', 'PurchaseController@update')->name('purchase.update');
+    Route::post('purchase-detail/update', 'PurchaseDetailController@update')->name('purchase-detail.update');
 });
 
 Route::middleware(['auth.two', 'auth'])->group(function () {

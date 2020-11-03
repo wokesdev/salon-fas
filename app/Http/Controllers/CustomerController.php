@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Customer;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
 
 class CustomerController extends Controller
@@ -47,7 +48,9 @@ class CustomerController extends Controller
      */
     public function store(Request $request)
     {
-        $number = Customer::count() + 1;
+        $statement = DB::select("show table status like 'customers'");
+        $number = $statement[0]->Auto_increment;
+        $code = 'CS' . str_pad($number, 5, '0', STR_PAD_LEFT);
 
         request()->validate([
             'name' => 'required|string|max:255|unique:customers,name',
@@ -58,7 +61,7 @@ class CustomerController extends Controller
         ]);
 
         $store = Customer::create([
-            'code' => 'CT' . str_pad($number, 5, '0', STR_PAD_LEFT),
+            'code' => $code,
             'name' => $request->name,
             'email' => $request->email,
             'gender' => $request->gender,

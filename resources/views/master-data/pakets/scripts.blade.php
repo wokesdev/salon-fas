@@ -6,8 +6,6 @@ $(document).ready(function () {
         },
     });
 
-    $('.price').mask('000.000.000', {reverse: true});
-
     $('#table').DataTable({
         processing: true,
         serverSide: true,
@@ -31,7 +29,7 @@ $(document).ready(function () {
         $('#action').val('Add');
         $('#addEditForm').trigger("reset");
         $('#addEditForm').validate().resetForm();
-
+        $('.price').mask('000.000.000', {reverse: true});
         $('#addEditModal').on('shown.bs.modal', function() {
             $('#name').trigger('focus');
         });
@@ -140,7 +138,7 @@ $(document).ready(function () {
                 $('.modal-title').text('Edit Paket');
                 $('#addEditModal').modal('show');
                 $('#addEditForm').validate().resetForm();
-
+                $('.price').mask('000.000.000', {reverse: true});
                 $('#addEditModal').on('shown.bs.modal', function() {
                     $('#name').trigger('focus');
                 });

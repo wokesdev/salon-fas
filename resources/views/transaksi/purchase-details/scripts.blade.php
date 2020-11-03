@@ -10,33 +10,31 @@ $(document).ready(function () {
         processing: true,
         serverSide: true,
         ajax: {
-            url: "{{ route('account-detail.index') }}"
+            url: "{{ route('purchase-detail.index') }}"
         },
         columns: [
-            { data: 'nomor_akun' },
-            { data: 'nama_akun' },
-            { data: 'nomor_rincian_akun' },
-            { data: 'nama_rincian_akun' },
+            { data: 'DT_RowIndex', name: 'id' },
+            { data: 'nomor_pembelian' },
+            { data: 'keterangan' },
+            { data: 'harga_satuan', render: $.fn.dataTable.render.number('.', ',', 2, 'Rp') },
+            { data: 'kuantitas' },
+            { data: 'total', render: $.fn.dataTable.render.number('.', ',', 2, 'Rp') },
             { data: 'action', name: 'action', orderable: false, searchable: false }
         ],
         order: [
-            [2, 'asc']
+            [0, 'asc']
         ],
     });
 
     $('#addButton').click(function(){
-        $('.modal-title').text('Tambah Rincian Akun');
+        $('.modal-title').text('Tambah Rincian Pembelian');
         $('#saveButton').val('Add');
         $('#action').val('Add');
-        $('#no_rincian').prop('disabled', true);
-        $('#no_rincian').prop('hidden', true);
-        $('#akun').prop('disabled', false);
-        $('#akun').prop('hidden', false);
         $('#addEditForm').trigger("reset");
         $('#addEditForm').validate().resetForm();
-
+        $('.price').mask('000.000.000', {reverse: true});
         $('#addEditModal').on('shown.bs.modal', function() {
-            $('#account_id').trigger('focus');
+            $('#purchase_id').trigger('focus');
         });
     });
 
@@ -44,20 +42,16 @@ $(document).ready(function () {
         $('#deleteButton').html('Processing..');
     });
 
-    $.validator.addMethod( "lettersOnly", function( value, element ) {
-        return this.optional( element ) || /^[a-zA-Z\s]+$/.test( value );
-    }, "Please enter letters only." );
-
     if ($("#addEditForm").length > 0) {
         $("#addEditForm").validate({
             rules: {
-                nomor_rincian_akun: { maxlength: 4, },
-                nama_rincian_akun: { lettersOnly: true, maxlength: 255, },
+                keterangan: { maxlength: 500, },
             },
-
             submitHandler: function (form) {
+                $("#price").unmask();
+
                 if($('#action').val() == 'Add') {
-                    action_url = "{{ route('account-detail.store') }}";
+                    action_url = "{{ route('purchase-detail.store') }}";
                     swal_title = "Berhasil!";
                     swal_text = "Data berhasil ditambahkan!";
                     swal_fail_title = "Gagal!";
@@ -65,7 +59,7 @@ $(document).ready(function () {
                 }
 
                 if($('#action').val() == 'Edit') {
-                    action_url = "{{ route('account-detail.update') }}";
+                    action_url = "{{ route('purchase-detail.update') }}";
                     swal_title = "Berhasil!";
                     swal_text = "Data berhasil diperbarui!";
                     swal_fail_title = "Gagal!";
@@ -121,32 +115,29 @@ $(document).ready(function () {
                     }
                 })
             }
-        });
+        })
     };
 
     $(document).on('click', '.edit', function(){
         var id = $(this).data('id');
         $.ajax({
-            url :"account-detail/"+ id +"/edit",
+            url :"purchase-detail/"+ id +"/edit",
             dataType:"json",
             success: function(data)
             {
                 $('#id').val(data.id);
-                $('#account_id').val(data.account_id);
-                $('#nomor_rincian_akun').val(data.nomor_rincian_akun);
-                $('#nama_rincian_akun').val(data.nama_rincian_akun);
+                $('#purchase_id').val(data.purchase_id);
+                $('#keterangan').val(data.keterangan);
+                $('#kuantitas').val(data.kuantitas);
+                $('#price').val(data.harga_satuan);
                 $('#saveButton').val('Update');
                 $('#action').val('Edit');
-                $('#no_rincian').prop('disabled', false);
-                $('#no_rincian').prop('hidden', false);
-                $('#akun').prop('disabled', true);
-                $('#akun').prop('hidden', true);
-                $('.modal-title').text('Edit Rincian Akun');
+                $('.modal-title').text('Edit Rincian Pembelian');
                 $('#addEditModal').modal('show');
                 $('#addEditForm').validate().resetForm();
-
+                $('.price').mask('000.000.000', {reverse: true});
                 $('#addEditModal').on('shown.bs.modal', function() {
-                    $('#account_id').trigger('focus');
+                    $('#purchase_id').trigger('focus');
                 });
             },
         })
@@ -171,7 +162,7 @@ $(document).ready(function () {
         }).then((willDelete) => {
             if (willDelete) {
                 $.ajax({
-                    url: "account-detail/" + dataId,
+                    url: "purchase-detail/" + dataId,
                     type: 'DELETE',
                     success: function (data) {
                         setTimeout(function () {

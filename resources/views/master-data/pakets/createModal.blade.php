@@ -21,9 +21,7 @@
                             </div>
                             <div class="form-group">
                                 <label for="price" class="col-sm-12 control-label">Harga</label>
-                                <div class="col-sm-12 input-group w-100">
-                                    <div class="input-group-prepend"><span class="input-group-text">Rp</span></div><input type="text" class="form-control price" id="price" name="price" placeholder="Contoh: 50.000" required><div class="input-group-append"><span class="input-group-text">,00</span></div>
-                                </div>
+                                <div class="col-sm-12 input-group w-100"><div class="input-group-prepend"><span class="input-group-text">Rp</span></div><input type="text" class="form-control price" id="price" name="price" placeholder="Contoh: 50.000" required><div class="input-group-append"><span class="input-group-text">,00</span></div></div>
                             </div>
                         </div>
                     </div>

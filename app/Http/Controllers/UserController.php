@@ -17,7 +17,7 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
-        $roles = Role::all();
+        $roles = Role::select('id', 'name', 'level')->get();
         if ($request->ajax()) {
             $users = User::query();
             return DataTables::of($users)
@@ -28,7 +28,13 @@ class UserController extends Controller
                     return $button;
                 })
                 ->editColumn('role_name', function($users) {
-                    return $users->role->name;
+                    if ($users->role_id == null) {
+                        return null;
+                    }
+
+                    else {
+                        return $users->role->name;
+                    }
                 })
                 ->rawColumns(['action'])
                 ->addIndexColumn()

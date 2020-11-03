@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Supplier;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
 
 class SupplierController extends Controller
@@ -47,7 +48,9 @@ class SupplierController extends Controller
      */
     public function store(Request $request)
     {
-        $number = Supplier::count() + 1;
+        $statement = DB::select("show table status like 'suppliers'");
+        $number = $statement[0]->Auto_increment;
+        $code = 'SP' . str_pad($number, 5, '0', STR_PAD_LEFT);
 
         request()->validate([
             'name' => 'required|string|max:255|unique:suppliers,name',
@@ -58,7 +61,7 @@ class SupplierController extends Controller
         ]);
 
         $store = Supplier::create([
-            'code' => 'SP' . str_pad($number, 5, '0', STR_PAD_LEFT),
+            'code' => $code,
             'name' => $request->name,
             'email' => $request->email,
             'gender' => $request->gender,

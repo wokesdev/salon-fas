@@ -42,8 +42,15 @@
                 @switch(Auth::user()->role->level)
                     @case('1')
                         <li class="nav-section"><span class="sidebar-mini-icon"><i class="fa fa-ellipsis-h"></i></span><h4 class="text-section">Master Data</h4></li>
-                        <li class="nav-item"><a href="{{ route('account.index') }}"><i class="fas fa-book"></i><p>Daftar Akuntansi</p></a></li>
-                        <li class="nav-item"><a href="{{ route('account-detail.index') }}"><i class="fas fa-book"></i><p>Rincian Daftar Akuntansi</p></a></li>
+                        <li class="nav-item">
+							<a data-toggle="collapse" href="#akun"><i class="fas fa-book"></i><p>Daftar Akun</p><span class="caret"></span></a>
+							<div class="collapse" id="akun">
+								<ul class="nav nav-collapse">
+									<li><a href="{{ route('account.index') }}"><span class="sub-item">Daftar Akuntansi</span></a></li>
+                                    <li><a href="{{ route('account-detail.index') }}"><span class="sub-item">Daftar Rincian Akuntansi</span></a></li>
+                                </ul>
+							</div>
+						</li>
                         <li class="nav-item"><a href="{{ route('user.index') }}"><i class="fas fa-user"></i><p>Data Admin</p></a></li>
                         <li class="nav-item"><a href="{{ route('role.index') }}"><i class="fas fa-user-circle"></i><p>Data Jabatan</p></a></li>
                         <li class="nav-item"><a href="{{ route('customer.index') }}"><i class="fas fa-users"></i><p>Data Pelanggan</p></a></li>
@@ -51,7 +58,15 @@
                         <li class="nav-item"><a href="{{ route('package.index') }}"><i class="fas fa-archive"></i><p>Data Paket</p></a></li>
 
                         <li class="nav-section"><span class="sidebar-mini-icon"><i class="fa fa-ellipsis-h"></i></span><h4 class="text-section">Transaksi</h4></li>
-                        <li class="nav-item"><a href="{{ route('account.index') }}"><i class="fas fa-money-bill-wave"></i><p>Pembelian</p></a></li>
+                        <li class="nav-item">
+							<a data-toggle="collapse" href="#pembelian"><i class="fas fa-book"></i><p>Pembelian</p><span class="caret"></span></a>
+							<div class="collapse" id="pembelian">
+								<ul class="nav nav-collapse">
+									<li><a href="{{ route('purchase.index') }}"><span class="sub-item">Pembelian</span></a></li>
+                                    <li><a href="{{ route('purchase-detail.index') }}"><span class="sub-item">Rincian Pembelian</span></a></li>
+                                </ul>
+							</div>
+						</li>
                         <li class="nav-item"><a href="{{ route('account.index') }}"><i class="fas fa-receipt"></i><p>Penjualan</p></a></li>
                         <li class="nav-item"><a href="{{ route('account.index') }}"><i class="fas fa-piggy-bank"></i><p>Pengeluaran Kas</p></a></li>
                         <li class="nav-item"><a href="{{ route('account.index') }}"><i class="fas fa-bookmark"></i><p>Jurnal Umum</p></a></li>
