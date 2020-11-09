@@ -59,15 +59,23 @@
 
                         <li class="nav-section"><span class="sidebar-mini-icon"><i class="fa fa-ellipsis-h"></i></span><h4 class="text-section">Transaksi</h4></li>
                         <li class="nav-item">
-							<a data-toggle="collapse" href="#pembelian"><i class="fas fa-book"></i><p>Pembelian</p><span class="caret"></span></a>
+							<a data-toggle="collapse" href="#pembelian"><i class="fas fa-coins"></i><p>Pembelian</p><span class="caret"></span></a>
 							<div class="collapse" id="pembelian">
 								<ul class="nav nav-collapse">
 									<li><a href="{{ route('purchase.index') }}"><span class="sub-item">Pembelian</span></a></li>
                                     <li><a href="{{ route('purchase-detail.index') }}"><span class="sub-item">Rincian Pembelian</span></a></li>
                                 </ul>
 							</div>
+                        </li>
+                        <li class="nav-item">
+							<a data-toggle="collapse" href="#penjualan"><i class="fas fa-receipt"></i><p>Penjualan</p><span class="caret"></span></a>
+							<div class="collapse" id="penjualan">
+								<ul class="nav nav-collapse">
+									<li><a href="{{ route('sale.index') }}"><span class="sub-item">Penjualan</span></a></li>
+                                    <li><a href="{{ route('sale-detail.index') }}"><span class="sub-item">Rincian Penjualan</span></a></li>
+                                </ul>
+							</div>
 						</li>
-                        <li class="nav-item"><a href="{{ route('account.index') }}"><i class="fas fa-receipt"></i><p>Penjualan</p></a></li>
                         <li class="nav-item"><a href="{{ route('account.index') }}"><i class="fas fa-piggy-bank"></i><p>Pengeluaran Kas</p></a></li>
                         <li class="nav-item"><a href="{{ route('account.index') }}"><i class="fas fa-bookmark"></i><p>Jurnal Umum</p></a></li>
 

@@ -7,11 +7,8 @@
                 <div class="card">
                     <div class="card-header">
                         <div class="d-flex align-items-center">
-                            <h4 class="card-title">Data Pembelian</h4>
-                            <button type="button" class="btn btn-primary btn-round ml-auto" id="importButton" data-toggle="modal" data-target="#importModal"><i class="fa fa-upload"></i> Import Excel</button>
-                        </div>
-                        <div class="d-flex align-items-center py-2">
-                            <button type="button" class="btn btn-primary btn-round ml-auto" id="addButton" data-toggle="modal" data-target="#addEditModal"><i class="fa fa-plus"></i> Tambah Pembelian</button>
+                            <h4 class="card-title">Data Penjualan</h4>
+                            <button type="button" class="btn btn-primary btn-round ml-auto text-white" id="addButton" data-toggle="modal" data-target="#addEditModal"><i class="fa fa-plus"></i> Tambah Pembelian</button>
                         </div>
                     </div>
                     <div class="card-body">
@@ -19,12 +16,13 @@
                             <table id="table" class="display table table-striped table-hover">
                                 <thead>
                                     <tr>
-                                        <th>Nomor Pembelian</th>
-                                        <th>Kode Supplier</th>
-                                        <th>Nama Supplier</th>
+                                        <th>Nomor Penjualan</th>
+                                        <th>Kode Pelanggan</th>
+                                        <th>Nama Pelanggan</th>
                                         <th>Nomor Rincian Akun</th>
                                         <th>Nama Rincian Akun</th>
                                         <th>Tanggal</th>
+                                        <th>Keterangan</th>
                                         <th style="width: 10%">Action</th>
                                     </tr>
                                 </thead>
@@ -36,11 +34,9 @@
         </div>
     </div>
 </div>
-@include('transaksi.purchases.createModal')
-@include('transaksi.purchases.showModal')
-@include('transaksi.purchases.importModal')
-@include('transaksi.purchases.detailModal')
+@include('transaksi.sales.createModal')
+@include('transaksi.sales.showModal')
 @endsection
 @section('contentScripts')
-    @include('transaksi.purchases.scripts')
+    @include('transaksi.sales.scripts')
 @endsection

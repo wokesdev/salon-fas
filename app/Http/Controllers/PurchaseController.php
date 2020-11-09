@@ -3,12 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Purchase;
+use App\Models\Supplier;
 use App\Models\AccountDetail;
 use App\Models\PurchaseDetail;
-use App\Models\Supplier;
+use App\Imports\PurchasesImport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
+use Maatwebsite\Excel\Facades\Excel;
 
 class PurchaseController extends Controller
 {
@@ -25,7 +27,8 @@ class PurchaseController extends Controller
             $purchase = Purchase::query();
             return DataTables::of($purchase)
                 ->addColumn('action', function($purchase){
-                    $button = '<div class="form-button-action"><button type="button" name="edit" data-toggle="tooltip" data-id="'.$purchase->id.'" data-original-title="Edit" class="edit btn btn-primary btn-sm">Edit</button>';
+                    $button = '<div class="form-button-action"><button type="button" name="detail" data-toggle="tooltip" data-id="'.$purchase->id.'" data-original-title="Detail" class="detail btn btn-warning btn-sm">Detail</button>';
+                    $button .= '&nbsp;&nbsp;&nbsp;<button type="button" name="edit" data-toggle="tooltip" data-id="'.$purchase->id.'" data-original-title="Edit" class="edit btn btn-primary btn-sm">Edit</button>';
                     $button .= '&nbsp;&nbsp;&nbsp;<button type="button" name="delete" id="'.$purchase->id.'" class="delete btn btn-danger btn-sm">Delete</button></div>';
                     return $button;
                 })
@@ -73,7 +76,6 @@ class PurchaseController extends Controller
             'account_detail_id' => 'required|numeric',
             'supplier_id' => 'required|numeric',
             'tanggal' => 'required|date',
-            'keterangan' => 'required|string|max:500',
         ]);
 
         $store = Purchase::create([
@@ -81,10 +83,20 @@ class PurchaseController extends Controller
             'account_detail_id' => $request->account_detail_id,
             'supplier_id' => $request->supplier_id,
             'tanggal' => $request->tanggal,
-            'keterangan' => $request->keterangan,
         ]);
 
-        return response()->json($store);
+        for($i = 0; $i < count((array) $request->price); $i++)
+        {
+            $storeDetail = PurchaseDetail::create([
+                'purchase_id' => $number,
+                'kuantitas'  => $request->kuantitas[$i],
+                'harga_satuan' => $request->price[$i],
+                'total' => $request->kuantitas[$i] * $request->price[$i],
+                'keterangan' => $request->keterangan[$i],
+            ]);
+        }
+
+        return response()->json([$store, $storeDetail]);
     }
 
     /**
@@ -95,7 +107,33 @@ class PurchaseController extends Controller
      */
     public function show(Purchase $purchase)
     {
-        //
+        $purchaseDetail = PurchaseDetail::where('purchase_id', $purchase->id)->get();
+        $response = "<div class='table-responsive'>";
+            $response .= "<table class='display table table-striped table-hover'>";
+                $response .= "<thead>";
+                    $response .= "<tr>";
+                        $response .= "<th>Kuantitas</th>";
+                        $response .= "<th>Harga Satuan</th>";
+                        $response .= "<th>Total</th>";
+                        $response .= "<th>Detail Keterangan</th>";
+                        $response .= "<th>Action</th>";
+                    $response .= "</tr>";
+                $response .= "</thead>";
+                $response .= "<tbody>";
+                foreach ($purchaseDetail as $pDetail) {
+                    $response .= "<tr>";
+                        $response .= "<td>".$pDetail->kuantitas." pcs</td>";
+                        $response .= "<td>Rp".number_format($pDetail->harga_satuan,2,',','.')."</td>";
+                        $response .= "<td>Rp".number_format($pDetail->total,2,',','.')."</td>";
+                        $response .= "<td>".$pDetail->keterangan."</td>";
+                        $response .= '<td><div class="form-button-action"><button type="button" name="editDetail" data-toggle="tooltip" data-id="'.$pDetail->id.'" id="'.$pDetail->purchase_id.'" data-original-title="EditDetail" class="editDetail btn btn-primary btn-sm">Edit</button>';
+                        $response .= '&nbsp;&nbsp;&nbsp;<button type="button" name="deleteDetail" data-id="'.$pDetail->purchase_id.'" id="'.$pDetail->id.'" class="deleteDetail btn btn-danger btn-sm">Delete</button></div></td>';
+                    $response .= "</tr>";
+                }
+                $response .= "</tbody>";
+            $response .= "</table>";
+        $response .= "</div>";
+        echo $response;
     }
 
     /**
@@ -148,5 +186,10 @@ class PurchaseController extends Controller
     {
         $destroy = Purchase::where('id', $purchase->id)->delete();
         return response()->json($destroy);
+    }
+
+    public function importExcel(Request $request)
+    {
+        Excel::import(new PurchasesImport, $request->file('import'));
     }
 }

@@ -7,7 +7,7 @@
                 <div class="card">
                     <div class="card-header">
                         <div class="d-flex align-items-center">
-                            <h4 class="card-title">Data Rincian Pembelian</h4>
+                            <h4 class="card-title">Data Rincian Penjualan</h4>
                             <button type="button" class="btn btn-primary btn-round ml-auto text-white" id="addButton" data-toggle="modal" data-target="#addEditModal"><i class="fa fa-plus"></i> Tambah Rincian Pembelian</button>
                         </div>
                     </div>
@@ -17,7 +17,7 @@
                                 <thead>
                                     <tr>
                                         <th>No</th>
-                                        <th>Nomor Pembelian</th>
+                                        <th>Nomor Penjualan</th>
                                         <th>Kuantitas</th>
                                         <th>Harga Satuan</th>
                                         <th>Total</th>
@@ -33,8 +33,8 @@
         </div>
     </div>
 </div>
-@include('transaksi.purchase-details.createModal')
+@include('transaksi.sale-details.createModal')
 @endsection
 @section('contentScripts')
-    @include('transaksi.purchase-details.scripts')
+    @include('transaksi.sale-details.scripts')
 @endsection

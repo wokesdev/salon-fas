@@ -1,57 +1,40 @@
 @extends('layouts.guest')
 
 @section('content')
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-8 mt-4">
-            <div class="card">
-                <div class="card-header">
-                    <div class="card-title">Login</div>
+<section class="h-100">
+    <div class="container h-100">
+        <div class="row justify-content-md-center h-100">
+            <div class="card-wrapper">
+                <div class="brand"><img src="{{ asset('atlantis-assets/img/logo-v2.png') }}" alt="logo"></div>
+                <div class="card fat">
+                    <div class="card-body">
+                        <h4 class="card-title">Login</h4>
+                        @if (session('status')) <div class="alert alert-success" role="alert">{{ session('status') }}</div >@endif
+                        <form method="POST" action="{{ route('login') }}">
+                            @csrf
+                            <div class="form-group">
+                                <label for="email">Username</label>
+                                <input type="text" class="form-control @error('username') is-invalid @enderror" id="username" placeholder="Username atau Email Address" name="username" value="{{ old('username') }}" autocomplete="username" tabindex="1" autofocus required>
+                                @error('username') <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span> @enderror
+                            </div>
+                            <div class="form-group">
+                                @if (Route::has('password.request')) <label for="password">Password<a href="{{ route('password.request') }}" class="float-right">Forgot Password?</a></label> @endif
+                                <input type="password" class="form-control @error('password') is-invalid @enderror" id="password" placeholder="Password" name="password" autocomplete="current-password" tabindex="2" required>
+                                @error('password') <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span> @enderror
+                            </div>
+                            <div class="form-group">
+                                <div class="custom-checkbox custom-control">
+                                    <input type="checkbox" class="custom-control-input" id="remember" name="remember" tabindex="3" {{ old('remember') ? 'checked' : '' }}>
+                                    <label for="remember" class="custom-control-label">Remember Me</label>
+                                </div>
+                            </div>
+                            <div class="form-group m-0"><button type="submit" class="btn btn-primary btn-block" tabindex="4">Login</button></div>
+                        </form>
+                    </div>
                 </div>
-                <div class="card-body">
-                    @if (session('status'))
-                        <div class="alert alert-success" role="alert">
-                            {{ session('status') }}
-                        </div>
-                    @endif
-                    <form method="POST" action="{{ route('login') }}" id="loginForm">
-                        @csrf
-                        <div class="form-group">
-                            <label for="username">{{ __('Username') }}</label>
-                            <input type="text" class="form-control @error('username') is-invalid @enderror" id="username" aria-describedby="usernameHelp" placeholder="Username or Email Address" name="username" value="{{ old('username') }}" required autocomplete="username" autofocus>
-                            @error('username')
-                                <span class="invalid-feedback" role="alert">
-                                    <strong>{{ $message }}</strong>
-                                </span>
-                            @enderror
-                        </div>
-                        <div class="form-group">
-                            <label for="password">{{ __('Password') }}</label>
-                            <input type="password" class="form-control @error('password') is-invalid @enderror" id="password" placeholder="Password" name="password" required autocomplete="current-password">
-                            @error('password')
-                                <span class="invalid-feedback" role="alert">
-                                    <strong>{{ $message }}</strong>
-                                </span>
-                            @enderror
-                        </div>
-                        <div class="form-check">
-                            <label class="form-check-label" for="remember">
-                                <input type="checkbox" class="form-check-input" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }}>
-                                <span class="form-check-sign">{{ __('Remember Me') }}</span>
-                            </label>
-                        </div>
-                    </form>
-                </div>
-                <div class="card-action">
-                    <button type="submit" class="btn btn-primary pull-left" form="loginForm">{{ __('Login') }}</button>
-                    @if (Route::has('password.request'))
-                        <a class="btn btn-link pull-right" href="{{ route('password.request') }}">
-                            {{ __('Forgot your password?') }}
-                        </a>
-                    @endif
-                </div>
+                <div class="footer">Copyright &copy; {{ date("Y") }} &mdash; Salon Fas</div>
             </div>
         </div>
     </div>
-</div>
+</section>
 @endsection

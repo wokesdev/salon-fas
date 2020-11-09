@@ -10,14 +10,15 @@ $(document).ready(function () {
         processing: true,
         serverSide: true,
         ajax: {
-            url: "{{ route('purchase-detail.index') }}"
+            url: "{{ route('sale.index') }}"
         },
         columns: [
-            { data: 'DT_RowIndex', name: 'id' },
-            { data: 'nomor_pembelian' },
-            { data: 'kuantitas' },
-            { data: 'harga_satuan', render: $.fn.dataTable.render.number('.', ',', 2, 'Rp') },
-            { data: 'total', render: $.fn.dataTable.render.number('.', ',', 2, 'Rp') },
+            { data: 'nomor_penjualan' },
+            { data: 'kode_pelanggan' },
+            { data: 'nama_pelanggan' },
+            { data: 'nomor_rincian_akun' },
+            { data: 'nama_rincian_akun' },
+            { data: 'tanggal' },
             { data: 'keterangan' },
             { data: 'action', name: 'action', orderable: false, searchable: false }
         ],
@@ -27,14 +28,14 @@ $(document).ready(function () {
     });
 
     $('#addButton').click(function(){
-        $('.modal-title').text('Tambah Rincian Pembelian');
+        $('.modal-title').text('Tambah Penjualan');
         $('#saveButton').val('Add');
         $('#action').val('Add');
         $('#addEditForm').trigger("reset");
         $('#addEditForm').validate().resetForm();
-        $('.price').mask('000.000.000', {reverse: true});
+
         $('#addEditModal').on('shown.bs.modal', function() {
-            $('#purchase_id').trigger('focus');
+            $('#account_detail_id').trigger('focus');
         });
     });
 
@@ -47,11 +48,10 @@ $(document).ready(function () {
             rules: {
                 keterangan: { maxlength: 500, },
             },
-            submitHandler: function (form) {
-                $("#price").unmask();
 
+            submitHandler: function (form) {
                 if($('#action').val() == 'Add') {
-                    action_url = "{{ route('purchase-detail.store') }}";
+                    action_url = "{{ route('sale.store') }}";
                     swal_title = "Berhasil!";
                     swal_text = "Data berhasil ditambahkan!";
                     swal_fail_title = "Gagal!";
@@ -59,7 +59,7 @@ $(document).ready(function () {
                 }
 
                 if($('#action').val() == 'Edit') {
-                    action_url = "{{ route('purchase-detail.update') }}";
+                    action_url = "{{ route('sale.update') }}";
                     swal_title = "Berhasil!";
                     swal_text = "Data berhasil diperbarui!";
                     swal_fail_title = "Gagal!";
@@ -115,32 +115,44 @@ $(document).ready(function () {
                     }
                 })
             }
-        })
+        });
     };
 
     $(document).on('click', '.edit', function(){
         var id = $(this).data('id');
         $.ajax({
-            url :"purchase-detail/"+ id +"/edit",
+            url :"sale/"+ id +"/edit",
             dataType:"json",
             success: function(data)
             {
                 $('#id').val(data.id);
-                $('#purchase_id').val(data.purchase_id);
+                $('#account_detail_id').val(data.account_detail_id);
+                $('#customer_id').val(data.customer_id);
+                $('#tanggal').val(data.tanggal);
                 $('#keterangan').val(data.keterangan);
-                $('#kuantitas').val(data.kuantitas);
-                $('#price').val(data.harga_satuan);
                 $('#saveButton').val('Update');
                 $('#action').val('Edit');
-                $('.modal-title').text('Edit Rincian Pembelian');
+                $('.modal-title').text('Edit Penjualan');
                 $('#addEditModal').modal('show');
                 $('#addEditForm').validate().resetForm();
-                $('.price').mask('000.000.000', {reverse: true});
+
                 $('#addEditModal').on('shown.bs.modal', function() {
-                    $('#purchase_id').trigger('focus');
+                    $('#account_detail_id').trigger('focus');
                 });
             },
         })
+    });
+
+    $(document).on('click', '.detail', function () {
+        var userId = $(this).data('id');
+        $.ajax({
+            url: 'sale/' + userId,
+            type: 'GET',
+            success: function(response){
+                $('.modal-body').html(response);
+                $('#showModal').modal('show')
+            }
+        });
     });
 
     $(document).on('click', '.delete', function () {
@@ -162,7 +174,7 @@ $(document).ready(function () {
         }).then((willDelete) => {
             if (willDelete) {
                 $.ajax({
-                    url: "purchase-detail/" + dataId,
+                    url: "sale/" + dataId,
                     type: 'DELETE',
                     success: function (data) {
                         setTimeout(function () {

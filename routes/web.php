@@ -31,6 +31,8 @@ Route::middleware(['auth.one', 'auth'])->group(function () {
     Route::resource('supplier', 'SupplierController');
     Route::resource('purchase', 'PurchaseController');
     Route::resource('purchase-detail', 'PurchaseDetailController');
+    Route::resource('sale', 'SaleController');
+    Route::resource('sale-detail', 'SaleDetailController');
 
     Route::post('account/update', 'AccountController@update')->name('account.update');
     Route::post('account-detail/update', 'AccountDetailController@update')->name('account-detail.update');
@@ -41,6 +43,10 @@ Route::middleware(['auth.one', 'auth'])->group(function () {
     Route::post('supplier/update', 'SupplierController@update')->name('supplier.update');
     Route::post('purchase/update', 'PurchaseController@update')->name('purchase.update');
     Route::post('purchase-detail/update', 'PurchaseDetailController@update')->name('purchase-detail.update');
+    Route::post('sale/update', 'SaleController@update')->name('sale.update');
+    Route::post('sale-detail/update', 'SaleController@update')->name('sale-detail.update');
+
+    Route::post('purchase/import', 'PurchaseController@importExcel')->name('purchase.import');
 });
 
 Route::middleware(['auth.two', 'auth'])->group(function () {

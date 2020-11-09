@@ -10,11 +10,11 @@ $(document).ready(function () {
         processing: true,
         serverSide: true,
         ajax: {
-            url: "{{ route('purchase-detail.index') }}"
+            url: "{{ route('sale-detail.index') }}"
         },
         columns: [
             { data: 'DT_RowIndex', name: 'id' },
-            { data: 'nomor_pembelian' },
+            { data: 'nomor_penjualan' },
             { data: 'kuantitas' },
             { data: 'harga_satuan', render: $.fn.dataTable.render.number('.', ',', 2, 'Rp') },
             { data: 'total', render: $.fn.dataTable.render.number('.', ',', 2, 'Rp') },
@@ -27,14 +27,14 @@ $(document).ready(function () {
     });
 
     $('#addButton').click(function(){
-        $('.modal-title').text('Tambah Rincian Pembelian');
+        $('.modal-title').text('Tambah Rincian Penjualan');
         $('#saveButton').val('Add');
         $('#action').val('Add');
         $('#addEditForm').trigger("reset");
         $('#addEditForm').validate().resetForm();
         $('.price').mask('000.000.000', {reverse: true});
         $('#addEditModal').on('shown.bs.modal', function() {
-            $('#purchase_id').trigger('focus');
+            $('#sale_id').trigger('focus');
         });
     });
 
@@ -51,7 +51,7 @@ $(document).ready(function () {
                 $("#price").unmask();
 
                 if($('#action').val() == 'Add') {
-                    action_url = "{{ route('purchase-detail.store') }}";
+                    action_url = "{{ route('sale-detail.store') }}";
                     swal_title = "Berhasil!";
                     swal_text = "Data berhasil ditambahkan!";
                     swal_fail_title = "Gagal!";
@@ -59,7 +59,7 @@ $(document).ready(function () {
                 }
 
                 if($('#action').val() == 'Edit') {
-                    action_url = "{{ route('purchase-detail.update') }}";
+                    action_url = "{{ route('sale-detail.update') }}";
                     swal_title = "Berhasil!";
                     swal_text = "Data berhasil diperbarui!";
                     swal_fail_title = "Gagal!";
@@ -121,18 +121,18 @@ $(document).ready(function () {
     $(document).on('click', '.edit', function(){
         var id = $(this).data('id');
         $.ajax({
-            url :"purchase-detail/"+ id +"/edit",
+            url :"sale-detail/"+ id +"/edit",
             dataType:"json",
             success: function(data)
             {
                 $('#id').val(data.id);
-                $('#purchase_id').val(data.purchase_id);
+                $('#sale_id').val(data.sale_id);
                 $('#keterangan').val(data.keterangan);
                 $('#kuantitas').val(data.kuantitas);
                 $('#price').val(data.harga_satuan);
                 $('#saveButton').val('Update');
                 $('#action').val('Edit');
-                $('.modal-title').text('Edit Rincian Pembelian');
+                $('.modal-title').text('Edit Rincian Penjualan');
                 $('#addEditModal').modal('show');
                 $('#addEditForm').validate().resetForm();
                 $('.price').mask('000.000.000', {reverse: true});
@@ -162,7 +162,7 @@ $(document).ready(function () {
         }).then((willDelete) => {
             if (willDelete) {
                 $.ajax({
-                    url: "purchase-detail/" + dataId,
+                    url: "sale-detail/" + dataId,
                     type: 'DELETE',
                     success: function (data) {
                         setTimeout(function () {
