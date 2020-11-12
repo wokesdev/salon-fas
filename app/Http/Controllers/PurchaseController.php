@@ -6,19 +6,12 @@ use App\Models\Purchase;
 use App\Models\Supplier;
 use App\Models\AccountDetail;
 use App\Models\PurchaseDetail;
-use App\Imports\PurchasesImport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
-use Maatwebsite\Excel\Facades\Excel;
 
 class PurchaseController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index(Request $request)
     {
         $accountDetails = AccountDetail::select('id', 'nomor_rincian_akun', 'nama_rincian_akun')->get();
@@ -26,23 +19,39 @@ class PurchaseController extends Controller
         if ($request->ajax()) {
             $purchase = Purchase::query();
             return DataTables::of($purchase)
-                ->addColumn('action', function($purchase){
+                ->addColumn('action', function($purchase) {
                     $button = '<div class="form-button-action"><button type="button" name="detail" data-toggle="tooltip" data-id="'.$purchase->id.'" data-original-title="Detail" class="detail btn btn-warning btn-sm">Detail</button>';
                     $button .= '&nbsp;&nbsp;&nbsp;<button type="button" name="edit" data-toggle="tooltip" data-id="'.$purchase->id.'" data-original-title="Edit" class="edit btn btn-primary btn-sm">Edit</button>';
                     $button .= '&nbsp;&nbsp;&nbsp;<button type="button" name="delete" id="'.$purchase->id.'" class="delete btn btn-danger btn-sm">Delete</button></div>';
                     return $button;
                 })
-                ->editColumn('nomor_rincian_akun', function($purchase) {
-                    return $purchase->account_detail->nomor_rincian_akun;
-                })
-                ->editColumn('nama_rincian_akun', function($purchase) {
-                    return $purchase->account_detail->nama_rincian_akun;
-                })
                 ->editColumn('kode_supplier', function($purchase) {
-                    return $purchase->supplier->code;
+                    if ($purchase->supplier_id == null) {
+                        return null;
+                    } else {
+                        return $purchase->supplier->code;
+                    }
                 })
                 ->editColumn('nama_supplier', function($purchase) {
-                    return $purchase->supplier->name;
+                    if ($purchase->supplier_id == null) {
+                        return null;
+                    } else {
+                        return $purchase->supplier->name;
+                    }
+                })
+                ->editColumn('nomor_rincian_akun', function($purchase) {
+                    if ($purchase->account_detail_id == null) {
+                        return null;
+                    } else {
+                        return $purchase->account_detail->nomor_rincian_akun;
+                    }
+                })
+                ->editColumn('nama_rincian_akun', function($purchase) {
+                    if ($purchase->account_detail_id == null) {
+                        return null;
+                    } else {
+                        return $purchase->account_detail->nama_rincian_akun;
+                    }
                 })
                 ->rawColumns(['action'])
                 ->make(true);
@@ -50,32 +59,19 @@ class PurchaseController extends Controller
         return view('transaksi.purchases.index', compact('accountDetails', 'suppliers'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
         $statement = DB::select("show table status like 'purchases'");
         $number = $statement[0]->Auto_increment;
         $code = 'PC' . str_pad($number, 5, '0', STR_PAD_LEFT);
 
-        request()->validate([
-            'account_detail_id' => 'required|numeric',
-            'supplier_id' => 'required|numeric',
+        $request->validate([
+            'account_detail_id' => 'required|numeric|exists:account_details,id',
+            'supplier_id' => 'required|numeric|exists:suppliers,id',
             'tanggal' => 'required|date',
+            'kuantitas.*' => 'required|numeric',
+            'harga_satuan.*' => 'required|numeric',
+            'keterangan.*' => 'required|string|max:500',
         ]);
 
         $store = Purchase::create([
@@ -85,7 +81,7 @@ class PurchaseController extends Controller
             'tanggal' => $request->tanggal,
         ]);
 
-        for($i = 0; $i < count((array) $request->price); $i++)
+        for($i = 0; $i < count((array) $request->kuantitas); $i++)
         {
             $storeDetail = PurchaseDetail::create([
                 'purchase_id' => $number,
@@ -95,16 +91,9 @@ class PurchaseController extends Controller
                 'keterangan' => $request->keterangan[$i],
             ]);
         }
-
         return response()->json([$store, $storeDetail]);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Purchase  $purchase
-     * @return \Illuminate\Http\Response
-     */
     public function show(Purchase $purchase)
     {
         $purchaseDetail = PurchaseDetail::where('purchase_id', $purchase->id)->get();
@@ -136,12 +125,6 @@ class PurchaseController extends Controller
         echo $response;
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Purchase  $purchase
-     * @return \Illuminate\Http\Response
-     */
     public function edit(Purchase $purchase)
     {
         if(request()->ajax()) {
@@ -150,46 +133,25 @@ class PurchaseController extends Controller
         }
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Purchase  $purchase
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request, Purchase $purchase)
     {
-        request()->validate([
-            'account_detail_id' => 'required|numeric',
-            'supplier_id' => 'required|numeric',
+        $request->validate([
+            'account_detail_id' => 'required|numeric|exists:account_details,id',
+            'supplier_id' => 'required|numeric|exists:suppliers,id',
             'tanggal' => 'required|date',
-            'keterangan' => 'required|string|max:500',
         ]);
 
         $update = Purchase::where('id', $request->id)->update([
             'account_detail_id' => $request->account_detail_id,
             'supplier_id' => $request->supplier_id,
             'tanggal' => $request->tanggal,
-            'keterangan' => $request->keterangan,
         ]);
-
         return response()->json($update);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Purchase  $purchase
-     * @return \Illuminate\Http\Response
-     */
     public function destroy(Purchase $purchase)
     {
         $destroy = Purchase::where('id', $purchase->id)->delete();
         return response()->json($destroy);
-    }
-
-    public function importExcel(Request $request)
-    {
-        Excel::import(new PurchasesImport, $request->file('import'));
     }
 }

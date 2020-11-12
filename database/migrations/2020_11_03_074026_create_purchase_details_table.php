@@ -16,10 +16,10 @@ class CreatePurchaseDetailsTable extends Migration
         Schema::create('purchase_details', function (Blueprint $table) {
             $table->id();
             $table->foreignId('purchase_id')->nullable()->constrained('purchases')->onUpdate('cascade')->onDelete('set null');
-            $table->text('keterangan');
             $table->integer('kuantitas');
             $table->integer('harga_satuan');
             $table->integer('total');
+            $table->text('keterangan');
             $table->timestamps();
         });
     }

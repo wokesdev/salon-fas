@@ -8,10 +8,10 @@
                         <div class="col-sm-12">
                             <input type="hidden" name="id" id="id">
                             <input type="hidden" name="action" id="action" value="Add">
-                            <div id="dataFields">
+                            <div>
                                 <div class="form-group">
-                                    <label for="name" class="col-sm-12 control-label">Jabatan</label>
-                                    <div class="col-sm-12"><input type="text" class="form-control" id="name" name="name" placeholder="Contoh: Kasir" required></div>
+                                    <label for="jabatan" class="col-sm-12 control-label">Jabatan</label>
+                                    <div class="col-sm-12"><input type="text" class="form-control" id="jabatan" name="jabatan" placeholder="Contoh: Kasir" required></div>
                                 </div>
                                 <div class="form-group">
                                     <label for="username" class="col-sm-12 control-label">Level</label>

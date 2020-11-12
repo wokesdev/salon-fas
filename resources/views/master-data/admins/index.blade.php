@@ -16,7 +16,6 @@
                             <table id="table" class="display table table-striped table-hover" >
                                 <thead>
                                     <tr>
-                                        <th>No</th>
                                         <th>Nama</th>
                                         <th>Username</th>
                                         <th>Email</th>
@@ -32,8 +31,8 @@
         </div>
     </div>
 </div>
-@include('master-data.users.createModal')
+@include('master-data.admins.createModal')
 @endsection
 @section('contentScripts')
-    @include('master-data.users.scripts')
+    @include('master-data.admins.scripts')
 @endsection

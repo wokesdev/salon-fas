@@ -32,97 +32,10 @@ $(document).ready(function () {
         $('#action').val('Add');
         $('#addEditForm').trigger("reset");
         $('#addEditForm').validate().resetForm();
-
         $('#addEditModal').on('shown.bs.modal', function() {
             $('#name').trigger('focus');
         });
     });
-
-    $('#deleteButton').click(function () {
-        $('#deleteButton').html('Processing..');
-    });
-
-    $.validator.addMethod( "lettersOnly", function( value, element ) {
-        return this.optional( element ) || /^[a-zA-Z\s]+$/.test( value );
-    }, "Please enter letters only." );
-
-    if ($("#addEditForm").length > 0) {
-        $("#addEditForm").validate({
-            rules: {
-                name: { lettersOnly: true, maxlength: 255, },
-                email: { maxlength: 255, },
-                address: { maxlength: 500, },
-                phone: { maxlength: 50, },
-            },
-
-            submitHandler: function (form) {
-                if($('#action').val() == 'Add') {
-                    action_url = "{{ route('supplier.store') }}";
-                    swal_title = "Berhasil!";
-                    swal_text = "Data berhasil ditambahkan!";
-                    swal_fail_title = "Gagal!";
-                    swal_fail_text = "Data gagal ditambahkan!";
-                }
-
-                if($('#action').val() == 'Edit') {
-                    action_url = "{{ route('supplier.update') }}";
-                    swal_title = "Berhasil!";
-                    swal_text = "Data berhasil diperbarui!";
-                    swal_fail_title = "Gagal!";
-                    swal_fail_text = "Data gagal diperbarui!";
-                }
-
-                $('#saveButton').html('Processing..');
-                $.ajax({
-                    data: $('#addEditForm').serialize(),
-                    url: action_url,
-                    type: "POST",
-                    dataType: 'json',
-                    success: function (data) {
-                        $('#addEditForm').trigger("reset");
-                        $('#addEditModal').modal('hide');
-                        $('#saveButton').html('Submit');
-                        var oTable = $('#table').DataTable();
-                        oTable.draw(false);
-                        swal({
-                            title: swal_title,
-                            text: swal_text,
-                            icon: "success",
-                            buttons: {
-                                confirm: {
-                                    text: "Oke",
-                                    value: true,
-                                    visible: true,
-                                    className: "btn btn-success",
-                                    closeModal: true
-                                }
-                            },
-                            timer: 1500,
-                        });
-                    },
-                    error: function (data) {
-                        swal({
-                            title: swal_fail_title,
-                            text: swal_fail_text,
-                            icon: "error",
-                            buttons: {
-                                confirm: {
-                                    text: "Oke",
-                                    value: true,
-                                    visible: true,
-                                    className: "btn btn-danger",
-                                    closeModal: true
-                                }
-                            },
-                            timer: 1500,
-                        });
-                        console.log('Error:', data);
-                        $('#saveButton').html('Submit');
-                    }
-                })
-            }
-        });
-    };
 
     $(document).on('click', '.edit', function(){
         var id = $(this).data('id');
@@ -131,29 +44,26 @@ $(document).ready(function () {
             dataType:"json",
             success: function(data)
             {
+                $('.modal-title').text('Edit Supplier');
+                $('#saveButton').val('Update');
+                $('#action').val('Edit');
                 $('#id').val(data.id);
                 $('#name').val(data.name);
                 $('#email').val(data.email);
-
                 if(data.gender == 'Laki-laki'){
                     $("#men").prop("checked", true);
                 } else if(data.gender == 'Perempuan'){
                     $("#women").prop("checked", true);
                 }
-
                 $('#address').val(data.address);
                 $('#phone').val(data.phone);
-                $('#saveButton').val('Update');
-                $('#action').val('Edit');
-                $('.modal-title').text('Edit Supplier');
                 $('#addEditModal').modal('show');
                 $('#addEditForm').validate().resetForm();
-
                 $('#addEditModal').on('shown.bs.modal', function() {
                     $('#name').trigger('focus');
                 });
             },
-        })
+        });
     });
 
     $(document).on('click', '.delete', function () {
@@ -201,7 +111,7 @@ $(document).ready(function () {
                     error: function (data) {
                         swal({
                             title: "Data gagal dihapus!",
-                            text: "Terjadi masalah pada server! Silakan coba lagi!",
+                            text: "Terjadi masalah pada server!",
                             icon: "error",
                             buttons: {
                                 confirm: {
@@ -216,9 +126,113 @@ $(document).ready(function () {
                         });
                         console.log('Error:', data);
                     }
-                })
-            }
+                });
+            };
         });
     });
+
+    if ($("#addEditForm").length > 0) {
+        $.validator.addMethod( "lettersOnly", function( value, element ) {
+            return this.optional( element ) || /^[a-zA-Z\s]+$/.test( value );
+        }, "Please enter letters only." );
+
+        $("#addEditForm").validate({
+            rules: {
+                name: { lettersOnly: true, maxlength: 255, },
+                email: { maxlength: 255, },
+                address: { maxlength: 500, },
+                phone: { maxlength: 50, },
+            },
+
+            submitHandler: function (form) {
+                if($('#action').val() == 'Add') {
+                    action_url = "{{ route('supplier.store') }}";
+                    swal_title = "Berhasil!";
+                    swal_text = "Data berhasil ditambahkan!";
+                    swal_fail_title = "Data gagal ditambahkan!";
+                }
+
+                if($('#action').val() == 'Edit') {
+                    action_url = "{{ route('supplier.update') }}";
+                    swal_title = "Berhasil!";
+                    swal_text = "Data berhasil diperbarui!";
+                    swal_fail_title = "Data gagal diperbarui!";
+                }
+
+                $('#saveButton').html('Processing..');
+                $.ajax({
+                    data: $('#addEditForm').serialize(),
+                    url: action_url,
+                    type: "POST",
+                    dataType: 'json',
+                    success: function (data) {
+                        $('#addEditForm').trigger("reset");
+                        $('#addEditModal').modal('hide');
+                        $('#saveButton').html('Submit');
+                        var oTable = $('#table').DataTable();
+                        oTable.draw(false);
+                        swal({
+                            title: swal_title,
+                            text: swal_text,
+                            icon: "success",
+                            buttons: {
+                                confirm: {
+                                    text: "Oke",
+                                    value: true,
+                                    visible: true,
+                                    className: "btn btn-success",
+                                    closeModal: true
+                                }
+                            },
+                            timer: 1500,
+                        });
+                    },
+                    error: function (data) {
+                        if(data.responseJSON.errors) {
+                            var values = '';
+                            jQuery.each(data.responseJSON.errors, function (key, value) {
+                                values += "• " + value + "\n"
+                            });
+
+                            swal({
+                                title: swal_fail_title,
+                                text: values,
+                                icon: "error",
+                                buttons: {
+                                    confirm: {
+                                        text: "Oke",
+                                        value: true,
+                                        visible: true,
+                                        className: "btn btn-danger",
+                                        closeModal: true
+                                    }
+                                },
+                            });
+                        }
+
+                        else {
+                            swal({
+                                title: swal_fail_title,
+                                text: "Terjadi masalah pada server!",
+                                icon: "error",
+                                buttons: {
+                                    confirm: {
+                                        text: "Oke",
+                                        value: true,
+                                        visible: true,
+                                        className: "btn btn-danger",
+                                        closeModal: true
+                                    }
+                                },
+                                timer: 1500,
+                            });
+                        }
+                        console.log('Error:', data);
+                        $('#saveButton').html('Submit');
+                    }
+                });
+            }
+        });
+    };
 });
 </script>

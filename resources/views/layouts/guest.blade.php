@@ -1,8 +1,8 @@
-<!doctype html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta content='width=device-width, initial-scale=1.0, shrink-to-fit=no' name='viewport' />
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ config('app.name') }}</title>
     <link rel="icon" href="{{ asset('atlantis-assets/img/icon1.png') }}" type="image/x-icon"/>
@@ -11,6 +11,8 @@
 </head>
 <body class="my-login-page">
     @yield('content')
-    @include('scripts.baseScripts')
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="{{ asset('atlantis-assets/js/core/popper.min.js') }}"></script>
+    <script src="{{ asset('atlantis-assets/js/core/bootstrap.min.js') }}"></script>
 </body>
 </html>

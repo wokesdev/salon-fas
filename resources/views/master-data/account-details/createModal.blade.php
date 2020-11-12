@@ -1,17 +1,17 @@
 <div class="modal fade" id="addEditModal" aria-hidden="true" tabindex="-1" role="dialog" aria-labelledby="addEditModalLabel">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-            <div class="modal-header"><h5 class="modal-title" id="titleModal">Tambah Akun</h5><button type="button" class="close" data-dismiss="modal">&times;</button></div>
+            <div class="modal-header"><h5 class="modal-title" id="titleModal">Tambah Rincian Akun</h5><button type="button" class="close" data-dismiss="modal">&times;</button></div>
             <div class="modal-body">
                 <form id="addEditForm" name="addEditForm" class="form-horizontal" autocomplete="off">
                     <div class="row">
                         <div class="col-sm-12">
                             <input type="hidden" name="id" id="id">
                             <input type="hidden" name="action" id="action" value="Add">
-                            <div class="form-group" id="akun">
-                                <label for="account_id" class="col-sm-12 control-label">Akun</label>
+                            <div class="form-group" id="input_akun">
+                                <label for="akun_id" class="col-sm-12 control-label">Akun</label>
                                 <div class="col-sm-12">
-                                    <select name="account_id" id="account_id" class="form-control" required>
+                                    <select name="akun_id" id="akun_id" class="form-control" required>
                                         <option value="" disabled selected>Pilih Akun</option>
                                         @foreach ($accounts as $account)
                                             <option value="{{ $account->id }}">{{ $account->nomor_akun }} - {{ $account->nama_akun }}</option>
@@ -19,7 +19,7 @@
                                     </select>
                                 </div>
                             </div>
-                            <div class="form-group" id="no_rincian">
+                            <div class="form-group" id="input_no_rincian">
                                 <label for="nomor_rincian_akun" class="col-sm-12 control-label">Nomor Rincian Akun</label>
                                 <div class="col-sm-12"><input type="number" class="form-control" id="nomor_rincian_akun" name="nomor_rincian_akun" placeholder="Contoh: 101" required></div>
                             </div>

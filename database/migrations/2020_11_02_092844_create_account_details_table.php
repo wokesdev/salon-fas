@@ -15,9 +15,9 @@ class CreateAccountDetailsTable extends Migration
     {
         Schema::create('account_details', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('account_id')->nullable()->constrained('accounts')->onUpdate('cascade')->onDelete('set null');
-            $table->integer('nomor_rincian_akun');
-            $table->string('nama_rincian_akun');
+            $table->foreignId('account_id')->nullable()->constrained('accounts')->onUpdate('cascade')->onDelete('cascade');
+            $table->integer('nomor_rincian_akun')->unique();
+            $table->string('nama_rincian_akun')->unique();
             $table->timestamps();
         });
     }

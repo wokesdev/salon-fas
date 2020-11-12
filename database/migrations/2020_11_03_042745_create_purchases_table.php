@@ -15,11 +15,10 @@ class CreatePurchasesTable extends Migration
     {
         Schema::create('purchases', function (Blueprint $table) {
             $table->id();
-            $table->string('nomor_pembelian');
             $table->foreignId('supplier_id')->nullable()->constrained('suppliers')->onUpdate('cascade')->onDelete('set null');
             $table->foreignId('account_detail_id')->nullable()->constrained('account_details')->onUpdate('cascade')->onDelete('set null');
-            $table->date('tanggal', 0);
-            $table->text('keterangan');
+            $table->string('nomor_pembelian')->unique();
+            $table->date('tanggal');
             $table->timestamps();
         });
     }

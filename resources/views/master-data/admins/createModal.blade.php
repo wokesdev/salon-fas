@@ -15,16 +15,16 @@
                                 </div>
                                 <div class="form-group">
                                     <label for="username" class="col-sm-12 control-label">Username</label>
-                                    <div class="col-sm-12"><input type="text" class="form-control" id="username" name="username" placeholder="Contoh: budi"></div>
+                                    <div class="col-sm-12"><input type="text" class="form-control" id="username" name="username" placeholder="Contoh: budi" required></div>
                                 </div>
                                 <div class="form-group">
                                     <label for="email" class="col-sm-12 control-label">Email Address</label>
                                     <div class="col-sm-12"><input type="email" class="form-control" id="email" name="email" placeholder="Contoh: budi@gmail.com" required></div>
                                 </div>
                                 <div class="form-group">
-                                    <label for="role" class="col-sm-12 control-label">Jabatan</label>
+                                    <label for="jabatan" class="col-sm-12 control-label">Jabatan</label>
                                     <div class="col-sm-12">
-                                        <select name="role" id="role" class="form-control" required>
+                                        <select name="jabatan" id="jabatan" class="form-control" required>
                                             <option value="" disabled selected>Pilih Jabatan</option>
                                             @foreach ($roles as $role)
                                                 <option value="{{ $role->id }}">{{ $role->name }}</option>

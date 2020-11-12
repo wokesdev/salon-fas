@@ -9,11 +9,6 @@ use Yajra\DataTables\Facades\DataTables;
 
 class CustomerController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index(Request $request)
     {
         if ($request->ajax()) {
@@ -30,34 +25,18 @@ class CustomerController extends Controller
         return view('master-data.customers.index');
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
         $statement = DB::select("show table status like 'customers'");
         $number = $statement[0]->Auto_increment;
         $code = 'CS' . str_pad($number, 5, '0', STR_PAD_LEFT);
 
-        request()->validate([
-            'name' => 'required|string|max:255|unique:customers,name',
+        $request->validate([
+            'name' => 'required|string|max:255',
             'email' => 'required|string|max:255|email|unique:customers,email',
-            'gender' => 'required',
+            'gender' => 'required|in:Laki-laki,Perempuan',
             'address' => 'required|string|max:500',
-            'phone' => 'required|numeric',
+            'phone' => 'required|numeric|digits_between:1,50',
         ]);
 
         $store = Customer::create([
@@ -68,27 +47,9 @@ class CustomerController extends Controller
             'address' => $request->address,
             'phone' => $request->phone,
         ]);
-
         return response()->json($store);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Customer  $customer
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Customer $customer)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Customer  $customer
-     * @return \Illuminate\Http\Response
-     */
     public function edit(Customer $customer)
     {
         if(request()->ajax()) {
@@ -97,21 +58,14 @@ class CustomerController extends Controller
         }
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Customer  $customer
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request, Customer $customer)
     {
-        request()->validate([
-            'name' => 'required|string|max:255|unique:customers,name,'  . $request->id,
+        $request->validate([
+            'name' => 'required|string|max:255',
             'email' => 'required|string|max:255|email|unique:customers,email,' . $request->id,
-            'gender' => 'required',
+            'gender' => 'required|in:Laki-laki,Perempuan',
             'address' => 'required|string|max:500',
-            'phone' => 'required|numeric',
+            'phone' => 'required|numeric|digits_between:1,50',
         ]);
 
         $update = Customer::where('id', $request->id)->update([
@@ -121,16 +75,9 @@ class CustomerController extends Controller
             'address' => $request->address,
             'phone' => $request->phone,
         ]);
-
         return response()->json($update);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Customer  $customer
-     * @return \Illuminate\Http\Response
-     */
     public function destroy(Customer $customer)
     {
         $destroy = Customer::where('id', $customer->id)->delete();

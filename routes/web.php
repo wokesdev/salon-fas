@@ -22,13 +22,13 @@ Route::middleware(['auth'])->group(function () {
 });
 
 Route::middleware(['auth.one', 'auth'])->group(function () {
-    Route::resource('account', 'AccountController');
-    Route::resource('account-detail', 'AccountDetailController');
-    Route::resource('user', 'UserController');
-    Route::resource('role', 'RoleController');
-    Route::resource('customer', 'CustomerController');
-    Route::resource('package', 'PackageController');
-    Route::resource('supplier', 'SupplierController');
+    Route::resource('account', 'AccountController')->except('create', 'show', 'update');
+    Route::resource('account-detail', 'AccountDetailController')->except('create', 'show', 'update');
+    Route::resource('user', 'UserController')->except('create', 'show', 'update');
+    Route::resource('role', 'RoleController')->except('create', 'show', 'update');
+    Route::resource('customer', 'CustomerController')->except('create', 'show', 'update');
+    Route::resource('package', 'PackageController')->except('create', 'show', 'update');
+    Route::resource('supplier', 'SupplierController')->except('create', 'show', 'update');
     Route::resource('purchase', 'PurchaseController');
     Route::resource('purchase-detail', 'PurchaseDetailController');
     Route::resource('sale', 'SaleController');

@@ -10,11 +10,13 @@ $(document).ready(function () {
         processing: true,
         serverSide: true,
         ajax: {
-            url: "{{ route('account.index') }}"
+            url: "{{ route('user.index') }}"
         },
         columns: [
-            { data: 'nomor_akun' },
-            { data: 'nama_akun' },
+            { data: 'name' },
+            { data: 'username' },
+            { data: 'email' },
+            { data: 'jabatan', orderable: false },
             { data: 'action', name: 'action', orderable: false, searchable: false }
         ],
         order: [
@@ -23,33 +25,69 @@ $(document).ready(function () {
     });
 
     $('#addButton').click(function(){
-        $('.modal-title').text('Tambah Akun');
+        $('.modal-title').text('Tambah Admin');
         $('#saveButton').val('Add');
         $('#action').val('Add');
+        $('#dataFields').prop('disabled', false);
+        $('#dataFields').prop('hidden', false);
+        $('#passwordFields').prop('disabled', false);
+        $('#passwordFields').prop('hidden', false);
         $('#addEditForm').trigger("reset");
         $('#addEditForm').validate().resetForm();
         $('#addEditModal').on('shown.bs.modal', function() {
-            $('#nomor_akun').trigger('focus');
+            $('#name').trigger('focus');
         });
     });
 
     $(document).on('click', '.edit', function(){
         var id = $(this).data('id');
         $.ajax({
-            url :"account/"+ id +"/edit",
+            url :"user/"+ id +"/edit",
             dataType:"json",
             success: function(data)
             {
-                $('.modal-title').text('Edit Akun');
+                $('.modal-title').text('Edit Admin');
                 $('#saveButton').val('Update');
                 $('#action').val('Edit');
                 $('#id').val(data.id);
-                $('#nomor_akun').val(data.nomor_akun);
-                $('#nama_akun').val(data.nama_akun);
+                $('#name').val(data.name);
+                $('#username').val(data.username);
+                $('#email').val(data.email);
+                $('#jabatan').val(data.role_id);
+                $('#dataFields').prop('disabled', false);
+                $('#dataFields').prop('hidden', false);
+                $('#passwordFields').prop('disabled', true);
+                $('#passwordFields').prop('hidden', true);
                 $('#addEditModal').modal('show');
                 $('#addEditForm').validate().resetForm();
                 $('#addEditModal').on('shown.bs.modal', function() {
-                    $('#nomor_akun').trigger('focus');
+                    $('#name').trigger('focus');
+                });
+            },
+        });
+    });
+
+    $(document).on('click', '.change-pass', function(){
+        var id = $(this).data('id');
+        $.ajax({
+            url :"user/"+ id +"/edit",
+            dataType:"json",
+            success: function(data)
+            {
+                $('.modal-title').text('Change Password');
+                $('#saveButton').val('ChangePass');
+                $('#action').val('ChangePass');
+                $('#id').val(data.id);
+                $('#label-password').text('New Password');
+                $('#label-confirm-password').text('Confirm New Password');
+                $('#addEditModal').modal('show');
+                $('#passwordFields').prop('disabled', false);
+                $('#passwordFields').prop('hidden', false);
+                $('#dataFields').prop('disabled', true);
+                $('#dataFields').prop('hidden', true);
+                $('#addEditForm').validate().resetForm();
+                $('#addEditModal').on('shown.bs.modal', function() {
+                    $('#password').trigger('focus');
                 });
             },
         });
@@ -59,15 +97,14 @@ $(document).ready(function () {
         var dataId = $(this).attr('id');
         swal({
             title: 'Apa Anda yakin?',
-            text: "Data rincian akuntansi yang berkaitan juga akan terhapus permanen!",
+            text: "Data akan terhapus permanen!",
             icon: 'warning',
             buttons:{
                 confirm: {
-                    text: 'Ya, saya yakin!',
-                    className: 'btn btn-success'
+                    text : 'Ya, saya yakin!',
+                    className : 'btn btn-success'
                 },
                 cancel: {
-                    text: 'Batal!',
                     visible: true,
                     className: 'btn btn-danger'
                 }
@@ -75,7 +112,7 @@ $(document).ready(function () {
         }).then((willDelete) => {
             if (willDelete) {
                 $.ajax({
-                    url: "account/" + dataId,
+                    url: "user/" + dataId,
                     type: 'DELETE',
                     success: function (data) {
                         setTimeout(function () {
@@ -101,7 +138,7 @@ $(document).ready(function () {
                     error: function (data) {
                         swal({
                             title: "Data gagal dihapus!",
-                            text: "Terjadi masalah pada server!",
+                            text: "Terjadi masalah pada server! Silakan coba lagi!",
                             icon: "error",
                             buttons: {
                                 confirm: {
@@ -123,28 +160,46 @@ $(document).ready(function () {
 
     if ($("#addEditForm").length > 0) {
         $.validator.addMethod( "lettersOnly", function( value, element ) {
-        return this.optional( element ) || /^[a-zA-Z\s]+$/.test( value );
+            return this.optional( element ) || /^[a-zA-Z\s]+$/.test( value );
         }, "Please enter letters only." );
+
+        $.validator.addMethod( "nowhitespace", function( value, element ) {
+            return this.optional( element ) || /^\S+$/i.test( value );
+        }, "Any spaces are not allowed." );
+
+        $.validator.addMethod( "alphanumeric", function( value, element ) {
+            return this.optional( element ) || /^\w+$/i.test( value );
+        }, "Please enter letters, numbers, and underscores only." );
 
         $("#addEditForm").validate({
             rules: {
-                nomor_akun: { maxlength: 4, },
-                nama_akun: { lettersOnly: true, maxlength: 255, },
+                name: { lettersOnly: true, maxlength: 255, },
+                username: { nowhitespace: true, alphanumeric: true, maxlength: 255, },
+                email: { maxlength: 255, },
+                password: { minlength: 8, },
+                password_confirmation: { equalTo: '#password', },
             },
 
             submitHandler: function (form) {
                 if($('#action').val() == 'Add') {
-                    action_url = "{{ route('account.store') }}";
+                    action_url = "{{ route('user.store') }}";
                     swal_title = "Berhasil!";
                     swal_text = "Data berhasil ditambahkan!";
                     swal_fail_title = "Data gagal ditambahkan!";
                 }
 
                 if($('#action').val() == 'Edit') {
-                    action_url = "{{ route('account.update') }}";
+                    action_url = "{{ route('user.update') }}";
                     swal_title = "Berhasil!";
                     swal_text = "Data berhasil diperbarui!";
                     swal_fail_title = "Data gagal diperbarui!";
+                }
+
+                if($('#action').val() == 'ChangePass') {
+                    action_url = "{{ route('user.update') }}";
+                    swal_title = "Berhasil!";
+                    swal_text = "Password berhasil diperbarui!";
+                    swal_fail_title = "Password gagal diperbarui!";
                 }
 
                 $('#saveButton').html('Processing..');

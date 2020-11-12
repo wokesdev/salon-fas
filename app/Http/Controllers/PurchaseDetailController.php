@@ -53,23 +53,26 @@ class PurchaseDetailController extends Controller
      */
     public function store(Request $request)
     {
-        $total = $request->price * $request->kuantitas;
-
-        request()->validate([
-            'purchase_id' => 'required|numeric',
-            'keterangan' => 'required|string|max:500',
-            'kuantitas' => 'required|numeric',
-            'price' => 'required|numeric',
+        $request->validate([
+            'id' => 'required|numeric|exists:purchases,id',
+            'kuantitas' => 'required|array',
+            'kuantitas.*' => 'required|numeric',
+            'price' => 'required|array',
+            'price.*' => 'required|numeric',
+            'keterangan' => 'required|array',
+            'keterangan.*' => 'required|string|max:500',
         ]);
 
-        $store = PurchaseDetail::create([
-            'purchase_id' => $request->purchase_id,
-            'keterangan' => $request->keterangan,
-            'kuantitas' => $request->kuantitas,
-            'harga_satuan' => $request->price,
-            'total' => $total,
-        ]);
-
+        for($i = 0; $i < count((array) $request->kuantitas); $i++)
+        {
+            $store = PurchaseDetail::create([
+                'purchase_id' => $request->id,
+                'kuantitas'  => $request->kuantitas[$i],
+                'harga_satuan' => $request->price[$i],
+                'total' => $request->kuantitas[$i] * $request->price[$i],
+                'keterangan' => $request->keterangan[$i],
+            ]);
+        }
         return response()->json($store);
     }
 
@@ -107,23 +110,18 @@ class PurchaseDetailController extends Controller
      */
     public function update(Request $request, PurchaseDetail $purchaseDetail)
     {
-        $total = $request->price * $request->kuantitas;
-
         request()->validate([
-            'purchase_id' => 'required|numeric',
-            'keterangan' => 'required|string|max:500',
-            'kuantitas' => 'required|numeric',
-            'price' => 'required|numeric',
+            'detailKuantitas' => 'required|numeric',
+            'detailPrice' => 'required|numeric',
+            'detailKeterangan' => 'required|string|max:500',
         ]);
 
-        $update = PurchaseDetail::where('id', $request->id)->update([
-            'purchase_id' => $request->purchase_id,
-            'keterangan' => $request->keterangan,
-            'kuantitas' => $request->kuantitas,
-            'harga_satuan' => $request->price,
-            'total' => $total,
+        $update = PurchaseDetail::where('id', $request->detailId)->update([
+            'kuantitas' => $request->detailKuantitas,
+            'harga_satuan' => $request->detailPrice,
+            'total' => $request->detailPrice * $request->detailKuantitas,
+            'keterangan' => $request->detailKeterangan,
         ]);
-
         return response()->json($update);
     }
 

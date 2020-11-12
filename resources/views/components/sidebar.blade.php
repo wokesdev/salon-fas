@@ -1,44 +1,8 @@
 <div class="sidebar sidebar-style-2">
     <div class="sidebar-wrapper scrollbar scrollbar-inner">
         <div class="sidebar-content">
-            <div class="user">
-                <div class="avatar-sm float-left mr-2">
-                    <img src="{{ asset('atlantis-assets/img/profile.jpg') }}" alt="..." class="avatar-img rounded-circle">
-                </div>
-                <div class="info">
-                    <a data-toggle="collapse" href="#collapseExample" aria-expanded="true">
-                        <span>
-                            Hizrian
-                            <span class="user-level">Administrator</span>
-                            <span class="caret"></span>
-                        </span>
-                    </a>
-                    <div class="clearfix"></div>
-
-                    <div class="collapse in" id="collapseExample">
-                        <ul class="nav">
-                            <li>
-                                <a href="#profile">
-                                    <span class="link-collapse">My Profile</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#edit">
-                                    <span class="link-collapse">Edit Profile</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#settings">
-                                    <span class="link-collapse">Settings</span>
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
             <ul class="nav nav-primary">
                 <li class="nav-item"><a href="{{ route('dashboard') }}"><i class="fas fa-home"></i><p>Dashboard</p></a></li>
-
                 @switch(Auth::user()->role->level)
                     @case('1')
                         <li class="nav-section"><span class="sidebar-mini-icon"><i class="fa fa-ellipsis-h"></i></span><h4 class="text-section">Master Data</h4></li>
@@ -58,15 +22,7 @@
                         <li class="nav-item"><a href="{{ route('package.index') }}"><i class="fas fa-archive"></i><p>Data Paket</p></a></li>
 
                         <li class="nav-section"><span class="sidebar-mini-icon"><i class="fa fa-ellipsis-h"></i></span><h4 class="text-section">Transaksi</h4></li>
-                        <li class="nav-item">
-							<a data-toggle="collapse" href="#pembelian"><i class="fas fa-coins"></i><p>Pembelian</p><span class="caret"></span></a>
-							<div class="collapse" id="pembelian">
-								<ul class="nav nav-collapse">
-									<li><a href="{{ route('purchase.index') }}"><span class="sub-item">Pembelian</span></a></li>
-                                    <li><a href="{{ route('purchase-detail.index') }}"><span class="sub-item">Rincian Pembelian</span></a></li>
-                                </ul>
-							</div>
-                        </li>
+                        <li class="nav-item"><a href="{{ route('purchase.index') }}"><i class="fas fa-coins"></i><p>Pembelian</p></a></li>
                         <li class="nav-item">
 							<a data-toggle="collapse" href="#penjualan"><i class="fas fa-receipt"></i><p>Penjualan</p><span class="caret"></span></a>
 							<div class="collapse" id="penjualan">
@@ -95,7 +51,6 @@
                     @default
                         <li class="nav-section"><span class="sidebar-mini-icon"><i class="fa fa-ellipsis-h"></i></span><h4 class="text-section">Laporan</h4></li>
                 @endswitch
-
             </ul>
         </div>
     </div>
