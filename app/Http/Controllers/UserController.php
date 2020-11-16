@@ -12,7 +12,7 @@ class UserController extends Controller
 {
     public function index(Request $request)
     {
-        $roles = Role::select('id', 'name', 'level')->get();
+        $roles = Role::select('id', 'name', 'level')->orderBy('level', 'ASC')->get();
         if ($request->ajax()) {
             $users = User::query();
             return DataTables::of($users)

@@ -39,6 +39,32 @@ $(document).ready(function () {
         });
     });
 
+    $(document).on('click', '.change-pass', function(){
+        var id = $(this).data('id');
+        $.ajax({
+            url :"user/"+ id +"/edit",
+            dataType:"json",
+            success: function(data)
+            {
+                $('.modal-title').text('Change Password');
+                $('#saveButton').val('ChangePass');
+                $('#action').val('ChangePass');
+                $('#id').val(data.id);
+                $('#label-password').text('New Password');
+                $('#label-confirm-password').text('Confirm New Password');
+                $('#addEditModal').modal('show');
+                $('#passwordFields').prop('disabled', false);
+                $('#passwordFields').prop('hidden', false);
+                $('#dataFields').prop('disabled', true);
+                $('#dataFields').prop('hidden', true);
+                $('#addEditForm').validate().resetForm();
+                $('#addEditModal').on('shown.bs.modal', function() {
+                    $('#password').trigger('focus');
+                });
+            },
+        });
+    });
+
     $(document).on('click', '.edit', function(){
         var id = $(this).data('id');
         $.ajax({
@@ -62,32 +88,6 @@ $(document).ready(function () {
                 $('#addEditForm').validate().resetForm();
                 $('#addEditModal').on('shown.bs.modal', function() {
                     $('#name').trigger('focus');
-                });
-            },
-        });
-    });
-
-    $(document).on('click', '.change-pass', function(){
-        var id = $(this).data('id');
-        $.ajax({
-            url :"user/"+ id +"/edit",
-            dataType:"json",
-            success: function(data)
-            {
-                $('.modal-title').text('Change Password');
-                $('#saveButton').val('ChangePass');
-                $('#action').val('ChangePass');
-                $('#id').val(data.id);
-                $('#label-password').text('New Password');
-                $('#label-confirm-password').text('Confirm New Password');
-                $('#addEditModal').modal('show');
-                $('#passwordFields').prop('disabled', false);
-                $('#passwordFields').prop('hidden', false);
-                $('#dataFields').prop('disabled', true);
-                $('#dataFields').prop('hidden', true);
-                $('#addEditForm').validate().resetForm();
-                $('#addEditModal').on('shown.bs.modal', function() {
-                    $('#password').trigger('focus');
                 });
             },
         });

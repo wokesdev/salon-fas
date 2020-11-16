@@ -1,11 +1,11 @@
 <div class="modal fade" id="addEditModal" aria-hidden="true" tabindex="-1" role="dialog" aria-labelledby="addEditModalLabel" style="z-index: 2000;">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header"><h5 class="modal-title" id="titleModal">Tambah Pembelian</h5><button type="button" class="close" data-dismiss="modal">&times;</button></div>
             <div class="modal-body">
                 <form id="addEditForm" name="addEditForm" class="form-horizontal" enctype="multipart/form-data" autocomplete="off">
                     <div class="row">
-                        <div class="col-sm-12">
+                        <div id="mainFields" class="col-sm-6">
                             <input type="hidden" name="id" id="id">
                             <input type="hidden" name="action" id="action" value="Add">
                             <div id="purchaseFields">
@@ -36,8 +36,8 @@
                                     <div class="col-sm-12"><input type="date" class="form-control" id="tanggal" name="tanggal" placeholder="Contoh: 11/03/2020" required></div>
                                 </div>
                             </div>
-                            <div id="detailFields"></div>
                         </div>
+                        <div id="detailFields" class="col-sm-6"></div>
                     </div>
                 </form>
             </div>

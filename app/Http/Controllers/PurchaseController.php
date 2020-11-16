@@ -14,8 +14,8 @@ class PurchaseController extends Controller
 {
     public function index(Request $request)
     {
-        $accountDetails = AccountDetail::select('id', 'nomor_rincian_akun', 'nama_rincian_akun')->get();
-        $suppliers = Supplier::select('id', 'code', 'name')->get();
+        $accountDetails = AccountDetail::select('id', 'nomor_rincian_akun', 'nama_rincian_akun')->orderBy('nomor_rincian_akun', 'ASC')->get();
+        $suppliers = Supplier::select('id', 'code', 'name')->orderBy('code', 'ASC')->get();
         if ($request->ajax()) {
             $purchase = Purchase::query();
             return DataTables::of($purchase)

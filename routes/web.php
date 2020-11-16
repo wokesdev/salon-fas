@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('auth.login');
+    return redirect('login', 308);
 });
 
 Route::middleware(['auth'])->group(function () {
@@ -29,10 +29,10 @@ Route::middleware(['auth.one', 'auth'])->group(function () {
     Route::resource('customer', 'CustomerController')->except('create', 'show', 'update');
     Route::resource('package', 'PackageController')->except('create', 'show', 'update');
     Route::resource('supplier', 'SupplierController')->except('create', 'show', 'update');
-    Route::resource('purchase', 'PurchaseController');
-    Route::resource('purchase-detail', 'PurchaseDetailController');
-    Route::resource('sale', 'SaleController');
-    Route::resource('sale-detail', 'SaleDetailController');
+    Route::resource('purchase', 'PurchaseController')->except('create', 'update');
+    Route::resource('purchase-detail', 'PurchaseDetailController')->except('index', 'create', 'show', 'update');
+    Route::resource('sale', 'SaleController')->except('create', 'update');
+    Route::resource('sale-detail', 'SaleDetailController')->except('index', 'create', 'show', 'update');
 
     Route::post('account/update', 'AccountController@update')->name('account.update');
     Route::post('account-detail/update', 'AccountDetailController@update')->name('account-detail.update');

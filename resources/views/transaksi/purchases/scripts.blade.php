@@ -27,18 +27,38 @@ $(document).ready(function () {
     });
 
     $('#addButton').click(function(){
+        $('#detailFields').html('');
+        add_dynamic_input_field(1);
         $('.modal-title').text('Tambah Pembelian');
         $('#saveButton').val('Add');
         $('#action').val('Add');
         $('#addEditForm').trigger("reset");
         $('#addEditForm').validate().resetForm();
+        $('#mainFields').prop('disabled', false);
+        $('#mainFields').prop('hidden', false);
+        $('#mainFields').removeClass('col-sm-12');
+        $('#mainFields').addClass('col-sm-6');
+        $('#purchaseFields').prop('disabled', false);
+        $('#purchaseFields').prop('hidden', false);
         $('#detailFields').prop('disabled', false);
         $('#detailFields').prop('hidden', false);
         $('#addEditModal').on('shown.bs.modal', function() {
             $('#account_detail_id').trigger('focus');
         });
-        add_dynamic_input_field(1);
         $('.price').mask('000.000.000', {reverse: true});
+    });
+
+    $(document).on('click', '.detail', function () {
+        var userId = $(this).data('id');
+        $.ajax({
+            url: 'purchase/' + userId,
+            type: 'GET',
+            success: function(response){
+                $('.modal-title').text('Rincian Pembelian');
+                $('.showModal').html(response);
+                $('#showModal').modal('show')
+            }
+        });
     });
 
     $(document).on('click', '.edit', function(){
@@ -55,6 +75,12 @@ $(document).ready(function () {
                 $('#account_detail_id').val(data.account_detail_id);
                 $('#supplier_id').val(data.supplier_id);
                 $('#tanggal').val(data.tanggal);
+                $('#mainFields').prop('disabled', false);
+                $('#mainFields').prop('hidden', false);
+                $('#mainFields').removeClass('col-sm-6');
+                $('#mainFields').addClass('col-sm-12');
+                $('#purchaseFields').prop('disabled', false);
+                $('#purchaseFields').prop('hidden', false);
                 $('#detailFields').prop('disabled', true);
                 $('#detailFields').prop('hidden', true);
                 $('#addEditModal').modal('show');
@@ -62,21 +88,7 @@ $(document).ready(function () {
                 $('#addEditModal').on('shown.bs.modal', function() {
                     $('#account_detail_id').trigger('focus');
                 });
-                add_dynamic_input_field(1);
             },
-        });
-    });
-
-    $(document).on('click', '.detail', function () {
-        var userId = $(this).data('id');
-        $.ajax({
-            url: 'purchase/' + userId,
-            type: 'GET',
-            success: function(response){
-                $('.modal-title').text('Rincian Pembelian');
-                $('.showModal').html(response);
-                $('#showModal').modal('show')
-            }
         });
     });
 
@@ -153,15 +165,19 @@ $(document).ready(function () {
         $('#id').val(userId);
         $('#addEditForm').trigger("reset");
         $('#addEditForm').validate().resetForm();
-        $('#detailFields').prop('disabled', false);
-        $('#detailFields').prop('hidden', false);
+        $('#mainFields').prop('disabled', true);
+        $('#mainFields').prop('hidden', true);
         $('#purchaseFields').prop('disabled', true);
         $('#purchaseFields').prop('hidden', true);
+        $('#detailFields').prop('disabled', false);
+        $('#detailFields').prop('hidden', false);
+        $('#detailFields').removeClass('col-sm-6');
+        $('#detailFields').addClass('col-sm-12');
         $('#detailFields').html('');
+        add_dynamic_input_field(1);
         $('#addEditModal').on('shown.bs.modal', function() {
             $('#kuantitas').trigger('focus');
         });
-        add_dynamic_input_field(1);
         $('.price').mask('000.000.000', {reverse: true});
     });
 
@@ -219,7 +235,6 @@ $(document).ready(function () {
                             success: function(response){
                                 $('.modal-title').text('Rincian Pembelian');
                                 $('.showModal').html(response);
-                                $('#showModal').modal('show')
                             }
                         });
 
@@ -272,6 +287,7 @@ $(document).ready(function () {
             submitHandler: function (form) {
                 var userId = $('.detail').data('id');
                 $(".price").unmask();
+                $('.modal-title').text('Rincian Pembelian');
 
                 if($('#action').val() == 'Add') {
                     action_url = "{{ route('purchase.store') }}";
@@ -392,7 +408,9 @@ $(document).ready(function () {
             submitHandler: function (form) {
                 var userId = $('.detail').data('id');
                 $(".detailPrice").unmask();
+                $('.modal-title').text('Rincian Pembelian');
                 $('#editDetailButton').html('Processing..');
+
                 $.ajax({
                     data: $('#editDetailForm').serialize(),
                     url: "{{ route('purchase-detail.update') }}",
