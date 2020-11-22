@@ -15,4 +15,9 @@ class PurchaseDetail extends Model
     {
         return $this->belongsTo('App\Models\Purchase', 'purchase_id');
     }
+
+    public function item()
+    {
+        return $this->belongsTo('App\Models\Item', 'item_id');
+    }
 }

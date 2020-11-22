@@ -19,6 +19,7 @@ class CreatePurchasesTable extends Migration
             $table->foreignId('account_detail_id')->nullable()->constrained('account_details')->onUpdate('cascade')->onDelete('set null');
             $table->string('nomor_pembelian')->unique();
             $table->date('tanggal');
+            $table->integer('total');
             $table->timestamps();
         });
     }

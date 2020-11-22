@@ -15,11 +15,11 @@ class CreatePurchaseDetailsTable extends Migration
     {
         Schema::create('purchase_details', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('purchase_id')->nullable()->constrained('purchases')->onUpdate('cascade')->onDelete('set null');
+            $table->foreignId('item_id')->nullable()->constrained('items')->onUpdate('cascade')->onDelete('set null');
+            $table->foreignId('purchase_id')->nullable()->constrained('purchases')->onUpdate('cascade')->onDelete('cascade');
             $table->integer('kuantitas');
             $table->integer('harga_satuan');
-            $table->integer('total');
-            $table->text('keterangan');
+            $table->integer('subtotal');
             $table->timestamps();
         });
     }

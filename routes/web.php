@@ -1,17 +1,5 @@
 <?php
-
 use Illuminate\Support\Facades\Route;
-
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
-|
-*/
 
 Route::get('/', function () {
     return redirect('login', 308);
@@ -27,8 +15,9 @@ Route::middleware(['auth.one', 'auth'])->group(function () {
     Route::resource('user', 'UserController')->except('create', 'show', 'update');
     Route::resource('role', 'RoleController')->except('create', 'show', 'update');
     Route::resource('customer', 'CustomerController')->except('create', 'show', 'update');
-    Route::resource('package', 'PackageController')->except('create', 'show', 'update');
     Route::resource('supplier', 'SupplierController')->except('create', 'show', 'update');
+    Route::resource('service', 'ServiceController')->except('create', 'show', 'update');
+    Route::resource('item', 'ItemController')->except('create', 'show', 'update');
     Route::resource('purchase', 'PurchaseController')->except('create', 'update');
     Route::resource('purchase-detail', 'PurchaseDetailController')->except('index', 'create', 'show', 'update');
     Route::resource('sale', 'SaleController')->except('create', 'update');
@@ -39,14 +28,19 @@ Route::middleware(['auth.one', 'auth'])->group(function () {
     Route::post('user/update', 'UserController@update')->name('user.update');
     Route::post('role/update', 'RoleController@update')->name('role.update');
     Route::post('customer/update', 'CustomerController@update')->name('customer.update');
-    Route::post('package/update', 'PackageController@update')->name('package.update');
     Route::post('supplier/update', 'SupplierController@update')->name('supplier.update');
+    Route::post('service/update', 'ServiceController@update')->name('service.update');
+    Route::post('item/update', 'ItemController@update')->name('item.update');
     Route::post('purchase/update', 'PurchaseController@update')->name('purchase.update');
     Route::post('purchase-detail/update', 'PurchaseDetailController@update')->name('purchase-detail.update');
     Route::post('sale/update', 'SaleController@update')->name('sale.update');
     Route::post('sale-detail/update', 'SaleController@update')->name('sale-detail.update');
 
-    Route::post('purchase/import', 'PurchaseController@importExcel')->name('purchase.import');
+    Route::post('purchase/getBarang', 'PurchaseController@getBarang')->name('purchase.getBarang');
+    Route::get('purchase/{item}/getBarangById', 'PurchaseController@getBarangById')->name('purchase.getBarangById');
+
+    Route::post('purchase/getServis', 'PurchaseController@getServis')->name('purchase.getServis');
+    Route::get('purchase/{item}/getServisById', 'PurchaseController@getServisById')->name('purchase.getServisById');
 });
 
 Route::middleware(['auth.two', 'auth'])->group(function () {

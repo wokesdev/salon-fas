@@ -29,7 +29,7 @@ class AccountDetailController extends Controller
                 ->rawColumns(['action'])
                 ->make(true);
         }
-        return view('master-data.account-details.index', compact('accounts'));
+        return view('master-data.account-detail.index', compact('accounts'));
     }
 
     public function store(Request $request)
@@ -82,12 +82,10 @@ class AccountDetailController extends Controller
     public function update(Request $request, AccountDetail $accountDetail)
     {
         $request->validate([
-            'nomor_rincian_akun' => 'required|numeric|digits_between:1,4|unique:account_details,nomor_rincian_akun,' . $request->id,
             'nama_rincian_akun' => 'required|string|max:255|unique:account_details,nama_rincian_akun,' . $request->id,
         ]);
 
         $edit = AccountDetail::where('id', $request->id)->update([
-            'nomor_rincian_akun' => $request->nomor_rincian_akun,
             'nama_rincian_akun' => $request->nama_rincian_akun,
         ]);
         return response()->json($edit);

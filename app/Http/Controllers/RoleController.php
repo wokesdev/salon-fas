@@ -21,18 +21,18 @@ class RoleController extends Controller
                 ->rawColumns(['action'])
                 ->make(true);
         }
-        return view('master-data.roles.index');
+        return view('master-data.role.index');
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'jabatan' => 'required|string|max:255|unique:roles,name',
+            'jabatan' => 'required|string|max:255|unique:roles,jabatan',
             'level' => 'required|numeric|digits:1',
         ]);
 
         $store = Role::create([
-            'name' => $request->jabatan,
+            'jabatan' => $request->jabatan,
             'level' => $request->level,
         ]);
         return response()->json($store);
@@ -49,12 +49,12 @@ class RoleController extends Controller
     public function update(Request $request, Role $role)
     {
         $request->validate([
-            'jabatan' => 'required|string|max:255|unique:roles,name,' . $request->id,
+            'jabatan' => 'required|string|max:255|unique:roles,jabatan,' . $request->id,
             'level' => 'required|numeric|digits:1',
         ]);
 
         $update = Role::where('id', $request->id)->update([
-            'name' => $request->jabatan,
+            'jabatan' => $request->jabatan,
             'level' => $request->level,
         ]);
         return response()->json($update);

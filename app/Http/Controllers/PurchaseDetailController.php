@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\PurchaseDetail;
+use App\Models\Purchase;
 use Illuminate\Http\Request;
 
 class PurchaseDetailController extends Controller
@@ -11,25 +12,28 @@ class PurchaseDetailController extends Controller
     {
         $request->validate([
             'id' => 'required|numeric|exists:purchases,id',
-            'kuantitas' => 'required|array',
+            'barang.*' => 'required|numeric|exists:items,id',
             'kuantitas.*' => 'required|numeric',
-            'price' => 'required|array',
-            'price.*' => 'required|numeric',
-            'keterangan' => 'required|array',
-            'keterangan.*' => 'required|string|max:500',
+            'harga_satuan.*' => 'required|numeric',
+            'subtotal.*' => 'required|numeric',
         ]);
 
         for($i = 0; $i < count((array) $request->kuantitas); $i++)
         {
+            $currentTotal = Purchase::select('total')->where('id', $request->id)->first();
             $store = PurchaseDetail::create([
                 'purchase_id' => $request->id,
+                'item_id' => $request->barang[$i],
                 'kuantitas'  => $request->kuantitas[$i],
-                'harga_satuan' => $request->price[$i],
-                'total' => $request->kuantitas[$i] * $request->price[$i],
-                'keterangan' => $request->keterangan[$i],
+                'harga_satuan' => $request->harga_satuan[$i],
+                'subtotal' => $request->subtotal[$i],
+            ]);
+
+            $storeTotal = Purchase::where('id', $request->id)->update([
+                'total' => $currentTotal->total + $request->subtotal[$i],
             ]);
         }
-        return response()->json($store);
+        return response()->json([$store, $storeTotal]);
     }
 
     public function edit(PurchaseDetail $purchaseDetail)
@@ -42,24 +46,35 @@ class PurchaseDetailController extends Controller
 
     public function update(Request $request, PurchaseDetail $purchaseDetail)
     {
-        request()->validate([
+        $currentTotal = Purchase::select('total')->where('id', $request->purchaseId)->first();
+        $request->validate([
+            'purchaseId' => 'required|numeric|exists:purchases,id',
+            'detailBarang' => 'required|numeric|exists:items,id',
             'detailKuantitas' => 'required|numeric',
-            'detailPrice' => 'required|numeric',
-            'detailKeterangan' => 'required|string|max:500',
+            'detailHargaSatuan' => 'required|numeric',
+            'detailSubtotal' => 'required|numeric',
         ]);
 
         $update = PurchaseDetail::where('id', $request->detailId)->update([
+            'item_id' => $request->detailBarang,
             'kuantitas' => $request->detailKuantitas,
-            'harga_satuan' => $request->detailPrice,
-            'total' => $request->detailPrice * $request->detailKuantitas,
-            'keterangan' => $request->detailKeterangan,
+            'harga_satuan' => $request->detailHargaSatuan,
+            'subtotal' => $request->detailSubtotal,
         ]);
-        return response()->json($update);
+
+        $updateTotal = Purchase::where('id', $request->purchaseId)->update([
+            'total' => ($currentTotal->total - $request->currentSubtotal) + $request->detailSubtotal,
+        ]);
+        return response()->json([$update, $updateTotal]);
     }
 
     public function destroy(PurchaseDetail $purchaseDetail)
     {
+        $currentTotal = Purchase::select('total')->where('id', $purchaseDetail->purchase_id)->first();
         $destroy = PurchaseDetail::where('id', $purchaseDetail->id)->delete();
-        return response()->json($destroy);
+        $destroyTotal = Purchase::where('id', $purchaseDetail->purchase_id)->update([
+            'total' => $currentTotal->total - $purchaseDetail->subtotal,
+        ]);
+        return response()->json([$destroy, $destroyTotal]);
     }
 }

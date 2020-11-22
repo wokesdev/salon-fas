@@ -12,7 +12,7 @@ class UserController extends Controller
 {
     public function index(Request $request)
     {
-        $roles = Role::select('id', 'name', 'level')->orderBy('level', 'ASC')->get();
+        $roles = Role::select('id', 'jabatan', 'level')->orderBy('level', 'ASC')->get();
         if ($request->ajax()) {
             $users = User::query();
             return DataTables::of($users)
@@ -26,13 +26,13 @@ class UserController extends Controller
                     if ($users->role_id == null) {
                         return null;
                     } else {
-                        return $users->role->name;
+                        return $users->role->jabatan;
                     }
                 })
                 ->rawColumns(['action'])
                 ->make(true);
         }
-        return view('master-data.admins.index', Compact('roles'));
+        return view('master-data.admin.index', Compact('roles'));
     }
 
     public function store(Request $request)

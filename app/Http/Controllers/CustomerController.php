@@ -22,7 +22,7 @@ class CustomerController extends Controller
                 ->rawColumns(['action'])
                 ->make(true);
         }
-        return view('master-data.customers.index');
+        return view('master-data.customer.index');
     }
 
     public function store(Request $request)
@@ -32,20 +32,20 @@ class CustomerController extends Controller
         $code = 'CS' . str_pad($number, 5, '0', STR_PAD_LEFT);
 
         $request->validate([
-            'name' => 'required|string|max:255',
+            'nama' => 'required|string|max:255',
             'email' => 'required|string|max:255|email|unique:customers,email',
-            'gender' => 'required|in:Laki-laki,Perempuan',
-            'address' => 'required|string|max:500',
-            'phone' => 'required|numeric|digits_between:1,50',
+            'jenis_kelamin' => 'required|in:Laki-laki,Perempuan',
+            'alamat' => 'required|string|max:500',
+            'no_hp' => 'required|numeric|digits_between:1,50',
         ]);
 
         $store = Customer::create([
-            'code' => $code,
-            'name' => $request->name,
+            'kode_pelanggan' => $code,
+            'nama' => $request->nama,
             'email' => $request->email,
-            'gender' => $request->gender,
-            'address' => $request->address,
-            'phone' => $request->phone,
+            'jenis_kelamin' => $request->jenis_kelamin,
+            'alamat' => $request->alamat,
+            'no_hp' => $request->no_hp,
         ]);
         return response()->json($store);
     }
@@ -61,19 +61,19 @@ class CustomerController extends Controller
     public function update(Request $request, Customer $customer)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
+            'nama' => 'required|string|max:255',
             'email' => 'required|string|max:255|email|unique:customers,email,' . $request->id,
-            'gender' => 'required|in:Laki-laki,Perempuan',
-            'address' => 'required|string|max:500',
-            'phone' => 'required|numeric|digits_between:1,50',
+            'jenis_kelamin' => 'required|in:Laki-laki,Perempuan',
+            'alamat' => 'required|string|max:500',
+            'no_hp' => 'required|numeric|digits_between:1,50',
         ]);
 
         $update = Customer::where('id', $request->id)->update([
-            'name' => $request->name,
+            'nama' => $request->nama,
             'email' => $request->email,
-            'gender' => $request->gender,
-            'address' => $request->address,
-            'phone' => $request->phone,
+            'jenis_kelamin' => $request->jenis_kelamin,
+            'alamat' => $request->alamat,
+            'no_hp' => $request->no_hp,
         ]);
         return response()->json($update);
     }

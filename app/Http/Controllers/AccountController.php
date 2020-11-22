@@ -21,7 +21,7 @@ class AccountController extends Controller
                 ->rawColumns(['action'])
                 ->make(true);
         }
-        return view('master-data.accounts.index');
+        return view('master-data.account.index');
     }
 
     public function store(Request $request)

@@ -6,6 +6,8 @@ use App\Models\Purchase;
 use App\Models\Supplier;
 use App\Models\AccountDetail;
 use App\Models\PurchaseDetail;
+use App\Models\Item;
+use App\Models\Service;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
@@ -15,7 +17,8 @@ class PurchaseController extends Controller
     public function index(Request $request)
     {
         $accountDetails = AccountDetail::select('id', 'nomor_rincian_akun', 'nama_rincian_akun')->orderBy('nomor_rincian_akun', 'ASC')->get();
-        $suppliers = Supplier::select('id', 'code', 'name')->orderBy('code', 'ASC')->get();
+        $suppliers = Supplier::select('id', 'kode_supplier', 'nama')->orderBy('kode_supplier', 'ASC')->get();
+        $items = Item::select('id', 'nama')->orderBy('nama', 'ASC')->get();
         if ($request->ajax()) {
             $purchase = Purchase::query();
             return DataTables::of($purchase)
@@ -29,14 +32,14 @@ class PurchaseController extends Controller
                     if ($purchase->supplier_id == null) {
                         return null;
                     } else {
-                        return $purchase->supplier->code;
+                        return $purchase->supplier->kode_supplier;
                     }
                 })
                 ->editColumn('nama_supplier', function($purchase) {
                     if ($purchase->supplier_id == null) {
                         return null;
                     } else {
-                        return $purchase->supplier->name;
+                        return $purchase->supplier->nama;
                     }
                 })
                 ->editColumn('nomor_rincian_akun', function($purchase) {
@@ -56,7 +59,7 @@ class PurchaseController extends Controller
                 ->rawColumns(['action'])
                 ->make(true);
         }
-        return view('transaksi.purchases.index', compact('accountDetails', 'suppliers'));
+        return view('transaksi.purchase.index', compact('accountDetails', 'suppliers', 'items'));
     }
 
     public function store(Request $request)
@@ -66,29 +69,32 @@ class PurchaseController extends Controller
         $code = 'PC' . str_pad($number, 5, '0', STR_PAD_LEFT);
 
         $request->validate([
-            'account_detail_id' => 'required|numeric|exists:account_details,id',
-            'supplier_id' => 'required|numeric|exists:suppliers,id',
+            'rincian_akun' => 'required|numeric|exists:account_details,id',
+            'supplier' => 'required|numeric|exists:suppliers,id',
             'tanggal' => 'required|date',
+            'total' => 'required|numeric',
+            'barang.*' => 'required|numeric|exists:items,id',
             'kuantitas.*' => 'required|numeric',
             'harga_satuan.*' => 'required|numeric',
-            'keterangan.*' => 'required|string|max:500',
+            'subtotal.*' => 'required|numeric',
         ]);
 
         $store = Purchase::create([
             'nomor_pembelian' => $code,
-            'account_detail_id' => $request->account_detail_id,
-            'supplier_id' => $request->supplier_id,
+            'account_detail_id' => $request->rincian_akun,
+            'supplier_id' => $request->supplier,
             'tanggal' => $request->tanggal,
+            'total' => $request->total,
         ]);
 
         for($i = 0; $i < count((array) $request->kuantitas); $i++)
         {
             $storeDetail = PurchaseDetail::create([
                 'purchase_id' => $number,
+                'item_id' => $request->barang[$i],
                 'kuantitas'  => $request->kuantitas[$i],
-                'harga_satuan' => $request->price[$i],
-                'total' => $request->kuantitas[$i] * $request->price[$i],
-                'keterangan' => $request->keterangan[$i],
+                'harga_satuan' => $request->harga_satuan[$i],
+                'subtotal' => $request->subtotal[$i],
             ]);
         }
         return response()->json([$store, $storeDetail]);
@@ -101,20 +107,20 @@ class PurchaseController extends Controller
             $response .= "<table class='display table table-striped table-hover'>";
                 $response .= "<thead>";
                     $response .= "<tr>";
+                        $response .= "<th>Barang</th>";
                         $response .= "<th>Kuantitas</th>";
                         $response .= "<th>Harga Satuan</th>";
-                        $response .= "<th>Total</th>";
-                        $response .= "<th>Detail Keterangan</th>";
+                        $response .= "<th>Subtotal</th>";
                         $response .= "<th>Action</th>";
                     $response .= "</tr>";
                 $response .= "</thead>";
                 $response .= "<tbody>";
                 foreach ($purchaseDetail as $pDetail) {
                     $response .= "<tr>";
+                        $response .= "<td>".$pDetail->item->nama."</td>";
                         $response .= "<td>".$pDetail->kuantitas." pcs</td>";
                         $response .= "<td>Rp".number_format($pDetail->harga_satuan,2,',','.')."</td>";
-                        $response .= "<td>Rp".number_format($pDetail->total,2,',','.')."</td>";
-                        $response .= "<td>".$pDetail->keterangan."</td>";
+                        $response .= "<td>Rp".number_format($pDetail->subtotal,2,',','.')."</td>";
                         $response .= '<td><div class="form-button-action"><button type="button" name="editDetail" data-toggle="tooltip" data-id="'.$pDetail->id.'" id="'.$pDetail->purchase_id.'" data-original-title="EditDetail" class="editDetail btn btn-primary btn-sm">Edit</button>';
                         $response .= '&nbsp;&nbsp;&nbsp;<button type="button" name="deleteDetail" data-id="'.$pDetail->purchase_id.'" id="'.$pDetail->id.'" class="deleteDetail btn btn-danger btn-sm">Delete</button></div></td>';
                     $response .= "</tr>";
@@ -136,14 +142,14 @@ class PurchaseController extends Controller
     public function update(Request $request, Purchase $purchase)
     {
         $request->validate([
-            'account_detail_id' => 'required|numeric|exists:account_details,id',
-            'supplier_id' => 'required|numeric|exists:suppliers,id',
+            'rincian_akun' => 'required|numeric|exists:account_details,id',
+            'supplier' => 'required|numeric|exists:suppliers,id',
             'tanggal' => 'required|date',
         ]);
 
         $update = Purchase::where('id', $request->id)->update([
-            'account_detail_id' => $request->account_detail_id,
-            'supplier_id' => $request->supplier_id,
+            'account_detail_id' => $request->rincian_akun,
+            'supplier_id' => $request->supplier,
             'tanggal' => $request->tanggal,
         ]);
         return response()->json($update);
@@ -153,5 +159,37 @@ class PurchaseController extends Controller
     {
         $destroy = Purchase::where('id', $purchase->id)->delete();
         return response()->json($destroy);
+    }
+
+    public function getBarang()
+    {
+        $barang = Item::select('id', 'nama')->get();
+        if($barang != null){
+            return response()->json($barang);
+        }
+    }
+
+    public function getBarangById(Item $item)
+    {
+        if(request()->ajax()) {
+            $getBarang = Item::findOrFail($item->id);
+            return response()->json($getBarang);
+        }
+    }
+
+    public function getServis()
+    {
+        $servis = Service::select('id', 'nama')->get();
+        if($servis != null){
+            return response()->json($servis);
+        }
+    }
+
+    public function getServisById(Service $service)
+    {
+        if(request()->ajax()) {
+            $getServis = Service::findOrFail($service->id);
+            return response()->json($getServis);
+        }
     }
 }

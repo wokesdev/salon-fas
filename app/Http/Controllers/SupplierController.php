@@ -22,7 +22,7 @@ class SupplierController extends Controller
                 ->rawColumns(['action'])
                 ->make(true);
         }
-        return view('master-data.suppliers.index');
+        return view('master-data.supplier.index');
     }
 
     public function store(Request $request)
@@ -32,20 +32,20 @@ class SupplierController extends Controller
         $code = 'SP' . str_pad($number, 5, '0', STR_PAD_LEFT);
 
         $request->validate([
-            'name' => 'required|string|max:255',
+            'nama' => 'required|string|max:255',
             'email' => 'required|string|max:255|email|unique:suppliers,email',
-            'gender' => 'required|in:Laki-laki,Perempuan',
-            'address' => 'required|string|max:500',
-            'phone' => 'required|numeric|digits_between:1,50',
+            'jenis_kelamin' => 'required|in:Laki-laki,Perempuan',
+            'alamat' => 'required|string|max:500',
+            'no_hp' => 'required|numeric|digits_between:1,50',
         ]);
 
         $store = Supplier::create([
-            'code' => $code,
-            'name' => $request->name,
+            'kode_supplier' => $code,
+            'nama' => $request->nama,
             'email' => $request->email,
-            'gender' => $request->gender,
-            'address' => $request->address,
-            'phone' => $request->phone,
+            'jenis_kelamin' => $request->jenis_kelamin,
+            'alamat' => $request->alamat,
+            'no_hp' => $request->no_hp,
         ]);
         return response()->json($store);
     }
@@ -61,19 +61,19 @@ class SupplierController extends Controller
     public function update(Request $request, Supplier $supplier)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
+            'nama' => 'required|string|max:255',
             'email' => 'required|string|max:255|email|unique:suppliers,email,' . $request->id,
-            'gender' => 'required|in:Laki-laki,Perempuan',
-            'address' => 'required|string|max:500',
-            'phone' => 'required|numeric|digits_between:1,50',
+            'jenis_kelamin' => 'required|in:Laki-laki,Perempuan',
+            'alamat' => 'required|string|max:500',
+            'no_hp' => 'required|numeric|digits_between:1,50',
         ]);
 
         $update = Supplier::where('id', $request->id)->update([
-            'name' => $request->name,
+            'nama' => $request->nama,
             'email' => $request->email,
-            'gender' => $request->gender,
-            'address' => $request->address,
-            'phone' => $request->phone,
+            'jenis_kelamin' => $request->jenis_kelamin,
+            'alamat' => $request->alamat,
+            'no_hp' => $request->no_hp,
         ]);
 
         return response()->json($update);
