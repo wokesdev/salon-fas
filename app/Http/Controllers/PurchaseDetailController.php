@@ -35,10 +35,7 @@ class PurchaseDetailController extends Controller
                     'total' => $currentTotal->total + $request->subtotal[$i],
                 ]);
             } else {
-                $request->validate([
-                    'barang.*' => 'required|numeric|exists:purchase_details,item_id',
-                ]);
-                abort(422, 'Barang sudah ada!');
+                abort(422, 'Barang sudah terdaftar pada pembelian ini!');
             }
         }
         return response()->json([$store, $storeTotal]);

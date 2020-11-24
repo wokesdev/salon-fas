@@ -257,6 +257,32 @@ $(document).ready(function () {
             var val = parseInt($("#detailKuantitas").val()) * parseInt($("#detailHargaSatuan").val());
             $("#detailSubtotal").val(val);
         });
+
+        $(".input").on("change", function(){
+            var val = parseInt($("#detailKuantitas").val()) * parseInt($("#detailHargaSatuan").val());
+            $("#detailSubtotal").val(val);
+        });
+
+        $("#detailBarang").change(function(){
+            var id = $('#detailBarang').val();
+            $.ajax({
+                url :"purchase/"+ id +"/getBarangById",
+                dataType:"json",
+                beforeSend: function()
+                {
+                    $('#detailKuantitas').prop('disabled', true);
+                    $('#detailHargaSatuan').prop('disabled', true);
+                },
+                success: function(data)
+                {
+                    $('#detailHargaSatuan').val(data.harga_jual);
+                    var val = parseInt($("#detailKuantitas").val()) * parseInt($("#detailHargaSatuan").val());
+                    $("#detailSubtotal").val(val);
+                    $('#detailKuantitas').prop('disabled', false);
+                    $('#detailHargaSatuan').prop('disabled', false);
+                },
+            });
+        });
     });
 
     $(document).on('click', '.deleteDetail', function () {
@@ -282,6 +308,10 @@ $(document).ready(function () {
                     url: "purchase-detail/" + dataId,
                     type: 'DELETE',
                     success: function (data) {
+                        setTimeout(function () {
+                            var oTable = $('#table').DataTable();
+                            oTable.draw(false);
+                        });
                         $.ajax({
                             url: 'purchase/' + ddPurchaseId,
                             type: 'GET',
@@ -492,6 +522,8 @@ $(document).ready(function () {
                         $('#editDetailModal').modal('hide');
                         $('#editDetailButton').html('Edit');
                         add_dynamic_input_field(1);
+                        var oTable = $('#table').DataTable();
+                        oTable.draw(false);
 
                         swal({
                             title: "Berhasil!",
@@ -621,6 +653,8 @@ $(document).ready(function () {
                 success: function(data)
                 {
                     $('#harga_satuan' + count).val(data.harga_jual);
+                    var val = parseInt($("#kuantitas" + count).val()) * parseInt($("#harga_satuan" + count).val());
+                    $("#subtotal" + count).val(val);
                     $('#kuantitas' + count).prop('disabled', false);
                     $('#harga_satuan' + count).prop('disabled', false);
                 },
