@@ -431,6 +431,24 @@ $(document).ready(function () {
                             });
                         }
 
+                        else if(data.responseJSON.message) {
+                            var values = data.responseJSON.message;
+                            swal({
+                                title: swal_fail_title,
+                                text: values,
+                                icon: "error",
+                                buttons: {
+                                    confirm: {
+                                        text: "Oke",
+                                        value: true,
+                                        visible: true,
+                                        className: "btn btn-danger",
+                                        closeModal: true
+                                    }
+                                },
+                            });
+                        }
+
                         else {
                             swal({
                                 title: swal_fail_title,

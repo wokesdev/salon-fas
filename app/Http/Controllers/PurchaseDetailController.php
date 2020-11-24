@@ -20,18 +20,26 @@ class PurchaseDetailController extends Controller
 
         for($i = 0; $i < count((array) $request->kuantitas); $i++)
         {
-            $currentTotal = Purchase::select('total')->where('id', $request->id)->first();
-            $store = PurchaseDetail::create([
-                'purchase_id' => $request->id,
-                'item_id' => $request->barang[$i],
-                'kuantitas'  => $request->kuantitas[$i],
-                'harga_satuan' => $request->harga_satuan[$i],
-                'subtotal' => $request->subtotal[$i],
-            ]);
+            $itemAlreadyExist = PurchaseDetail::where('item_id', $request->barang[$i])->where('purchase_id', $request->id)->pluck('item_id')->toArray();
+            if (!in_array($request->barang[$i], $itemAlreadyExist)) {
+                $currentTotal = Purchase::select('total')->where('id', $request->id)->first();
+                $store = PurchaseDetail::create([
+                    'purchase_id' => $request->id,
+                    'item_id' => $request->barang[$i],
+                    'kuantitas'  => $request->kuantitas[$i],
+                    'harga_satuan' => $request->harga_satuan[$i],
+                    'subtotal' => $request->subtotal[$i],
+                ]);
 
-            $storeTotal = Purchase::where('id', $request->id)->update([
-                'total' => $currentTotal->total + $request->subtotal[$i],
-            ]);
+                $storeTotal = Purchase::where('id', $request->id)->update([
+                    'total' => $currentTotal->total + $request->subtotal[$i],
+                ]);
+            } else {
+                $request->validate([
+                    'barang.*' => 'required|numeric|exists:purchase_details,item_id',
+                ]);
+                abort(422, 'Barang sudah ada!');
+            }
         }
         return response()->json([$store, $storeTotal]);
     }
