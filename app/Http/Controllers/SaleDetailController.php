@@ -9,87 +9,120 @@ use Yajra\DataTables\Facades\DataTables;
 
 class SaleDetailController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index(Request $request)
-    {
-        $sales = Sale::select('id', 'nomor_pembelian', 'account_detail_id', 'keterangan')->get();
-        if ($request->ajax()) {
-            $saleDetail = SaleDetail::query();
-            return DataTables::of($saleDetail)
-                ->addColumn('action', function($saleDetail){
-                    $button = '<div class="form-button-action"><button type="button" name="edit" data-toggle="tooltip" data-id="'.$saleDetail->id.'" data-original-title="Edit" class="edit btn btn-primary btn-sm">Edit</button>';
-                    $button .= '&nbsp;&nbsp;&nbsp;<button type="button" name="delete" id="'.$saleDetail->id.'" class="delete btn btn-danger btn-sm">Delete</button></div>';
-                    return $button;
-                })
-                ->editColumn('nomor_pembelian', function($saleDetail) {
-                    return $saleDetail->sale->nomor_penjualan;
-                })
-                ->rawColumns(['action'])
-                ->addIndexColumn()
-                ->make(true);
-        }
-        return view('transaksi.sale-details.index', compact('sales'));
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
-        $total = $request->price * $request->kuantitas;
+        if (count((array) $request->servis) > 0 && count((array) $request->barang) > 0) {
+            $request->validate([
+                'id' => 'required|numeric|exists:sales,id',
+                'barang.*' => 'required|numeric|exists:items,id',
+                'kuantitas.*' => 'required|numeric',
+                'harga_satuan.*' => 'required|numeric',
+                'subtotal.*' => 'required|numeric',
+                'servis.*' => 'required|numeric|exists:services,id',
+                'kuantitas_servis.*' => 'required|numeric',
+                'harga_satuan_servis.*' => 'required|numeric',
+                'subtotal_servis.*' => 'required|numeric',
+            ]);
 
-        request()->validate([
-            'sale_id' => 'required|numeric',
-            'keterangan' => 'required|string|max:500',
-            'kuantitas' => 'required|numeric',
-            'price' => 'required|numeric',
-        ]);
+            for($i = 0; $i < count((array) $request->servis); $i++)
+            {
+                $serviceAlreadyExist = SaleDetail::where('service_id', $request->servis[$i])->where('sale_id', $request->id)->pluck('service_id')->toArray();
+                $itemAlreadyExist = SaleDetail::where('item_id', $request->barang[$i])->where('sale_id', $request->id)->pluck('item_id')->toArray();
+                if (!in_array($request->barang[$i], $itemAlreadyExist) && !in_array($request->servis[$i], $serviceAlreadyExist)) {
+                    $currentTotal = Sale::select('total_servis', 'total_barang', 'total')->where('id', $request->id)->first();
+                    $store = SaleDetail::create([
+                        'sale_id' => $request->id,
+                        'service_id' => $request->servis[$i],
+                        'kuantitas_servis'  => $request->kuantitas_servis[$i],
+                        'harga_satuan_servis' => $request->harga_satuan_servis[$i],
+                        'subtotal_servis' => $request->subtotal_servis[$i],
+                        'item_id' => $request->barang[$i],
+                        'kuantitas_barang'  => $request->kuantitas_barang[$i],
+                        'harga_satuan_barang' => $request->harga_satuan_barang[$i],
+                        'subtotal_barang' => $request->subtotal_barang[$i],
+                    ]);
 
-        $store = SaleDetail::create([
-            'sale_id' => $request->sale_id,
-            'keterangan' => $request->keterangan,
-            'kuantitas' => $request->kuantitas,
-            'harga_satuan' => $request->price,
-            'total' => $total,
-        ]);
+                    $storeTotal = Sale::where('id', $request->id)->update([
+                        'total_servis' => $currentTotal->total_servis + $request->subtotal_servis[$i],
+                        'total_barang' => $currentTotal->total_barang + $request->subtotal_barang[$i],
+                        'total' => $currentTotal->total + $request->subtotal_servis[$i] + $request->subtotal_barang[$i],
+                    ]);
+                } else {
+                    abort(422, 'Servis atau barang sudah terdaftar pada penjualan ini!');
+                }
+            }
+        }
 
-        return response()->json($store);
+        elseif (count((array) $request->servis) > 0) {
+            $request->validate([
+                'id' => 'required|numeric|exists:sales,id',
+                'servis.*' => 'required|numeric|exists:services,id',
+                'kuantitas_servis.*' => 'required|numeric',
+                'harga_satuan_servis.*' => 'required|numeric',
+                'subtotal_servis.*' => 'required|numeric',
+            ]);
+
+            for($i = 0; $i < count((array) $request->servis); $i++)
+            {
+                $serviceAlreadyExist = SaleDetail::where('service_id', $request->servis[$i])->where('sale_id', $request->id)->pluck('service_id')->toArray();
+                if (!in_array($request->servis[$i], $serviceAlreadyExist)) {
+                    $currentTotal = Sale::select('total_servis', 'total')->where('id', $request->id)->first();
+                    $store = SaleDetail::create([
+                        'sale_id' => $request->id,
+                        'service_id' => $request->servis[$i],
+                        'kuantitas_servis'  => $request->kuantitas_servis[$i],
+                        'harga_satuan_servis' => $request->harga_satuan_servis[$i],
+                        'subtotal_servis' => $request->subtotal_servis[$i],
+                    ]);
+
+                    $storeTotal = Sale::where('id', $request->id)->update([
+                        'total_servis' => $currentTotal->total_servis + $request->subtotal_servis[$i],
+                        'total' => $currentTotal->total + $request->subtotal_servis[$i] + $request->subtotal_barang[$i],
+                    ]);
+                } else {
+                    abort(422, 'Servis sudah terdaftar pada penjualan ini!');
+                }
+            }
+        }
+
+        elseif (count((array) $request->barang) > 0) {
+            $request->validate([
+                'id' => 'required|numeric|exists:sales,id',
+                'barang.*' => 'required|numeric|exists:items,id',
+                'kuantitas.*' => 'required|numeric',
+                'harga_satuan.*' => 'required|numeric',
+                'subtotal.*' => 'required|numeric',
+            ]);
+
+            for($i = 0; $i < count((array) $request->barang); $i++)
+            {
+                $itemAlreadyExist = SaleDetail::where('item_id', $request->barang[$i])->where('sale_id', $request->id)->pluck('item_id')->toArray();
+                if (!in_array($request->barang[$i], $itemAlreadyExist)) {
+                    $currentTotal = Sale::select('total_barang', 'total')->where('id', $request->id)->first();
+                    $store = SaleDetail::create([
+                        'sale_id' => $request->id,
+                        'item_id' => $request->barang[$i],
+                        'kuantitas_barang'  => $request->kuantitas_barang[$i],
+                        'harga_satuan_barang' => $request->harga_satuan_barang[$i],
+                        'subtotal_barang' => $request->subtotal_barang[$i],
+                    ]);
+
+                    $storeTotal = Sale::where('id', $request->id)->update([
+                        'total_barang' => $currentTotal->total_barang + $request->subtotal_barang[$i],
+                        'total' => $currentTotal->total + $request->subtotal_servis[$i] + $request->subtotal_barang[$i],
+                    ]);
+                } else {
+                    abort(422, 'Barang sudah terdaftar pada penjualan ini!');
+                }
+            }
+        }
+
+        else {
+            abort(422, 'Mohon mengisi data penjualan servis atau barang!');
+        }
+        return response()->json([$store, $storeTotal]);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\SaleDetail  $saleDetail
-     * @return \Illuminate\Http\Response
-     */
-    public function show(SaleDetail $saleDetail)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\SaleDetail  $saleDetail
-     * @return \Illuminate\Http\Response
-     */
     public function edit(SaleDetail $saleDetail)
     {
         if(request()->ajax()) {
@@ -98,44 +131,67 @@ class SaleDetailController extends Controller
         }
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\SaleDetail  $saleDetail
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request, SaleDetail $saleDetail)
     {
-        $total = $request->price * $request->kuantitas;
+        if ($request->detailServis != null) {
+            $currentTotal = Sale::select('total_servis', 'total')->where('id', $request->saleId)->first();
+            $currentSubtotal = $request->currentSubtotalServis != null ? $request->currentSubtotalServis : 0;
+            $request->validate([
+                'saleId' => 'required|numeric|exists:sales,id',
+                'detailServis' => 'required|numeric|exists:services,id',
+                'detailKuantitasServis' => 'required|numeric',
+                'detailHargaSatuanServis' => 'required|numeric',
+                'detailSubtotalServis' => 'required|numeric',
+            ]);
 
-        request()->validate([
-            'sale_id' => 'required|numeric',
-            'keterangan' => 'required|string|max:500',
-            'kuantitas' => 'required|numeric',
-            'price' => 'required|numeric',
-        ]);
+            $update = SaleDetail::where('id', $request->detailId)->update([
+                'service_id' => $request->detailServis,
+                'kuantitas_servis' => $request->detailKuantitasServis,
+                'harga_satuan_servis' => $request->detailHargaSatuanServis,
+                'subtotal_servis' => $request->detailSubtotalServis,
+            ]);
 
-        $update = SaleDetail::where('id', $request->id)->update([
-            'sale_id' => $request->sale_id,
-            'keterangan' => $request->keterangan,
-            'kuantitas' => $request->kuantitas,
-            'harga_satuan' => $request->price,
-            'total' => $total,
-        ]);
+            $updateTotal = Sale::where('id', $request->saleId)->update([
+                'total_servis' => ($currentTotal->total_servis - $request->currentSubtotalServis) + $request->detailSubtotalServis,
+                'total' => ($currentTotal->total - $currentSubtotal) + $request->detailSubtotalServis,
+            ]);
+        }
 
-        return response()->json($update);
+        else if ($request->detailBarang != null) {
+            $currentTotal = Sale::select('total_barang', 'total')->where('id', $request->saleId)->first();
+            $currentSubtotal = $request->currentSubtotalBarang != null ? $request->currentSubtotalBarang : 0;
+            $request->validate([
+                'saleId' => 'required|numeric|exists:sales,id',
+                'detailBarang' => 'required|numeric|exists:items,id',
+                'detailKuantitasBarang' => 'required|numeric',
+                'detailHargaSatuanBarang' => 'required|numeric',
+                'detailSubtotalBarang' => 'required|numeric',
+            ]);
+
+            $update = SaleDetail::where('id', $request->detailId)->update([
+                'item_id' => $request->detailBarang,
+                'kuantitas_barang' => $request->detailKuantitasBarang,
+                'harga_satuan_barang' => $request->detailHargaSatuanBarang,
+                'subtotal_barang' => $request->detailSubtotalBarang,
+            ]);
+
+            $updateTotal = Sale::where('id', $request->saleId)->update([
+                'total_barang' => ($currentTotal->total_barang - $request->currentSubtotalBarang) + $request->detailSubtotalBarang,
+                'total' => ($currentTotal->total - $currentSubtotal) + $request->detailSubtotalBarang,
+            ]);
+        }
+        return response()->json([$update, $updateTotal]);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\SaleDetail  $saleDetail
-     * @return \Illuminate\Http\Response
-     */
     public function destroy(SaleDetail $saleDetail)
     {
+        $currentTotal = Sale::select('total', 'total_barang', 'total_servis')->where('id', $saleDetail->sale_id)->first();
+        $destroyTotal = Sale::where('id', $saleDetail->sale_id)->update([
+            'total_servis' => $currentTotal->total_servis - $saleDetail->subtotal_servis,
+            'total_barang' => $currentTotal->total_barang - $saleDetail->subtotal_barang,
+            'total' => $currentTotal->total - ($saleDetail->subtotal_barang + $saleDetail->subtotal_servis),
+        ]);
         $destroy = SaleDetail::where('id', $saleDetail->id)->delete();
-        return response()->json($destroy);
+        return response()->json([$destroy, $destroyTotal]);
     }
 }

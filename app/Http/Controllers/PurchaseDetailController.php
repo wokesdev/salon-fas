@@ -76,10 +76,10 @@ class PurchaseDetailController extends Controller
     public function destroy(PurchaseDetail $purchaseDetail)
     {
         $currentTotal = Purchase::select('total')->where('id', $purchaseDetail->purchase_id)->first();
-        $destroy = PurchaseDetail::where('id', $purchaseDetail->id)->delete();
         $destroyTotal = Purchase::where('id', $purchaseDetail->purchase_id)->update([
             'total' => $currentTotal->total - $purchaseDetail->subtotal,
         ]);
+        $destroy = PurchaseDetail::where('id', $purchaseDetail->id)->delete();
         return response()->json([$destroy, $destroyTotal]);
     }
 }

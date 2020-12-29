@@ -34,13 +34,13 @@ Route::middleware(['auth.one', 'auth'])->group(function () {
     Route::post('purchase/update', 'PurchaseController@update')->name('purchase.update');
     Route::post('purchase-detail/update', 'PurchaseDetailController@update')->name('purchase-detail.update');
     Route::post('sale/update', 'SaleController@update')->name('sale.update');
-    Route::post('sale-detail/update', 'SaleController@update')->name('sale-detail.update');
+    Route::post('sale-detail/update', 'SaleDetailController@update')->name('sale-detail.update');
 
     Route::post('purchase/getBarang', 'PurchaseController@getBarang')->name('purchase.getBarang');
     Route::get('purchase/{item}/getBarangById', 'PurchaseController@getBarangById')->name('purchase.getBarangById');
 
     Route::post('purchase/getServis', 'PurchaseController@getServis')->name('purchase.getServis');
-    Route::get('purchase/{item}/getServisById', 'PurchaseController@getServisById')->name('purchase.getServisById');
+    Route::get('purchase/{service}/getServisById', 'PurchaseController@getServisById')->name('purchase.getServisById');
 });
 
 Route::middleware(['auth.two', 'auth'])->group(function () {

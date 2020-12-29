@@ -15,11 +15,15 @@ class CreateSaleDetailsTable extends Migration
     {
         Schema::create('sale_details', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('sale_id')->nullable()->constrained('sales')->onUpdate('cascade')->onDelete('set null');
-            $table->text('keterangan');
-            $table->integer('kuantitas');
-            $table->integer('harga_satuan');
-            $table->integer('total');
+            $table->foreignId('item_id')->nullable()->constrained('items')->onUpdate('cascade')->onDelete('set null');
+            $table->foreignId('service_id')->nullable()->constrained('services')->onUpdate('cascade')->onDelete('set null');
+            $table->foreignId('sale_id')->nullable()->constrained('sales')->onUpdate('cascade')->onDelete('cascade');
+            $table->integer('kuantitas_barang')->nullable();
+            $table->integer('harga_satuan_barang')->nullable();
+            $table->integer('subtotal_barang')->nullable();
+            $table->integer('kuantitas_servis')->nullable();
+            $table->integer('harga_satuan_servis')->nullable();
+            $table->integer('subtotal_servis')->nullable();
             $table->timestamps();
         });
     }

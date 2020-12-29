@@ -275,7 +275,7 @@ $(document).ready(function () {
                 },
                 success: function(data)
                 {
-                    $('#detailHargaSatuan').val(data.harga_jual);
+                    $('#detailHargaSatuan').val(data.harga_beli);
                     var val = parseInt($("#detailKuantitas").val()) * parseInt($("#detailHargaSatuan").val());
                     $("#detailSubtotal").val(val);
                     $('#detailKuantitas').prop('disabled', false);
@@ -559,7 +559,25 @@ $(document).ready(function () {
                             });
 
                             swal({
-                                title: "Data gagal ditambahkan!",
+                                title: swal_fail_title,
+                                text: values,
+                                icon: "error",
+                                buttons: {
+                                    confirm: {
+                                        text: "Oke",
+                                        value: true,
+                                        visible: true,
+                                        className: "btn btn-danger",
+                                        closeModal: true
+                                    }
+                                },
+                            });
+                        }
+
+                        else if(data.responseJSON.message) {
+                            var values = data.responseJSON.message;
+                            swal({
+                                title: swal_fail_title,
                                 text: values,
                                 icon: "error",
                                 buttons: {
@@ -576,7 +594,7 @@ $(document).ready(function () {
 
                         else {
                             swal({
-                                title: "Data gagal diperbarui!",
+                                title: swal_fail_title,
                                 text: "Terjadi masalah pada server!",
                                 icon: "error",
                                 buttons: {
@@ -652,7 +670,7 @@ $(document).ready(function () {
                 },
                 success: function(data)
                 {
-                    $('#harga_satuan' + count).val(data.harga_jual);
+                    $('#harga_satuan' + count).val(data.harga_beli);
                     var val = parseInt($("#kuantitas" + count).val()) * parseInt($("#harga_satuan" + count).val());
                     $("#subtotal" + count).val(val);
                     $('#kuantitas' + count).prop('disabled', false);

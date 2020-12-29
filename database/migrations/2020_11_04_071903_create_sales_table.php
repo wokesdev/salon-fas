@@ -15,11 +15,13 @@ class CreateSalesTable extends Migration
     {
         Schema::create('sales', function (Blueprint $table) {
             $table->id();
-            $table->string('nomor_pembelian');
             $table->foreignId('customer_id')->nullable()->constrained('customers')->onUpdate('cascade')->onDelete('set null');
             $table->foreignId('account_detail_id')->nullable()->constrained('account_details')->onUpdate('cascade')->onDelete('set null');
-            $table->date('tanggal', 0);
-            $table->text('keterangan');
+            $table->string('nomor_penjualan')->unique();
+            $table->date('tanggal');
+            $table->integer('total_barang')->nullable();
+            $table->integer('total_servis')->nullable();
+            $table->integer('total');
             $table->timestamps();
         });
     }

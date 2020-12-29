@@ -6,94 +6,185 @@ use App\Models\Sale;
 use App\Models\Customer;
 use App\Models\AccountDetail;
 use App\Models\SaleDetail;
+use App\Models\Item;
+use App\Models\Service;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
 
 class SaleController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index(Request $request)
     {
-        $accountDetails = AccountDetail::select('id', 'nomor_rincian_akun', 'nama_rincian_akun')->get();
-        $customers = Customer::select('id', 'code', 'name')->get();
+        $accountDetails = AccountDetail::select('id', 'nomor_rincian_akun', 'nama_rincian_akun')->orderBy('nomor_rincian_akun', 'ASC')->get();
+        $customers = Customer::select('id', 'kode_pelanggan', 'nama')->orderBy('kode_pelanggan', 'ASC')->get();
+        $items = Item::select('id', 'nama')->orderBy('nama', 'ASC')->get();
+        $services = Service::select('id', 'nama')->orderBy('nama', 'ASC')->get();
         if ($request->ajax()) {
             $sale = Sale::query();
             return DataTables::of($sale)
-                ->addColumn('action', function($sale){
+                ->addColumn('action', function($sale) {
                     $button = '<div class="form-button-action"><button type="button" name="detail" data-toggle="tooltip" data-id="'.$sale->id.'" data-original-title="Detail" class="detail btn btn-warning btn-sm">Detail</button>';
                     $button .= '&nbsp;&nbsp;&nbsp;<button type="button" name="edit" data-toggle="tooltip" data-id="'.$sale->id.'" data-original-title="Edit" class="edit btn btn-primary btn-sm">Edit</button>';
                     $button .= '&nbsp;&nbsp;&nbsp;<button type="button" name="delete" id="'.$sale->id.'" class="delete btn btn-danger btn-sm">Delete</button></div>';
                     return $button;
                 })
+                ->editColumn('kode_pelanggan', function($sale) {
+                    if ($sale->customer_id == null) {
+                        return null;
+                    } else {
+                        return $sale->customer->kode_pelanggan;
+                    }
+                })
+                ->editColumn('nama_pelanggan', function($sale) {
+                    if ($sale->customer_id == null) {
+                        return null;
+                    } else {
+                        return $sale->customer->nama;
+                    }
+                })
                 ->editColumn('nomor_rincian_akun', function($sale) {
-                    return $sale->account_detail->nomor_rincian_akun;
+                    if ($sale->account_detail_id == null) {
+                        return null;
+                    } else {
+                        return $sale->account_detail->nomor_rincian_akun;
+                    }
                 })
                 ->editColumn('nama_rincian_akun', function($sale) {
-                    return $sale->account_detail->nama_rincian_akun;
-                })
-                ->editColumn('kode_supplier', function($sale) {
-                    return $sale->customer->code;
-                })
-                ->editColumn('nama_supplier', function($sale) {
-                    return $sale->customer->name;
+                    if ($sale->account_detail_id == null) {
+                        return null;
+                    } else {
+                        return $sale->account_detail->nama_rincian_akun;
+                    }
                 })
                 ->rawColumns(['action'])
                 ->make(true);
         }
-        return view('transaksi.sales.index', compact('accountDetails', 'customers'));
+        return view('transaksi.sale.index', compact('accountDetails', 'customers', 'items', 'services'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
         $statement = DB::select("show table status like 'sales'");
         $number = $statement[0]->Auto_increment;
         $code = 'SL' . str_pad($number, 5, '0', STR_PAD_LEFT);
 
-        request()->validate([
-            'account_detail_id' => 'required|numeric',
-            'customer_id' => 'required|numeric',
-            'tanggal' => 'required|date',
-            'keterangan' => 'required|string|max:500',
-        ]);
+        if (count((array) $request->servis) > 0 && count((array) $request->barang) > 0) {
+            $request->validate([
+                'rincian_akun' => 'required|numeric|exists:account_details,id',
+                'customer' => 'required|numeric|exists:customers,id',
+                'tanggal' => 'required|date',
+                'total_barang' => 'required|numeric',
+                'total_servis' => 'required|numeric',
+                'total' => 'required|numeric',
+                'barang.*' => 'required|numeric|exists:items,id',
+                'kuantitas.*' => 'required|numeric',
+                'harga_satuan.*' => 'required|numeric',
+                'subtotal.*' => 'required|numeric',
+                'servis.*' => 'required|numeric|exists:services,id',
+                'kuantitas_servis.*' => 'required|numeric',
+                'harga_satuan_servis.*' => 'required|numeric',
+                'subtotal_servis.*' => 'required|numeric',
+            ]);
 
-        $store = Sale::create([
-            'nomor_pembelian' => $code,
-            'account_detail_id' => $request->account_detail_id,
-            'customer_id' => $request->customer_id,
-            'tanggal' => $request->tanggal,
-            'keterangan' => $request->keterangan,
-        ]);
+            $store = Sale::create([
+                'nomor_penjualan' => $code,
+                'account_detail_id' => $request->rincian_akun,
+                'customer_id' => $request->customer,
+                'tanggal' => $request->tanggal,
+                'total_barang' => $request->total,
+                'total_servis' => $request->total_servis,
+                'total' => $request->total + $request->total_servis,
+            ]);
 
-        return response()->json($store);
+            for($i = 0; $i < count((array) $request->servis); $i++)
+            {
+                $storeDetail = SaleDetail::create([
+                    'sale_id' => $number,
+                    'item_id' => $request->barang[$i],
+                    'kuantitas_barang'  => $request->kuantitas[$i],
+                    'harga_satuan_barang' => $request->harga_satuan[$i],
+                    'subtotal_barang' => $request->subtotal[$i],
+                    'service_id' => $request->servis[$i],
+                    'kuantitas_servis'  => $request->kuantitas_servis[$i],
+                    'harga_satuan_servis' => $request->harga_satuan_servis[$i],
+                    'subtotal_servis' => $request->subtotal_servis[$i],
+                ]);
+            }
+        }
+
+        elseif (count((array) $request->servis) > 0) {
+            $request->validate([
+                'rincian_akun' => 'required|numeric|exists:account_details,id',
+                'customer' => 'required|numeric|exists:customers,id',
+                'tanggal' => 'required|date',
+                'total_servis' => 'required|numeric',
+                'servis.*' => 'required|numeric|exists:services,id',
+                'kuantitas_servis.*' => 'required|numeric',
+                'harga_satuan_servis.*' => 'required|numeric',
+                'subtotal_servis.*' => 'required|numeric',
+            ]);
+
+            $store = Sale::create([
+                'nomor_penjualan' => $code,
+                'account_detail_id' => $request->rincian_akun,
+                'customer_id' => $request->customer,
+                'tanggal' => $request->tanggal,
+                'total_servis' => $request->total_servis,
+                'total' => $request->total_servis,
+            ]);
+
+            for($i = 0; $i < count((array) $request->servis); $i++)
+            {
+                $storeDetail = SaleDetail::create([
+                    'sale_id' => $number,
+                    'service_id' => $request->servis[$i],
+                    'kuantitas_servis'  => $request->kuantitas_servis[$i],
+                    'harga_satuan_servis' => $request->harga_satuan_servis[$i],
+                    'subtotal_servis' => $request->subtotal_servis[$i],
+                ]);
+            }
+        }
+
+        elseif (count((array) $request->barang) > 0) {
+            $request->validate([
+                'rincian_akun' => 'required|numeric|exists:account_details,id',
+                'customer' => 'required|numeric|exists:customers,id',
+                'tanggal' => 'required|date',
+                'total_barang' => 'required|numeric',
+                'barang.*' => 'required|numeric|exists:items,id',
+                'kuantitas.*' => 'required|numeric',
+                'harga_satuan.*' => 'required|numeric',
+                'subtotal.*' => 'required|numeric',
+            ]);
+
+            $store = Sale::create([
+                'nomor_penjualan' => $code,
+                'account_detail_id' => $request->rincian_akun,
+                'customer_id' => $request->customer,
+                'tanggal' => $request->tanggal,
+                'total_barang' => $request->total,
+                'total' => $request->total,
+            ]);
+
+            for($i = 0; $i < count((array) $request->barang); $i++)
+            {
+                $storeDetail = SaleDetail::create([
+                    'sale_id' => $number,
+                    'item_id' => $request->barang[$i],
+                    'kuantitas_barang'  => $request->kuantitas[$i],
+                    'harga_satuan_barang' => $request->harga_satuan[$i],
+                    'subtotal_barang' => $request->subtotal[$i],
+                ]);
+            }
+        }
+
+        else {
+            abort(422, 'Mohon mengisi data penjualan servis atau barang!');
+        }
+        return response()->json([$store, $storeDetail]);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Sale  $sale
-     * @return \Illuminate\Http\Response
-     */
     public function show(Sale $sale)
     {
         $saleDetail = SaleDetail::where('sale_id', $sale->id)->get();
@@ -101,19 +192,56 @@ class SaleController extends Controller
             $response .= "<table class='display table table-striped table-hover'>";
                 $response .= "<thead>";
                     $response .= "<tr>";
-                        $response .= "<th>Kuantitas</th>";
-                        $response .= "<th>Harga Satuan</th>";
-                        $response .= "<th>Total</th>";
-                        $response .= "<th>Detail Keterangan</th>";
+                        $response .= "<th>Servis</th>";
+                        $response .= "<th>Kuantitas Servis</th>";
+                        $response .= "<th>Harga Satuan Servis</th>";
+                        $response .= "<th>Subtotal Servis</th>";
+                        $response .= "<th>Barang</th>";
+                        $response .= "<th>Kuantitas Barang</th>";
+                        $response .= "<th>Harga Satuan Barang</th>";
+                        $response .= "<th>Subtotal Barang</th>";
+                        $response .= "<th>Action</th>";
                     $response .= "</tr>";
                 $response .= "</thead>";
                 $response .= "<tbody>";
-                foreach ($saleDetail as $pDetail) {
+                foreach ($saleDetail as $sDetail) {
                     $response .= "<tr>";
-                        $response .= "<td>".$pDetail->kuantitas." pcs</td>";
-                        $response .= "<td>Rp".number_format($pDetail->harga_satuan,2,',','.')."</td>";
-                        $response .= "<td>Rp".number_format($pDetail->total,2,',','.')."</td>";
-                        $response .= "<td>".$pDetail->keterangan."</td>";
+                        if ($sDetail->service_id != null && $sDetail->item_id != null) {
+                            $response .= "<td>".$sDetail->service->nama."</td>";
+                            $response .= "<td>".$sDetail->kuantitas_servis." kali</td>";
+                            $response .= "<td>Rp".number_format($sDetail->harga_satuan_servis,2,',','.')."</td>";
+                            $response .= "<td>Rp".number_format($sDetail->subtotal_servis,2,',','.')."</td>";
+                            $response .= "<td>".$sDetail->item->nama."</td>";
+                            $response .= "<td>".$sDetail->kuantitas_barang." pcs</td>";
+                            $response .= "<td>Rp".number_format($sDetail->harga_satuan_barang,2,',','.')."</td>";
+                            $response .= "<td>Rp".number_format($sDetail->subtotal_barang,2,',','.')."</td>";
+                        }
+
+                        elseif ($sDetail->service_id != null) {
+                            $response .= "<td>".$sDetail->service->nama."</td>";
+                            $response .= "<td>".$sDetail->kuantitas_servis." kali</td>";
+                            $response .= "<td>Rp".number_format($sDetail->harga_satuan_servis,2,',','.')."</td>";
+                            $response .= "<td>Rp".number_format($sDetail->subtotal_servis,2,',','.')."</td>";
+                            $response .= "<td>-</td>";
+                            $response .= "<td>-</td>";
+                            $response .= "<td>-</td>";
+                            $response .= "<td>-</td>";
+                        }
+
+                        elseif ($sDetail->item_id != null) {
+                            $response .= "<td>-</td>";
+                            $response .= "<td>-</td>";
+                            $response .= "<td>-</td>";
+                            $response .= "<td>-</td>";
+                            $response .= "<td>".$sDetail->item->nama."</td>";
+                            $response .= "<td>".$sDetail->kuantitas_barang." pcs</td>";
+                            $response .= "<td>Rp".number_format($sDetail->harga_satuan_barang,2,',','.')."</td>";
+                            $response .= "<td>Rp".number_format($sDetail->subtotal_barang,2,',','.')."</td>";
+                        }
+
+                        $response .= '<td><div class="form-button-action"><button type="button" name="editDetailServis" data-toggle="tooltip" data-id="'.$sDetail->id.'" id="'.$sDetail->sale_id.'" data-original-title="EditDetailServis" class="editDetailServis btn btn-primary btn-sm">Edit Servis</button>';
+                        $response .= '&nbsp;&nbsp;&nbsp;<button type="button" name="editDetailBarang" data-toggle="tooltip" data-id="'.$sDetail->id.'" id="'.$sDetail->sale_id.'" data-original-title="EditDetailBarang" class="editDetailBarang btn btn-primary btn-sm">Edit Barang</button>';
+                        $response .= '&nbsp;&nbsp;&nbsp;<button type="button" name="deleteDetail" data-id="'.$sDetail->sale_id.'" id="'.$sDetail->id.'" class="deleteDetail btn btn-danger btn-sm">Delete</button></div></td>';
                     $response .= "</tr>";
                 }
                 $response .= "</tbody>";
@@ -122,12 +250,6 @@ class SaleController extends Controller
         echo $response;
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Sale  $sale
-     * @return \Illuminate\Http\Response
-     */
     public function edit(Sale $sale)
     {
         if(request()->ajax()) {
@@ -136,38 +258,22 @@ class SaleController extends Controller
         }
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Sale  $sale
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request, Sale $sale)
     {
-        request()->validate([
-            'account_detail_id' => 'required|numeric',
-            'customer_id' => 'required|numeric',
+        $request->validate([
+            'rincian_akun' => 'required|numeric|exists:account_details,id',
+            'customer' => 'required|numeric|exists:customers,id',
             'tanggal' => 'required|date',
-            'keterangan' => 'required|string|max:500',
         ]);
 
         $update = Sale::where('id', $request->id)->update([
-            'account_detail_id' => $request->account_detail_id,
-            'customer_id' => $request->customer_id,
+            'account_detail_id' => $request->rincian_akun,
+            'customer_id' => $request->customer,
             'tanggal' => $request->tanggal,
-            'keterangan' => $request->keterangan,
         ]);
-
         return response()->json($update);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Sale  $sale
-     * @return \Illuminate\Http\Response
-     */
     public function destroy(Sale $sale)
     {
         $destroy = Sale::where('id', $sale->id)->delete();

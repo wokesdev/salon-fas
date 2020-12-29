@@ -15,4 +15,14 @@ class SaleDetail extends Model
     {
         return $this->belongsTo('App\Models\Sale', 'sale_id');
     }
+
+    public function item()
+    {
+        return $this->belongsTo('App\Models\Item', 'item_id');
+    }
+
+    public function service()
+    {
+        return $this->belongsTo('App\Models\Service', 'service_id');
+    }
 }
