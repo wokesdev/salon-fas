@@ -10,9 +10,20 @@
                             <input type="hidden" name="action" id="action" value="Add">
                             <div id="purchaseFields">
                                 <div class="form-group">
-                                    <label for="rincian_akun" class="col-sm-12 control-label">Akun</label>
+                                    <label for="rincian_akun" class="col-sm-12 control-label">Akun Pembelian</label>
                                     <div class="col-sm-12">
                                         <select name="rincian_akun" id="rincian_akun" class="form-control" required>
+                                            <option value="" disabled selected>Pilih Akun</option>
+                                            @foreach ($accountDetails as $accountDetail)
+                                                <option value="{{ $accountDetail->id }}">{{ $accountDetail->nomor_rincian_akun }} - {{ $accountDetail->nama_rincian_akun }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="rincian_akun_pembayaran" class="col-sm-12 control-label">Akun Pembayaran</label>
+                                    <div class="col-sm-12">
+                                        <select name="rincian_akun_pembayaran" id="rincian_akun_pembayaran" class="form-control" required>
                                             <option value="" disabled selected>Pilih Akun</option>
                                             @foreach ($accountDetails as $accountDetail)
                                                 <option value="{{ $accountDetail->id }}">{{ $accountDetail->nomor_rincian_akun }} - {{ $accountDetail->nama_rincian_akun }}</option>

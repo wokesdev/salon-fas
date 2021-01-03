@@ -14,16 +14,16 @@ $(document).ready(function () {
         },
         columns: [
             { data: 'nomor_penjualan' },
-            { data: 'kode_pelanggan', orderable: false },
-            { data: 'nama_pelanggan', orderable: false },
-            { data: 'nomor_rincian_akun', orderable: false },
-            { data: 'nama_rincian_akun', orderable: false },
-            { data: 'tanggal' },
+            { data: 'customer.kode_pelanggan', name: 'customer.kode_pelanggan', orderable: false },
+            { data: 'customer.nama', name: 'customer.nama', orderable: false },
+            { data: 'account_detail.nomor_rincian_akun', name: 'account_detail.nomor_rincian_akun', orderable: false },
+            { data: 'account_detail.nama_rincian_akun', name: 'account_detail.nama_rincian_akun', orderable: false },
             { data: 'total', render: $.fn.dataTable.render.number('.', ',', 2, 'Rp') },
+            { data: 'tanggal' },
             { data: 'action', name: 'action', orderable: false, searchable: false }
         ],
         order: [
-            [5, 'asc']
+            [6, 'asc']
         ],
     });
 
@@ -233,6 +233,7 @@ $(document).ready(function () {
             }
         });
 
+        $('#id').val(userId);
         $('.modal-title').text('Rincian Penjualan');
         $('#showModal').modal('show')
     });
@@ -246,6 +247,7 @@ $(document).ready(function () {
             {
                 $('#id').val(data.id);
                 $('#rincian_akun').val(data.account_detail_id);
+                $('#rincian_akun_pembayaran').val(data.account_detail_payment_id);
                 $('#customer').val(data.customer_id);
                 $('#tanggal').val(data.tanggal);
             },
@@ -341,7 +343,6 @@ $(document).ready(function () {
     });
 
     $('#addDetailButton').click(function(){
-        var userId = $('.detail').data('id');
         $.ajax({
             url: "{{ route('purchase.getServis') }}",
             type: "POST",
@@ -375,7 +376,6 @@ $(document).ready(function () {
         $('.modal-title').text('Tambah Rincian Penjualan');
         $('#saveButton').val('AddDetail');
         $('#action').val('AddDetail');
-        $('#id').val(userId);
         $('#mainFields').prop('disabled', true);
         $('#mainFields').prop('hidden', true);
         $('#purchaseFields').prop('disabled', true);
@@ -392,7 +392,6 @@ $(document).ready(function () {
     });
 
     $('#addDetailButtonServis').click(function(){
-        var userId = $('.detail').data('id');
         $.ajax({
             url: "{{ route('purchase.getServis') }}",
             type: "POST",
@@ -412,7 +411,6 @@ $(document).ready(function () {
         $('.modal-title').text('Tambah Rincian Penjualan');
         $('#saveButton').val('AddDetail');
         $('#action').val('AddDetail');
-        $('#id').val(userId);
         $('#mainFields').prop('disabled', true);
         $('#mainFields').prop('hidden', true);
         $('#purchaseFields').prop('disabled', true);
@@ -429,7 +427,6 @@ $(document).ready(function () {
     });
 
     $('#addDetailButtonBarang').click(function(){
-        var userId = $('.detail').data('id');
         $.ajax({
             url: "{{ route('purchase.getBarang') }}",
             type: "POST",
@@ -449,7 +446,6 @@ $(document).ready(function () {
         $('.modal-title').text('Tambah Rincian Penjualan');
         $('#saveButton').val('AddDetail');
         $('#action').val('AddDetail');
-        $('#id').val(userId);
         $('#mainFields').prop('disabled', true);
         $('#mainFields').prop('hidden', true);
         $('#purchaseFields').prop('disabled', true);
@@ -682,7 +678,7 @@ $(document).ready(function () {
         $("#addEditForm").validate({
             rules: {},
             submitHandler: function (form) {
-                var userId = $('.detail').data('id');
+                var userId = $('#id').val();
                 $('.modal-title').text('Rincian Penjualan');
 
                 if($('#action').val() == 'Add') {
@@ -819,7 +815,7 @@ $(document).ready(function () {
         $("#editDetailForm").validate({
             rules: {},
             submitHandler: function (form) {
-                var userId = $('.detail').data('id');
+                var userId = $('#id').val();
                 $('.modal-title').text('Rincian Penjualan');
                 $('#editDetailButton').html('Processing..');
 
@@ -1092,7 +1088,7 @@ $(document).ready(function () {
             $('.subtotal').each(function() {
                 total = total + parseInt($(this).val());
             });
-            $("#total").val(total);
+            $("#totalBarang").val(total);
         });
 
         $(".harga_satuan_servis").change(function(){
@@ -1395,7 +1391,7 @@ $(document).ready(function () {
             $('.subtotal').each(function() {
                 total = total + parseInt($(this).val());
             });
-            $("#total").val(total);
+            $("#totalBarang").val(total);
         });
     }
 

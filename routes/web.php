@@ -22,6 +22,10 @@ Route::middleware(['auth.one', 'auth'])->group(function () {
     Route::resource('purchase-detail', 'PurchaseDetailController')->except('index', 'create', 'show', 'update');
     Route::resource('sale', 'SaleController')->except('create', 'update');
     Route::resource('sale-detail', 'SaleDetailController')->except('index', 'create', 'show', 'update');
+    Route::resource('cash-payment', 'CashPaymentController')->except('create', 'show', 'update');
+    Route::resource('cash-receipt', 'CashReceiptController')->except('create', 'show', 'update');
+    Route::resource('general-entry', 'GeneralEntryController');
+    Route::resource('general-entry-detail', 'GeneralEntryDetailController');
 
     Route::post('account/update', 'AccountController@update')->name('account.update');
     Route::post('account-detail/update', 'AccountDetailController@update')->name('account-detail.update');
@@ -35,6 +39,8 @@ Route::middleware(['auth.one', 'auth'])->group(function () {
     Route::post('purchase-detail/update', 'PurchaseDetailController@update')->name('purchase-detail.update');
     Route::post('sale/update', 'SaleController@update')->name('sale.update');
     Route::post('sale-detail/update', 'SaleDetailController@update')->name('sale-detail.update');
+    Route::post('cash-payment/update', 'CashPaymentController@update')->name('cash-payment.update');
+    Route::post('cash-receipt/update', 'CashReceiptController@update')->name('cash-receipt.update');
 
     Route::post('purchase/getBarang', 'PurchaseController@getBarang')->name('purchase.getBarang');
     Route::get('purchase/{item}/getBarangById', 'PurchaseController@getBarangById')->name('purchase.getBarangById');

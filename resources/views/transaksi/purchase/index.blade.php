@@ -21,8 +21,8 @@
                                         <th>Nama Supplier</th>
                                         <th>Nomor Rincian Akun</th>
                                         <th>Nama Rincian Akun</th>
-                                        <th>Tanggal</th>
                                         <th>Total</th>
+                                        <th>Tanggal</th>
                                         <th style="width: 10%">Action</th>
                                     </tr>
                                 </thead>

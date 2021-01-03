@@ -14,16 +14,16 @@ $(document).ready(function () {
         },
         columns: [
             { data: 'nomor_pembelian' },
-            { data: 'kode_supplier', orderable: false },
-            { data: 'nama_supplier', orderable: false },
-            { data: 'nomor_rincian_akun', orderable: false },
-            { data: 'nama_rincian_akun', orderable: false },
-            { data: 'tanggal' },
+            { data: 'supplier.kode_supplier', name: 'supplier.kode_supplier', orderable: false },
+            { data: 'supplier.nama', name: 'supplier.nama', orderable: false },
+            { data: 'account_detail.nomor_rincian_akun', name: 'account_detail.nomor_rincian_akun', orderable: false },
+            { data: 'account_detail.nama_rincian_akun', name: 'account_detail.nama_rincian_akun', orderable: false },
             { data: 'total', render: $.fn.dataTable.render.number('.', ',', 2, 'Rp') },
+            { data: 'tanggal' },
             { data: 'action', name: 'action', orderable: false, searchable: false }
         ],
         order: [
-            [5, 'asc']
+            [6, 'asc']
         ],
     });
 
@@ -86,6 +86,7 @@ $(document).ready(function () {
             }
         });
 
+        $('#id').val(userId);
         $('.modal-title').text('Rincian Pembelian');
         $('#showModal').modal('show')
     });
@@ -99,6 +100,7 @@ $(document).ready(function () {
             {
                 $('#id').val(data.id);
                 $('#rincian_akun').val(data.account_detail_id);
+                $('#rincian_akun_pembayaran').val(data.account_detail_payment_id);
                 $('#supplier').val(data.supplier_id);
                 $('#tanggal').val(data.tanggal);
             },
@@ -190,11 +192,18 @@ $(document).ready(function () {
     });
 
     $('#addDetailButton').click(function(){
-        var userId = $('.detail').data('id');
         $.ajax({
             url: "{{ route('purchase.getBarang') }}",
             type: "POST",
             dataType: "json",
+            beforeSend: function()
+            {
+                $('#detailFields').html('');
+                add_dynamic_input_field(1);
+                $('#barang1').prop('disabled', true);
+                $('#kuantitas1').prop('disabled', true);
+                $('#harga_satuan1').prop('disabled', true);
+            },
             success: function(data){
                 var html = '<option value="" disabled selected>Pilih Barang</option>';
                 var i;
@@ -202,15 +211,15 @@ $(document).ready(function () {
                     html += '<option value='+data[i].id+'>'+data[i].nama+'</option>';
                 }
                 $('.barang').html(html);
+                $('#barang1').prop('disabled', false);
+                $('#kuantitas1').prop('disabled', false);
+                $('#harga_satuan1').prop('disabled', false);
             }
         });
 
-        $('#detailFields').html('');
-        add_dynamic_input_field(1);
         $('.modal-title').text('Tambah Rincian Pembelian');
         $('#saveButton').val('AddDetail');
         $('#action').val('AddDetail');
-        $('#id').val(userId);
         $('#mainFields').prop('disabled', true);
         $('#mainFields').prop('hidden', true);
         $('#purchaseFields').prop('disabled', true);
@@ -232,6 +241,12 @@ $(document).ready(function () {
         $.ajax({
             url :"purchase-detail/"+ id +"/edit",
             dataType:"json",
+            beforeSend: function()
+            {
+                $('#detailBarang').prop('disabled', true);
+                $('#detailKuantitas').prop('disabled', true);
+                $('#detailHargaSatuan').prop('disabled', true);
+            },
             success: function(data)
             {
                 $('#detailId').val(data.id);
@@ -240,6 +255,9 @@ $(document).ready(function () {
                 $('#detailHargaSatuan').val(data.harga_satuan);
                 $('#detailSubtotal').val(data.subtotal);
                 $('#currentSubtotal').val(data.subtotal);
+                $('#detailBarang').prop('disabled', false);
+                $('#detailKuantitas').prop('disabled', false);
+                $('#detailHargaSatuan').prop('disabled', false);
             },
         });
 
@@ -372,7 +390,7 @@ $(document).ready(function () {
         $("#addEditForm").validate({
             rules: {},
             submitHandler: function (form) {
-                var userId = $('.detail').data('id');
+                var userId = $('#id').val();
                 $('.modal-title').text('Rincian Pembelian');
 
                 if($('#action').val() == 'Add') {

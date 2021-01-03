@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Account;
 use App\Models\Sale;
 use App\Models\Customer;
 use App\Models\AccountDetail;
+use App\Models\GeneralEntry;
+use App\Models\GeneralEntryDetail;
 use App\Models\SaleDetail;
 use App\Models\Item;
 use App\Models\Service;
@@ -21,41 +24,13 @@ class SaleController extends Controller
         $items = Item::select('id', 'nama')->orderBy('nama', 'ASC')->get();
         $services = Service::select('id', 'nama')->orderBy('nama', 'ASC')->get();
         if ($request->ajax()) {
-            $sale = Sale::query();
+            $sale = Sale::query()->with(['customer', 'account_detail']);
             return DataTables::of($sale)
                 ->addColumn('action', function($sale) {
                     $button = '<div class="form-button-action"><button type="button" name="detail" data-toggle="tooltip" data-id="'.$sale->id.'" data-original-title="Detail" class="detail btn btn-warning btn-sm">Detail</button>';
                     $button .= '&nbsp;&nbsp;&nbsp;<button type="button" name="edit" data-toggle="tooltip" data-id="'.$sale->id.'" data-original-title="Edit" class="edit btn btn-primary btn-sm">Edit</button>';
                     $button .= '&nbsp;&nbsp;&nbsp;<button type="button" name="delete" id="'.$sale->id.'" class="delete btn btn-danger btn-sm">Delete</button></div>';
                     return $button;
-                })
-                ->editColumn('kode_pelanggan', function($sale) {
-                    if ($sale->customer_id == null) {
-                        return null;
-                    } else {
-                        return $sale->customer->kode_pelanggan;
-                    }
-                })
-                ->editColumn('nama_pelanggan', function($sale) {
-                    if ($sale->customer_id == null) {
-                        return null;
-                    } else {
-                        return $sale->customer->nama;
-                    }
-                })
-                ->editColumn('nomor_rincian_akun', function($sale) {
-                    if ($sale->account_detail_id == null) {
-                        return null;
-                    } else {
-                        return $sale->account_detail->nomor_rincian_akun;
-                    }
-                })
-                ->editColumn('nama_rincian_akun', function($sale) {
-                    if ($sale->account_detail_id == null) {
-                        return null;
-                    } else {
-                        return $sale->account_detail->nama_rincian_akun;
-                    }
                 })
                 ->rawColumns(['action'])
                 ->make(true);
@@ -72,6 +47,7 @@ class SaleController extends Controller
         if (count((array) $request->servis) > 0 && count((array) $request->barang) > 0) {
             $request->validate([
                 'rincian_akun' => 'required|numeric|exists:account_details,id',
+                'rincian_akun_pembayaran' => 'required|numeric|exists:account_details,id',
                 'customer' => 'required|numeric|exists:customers,id',
                 'tanggal' => 'required|date',
                 'total_barang' => 'required|numeric',
@@ -90,25 +66,30 @@ class SaleController extends Controller
             $store = Sale::create([
                 'nomor_penjualan' => $code,
                 'account_detail_id' => $request->rincian_akun,
+                'account_detail_payment_id' => $request->rincian_akun_pembayaran,
                 'customer_id' => $request->customer,
                 'tanggal' => $request->tanggal,
-                'total_barang' => $request->total,
+                'total_barang' => $request->total_barang,
                 'total_servis' => $request->total_servis,
-                'total' => $request->total + $request->total_servis,
+                'total' => $request->total_barang + $request->total_servis,
             ]);
 
             for($i = 0; $i < count((array) $request->servis); $i++)
             {
+                $currentItem = Item::select('nama')->where('id', $request->barang[$i])->first();
+                $currentService = Service::select('nama')->where('id', $request->servis[$i])->first();
                 $storeDetail = SaleDetail::create([
                     'sale_id' => $number,
                     'item_id' => $request->barang[$i],
                     'kuantitas_barang'  => $request->kuantitas[$i],
                     'harga_satuan_barang' => $request->harga_satuan[$i],
                     'subtotal_barang' => $request->subtotal[$i],
+                    'keterangan_barang' => 'Penjualan ' . $currentItem->nama,
                     'service_id' => $request->servis[$i],
                     'kuantitas_servis'  => $request->kuantitas_servis[$i],
                     'harga_satuan_servis' => $request->harga_satuan_servis[$i],
                     'subtotal_servis' => $request->subtotal_servis[$i],
+                    'keterangan_servis' => 'Jasa ' . $currentService->nama,
                 ]);
             }
         }
@@ -116,6 +97,7 @@ class SaleController extends Controller
         elseif (count((array) $request->servis) > 0) {
             $request->validate([
                 'rincian_akun' => 'required|numeric|exists:account_details,id',
+                'rincian_akun_pembayaran' => 'required|numeric|exists:account_details,id',
                 'customer' => 'required|numeric|exists:customers,id',
                 'tanggal' => 'required|date',
                 'total_servis' => 'required|numeric',
@@ -128,6 +110,7 @@ class SaleController extends Controller
             $store = Sale::create([
                 'nomor_penjualan' => $code,
                 'account_detail_id' => $request->rincian_akun,
+                'account_detail_payment_id' => $request->rincian_akun_pembayaran,
                 'customer_id' => $request->customer,
                 'tanggal' => $request->tanggal,
                 'total_servis' => $request->total_servis,
@@ -136,12 +119,14 @@ class SaleController extends Controller
 
             for($i = 0; $i < count((array) $request->servis); $i++)
             {
+                $currentService = Service::select('nama')->where('id', $request->servis[$i])->first();
                 $storeDetail = SaleDetail::create([
                     'sale_id' => $number,
                     'service_id' => $request->servis[$i],
                     'kuantitas_servis'  => $request->kuantitas_servis[$i],
                     'harga_satuan_servis' => $request->harga_satuan_servis[$i],
                     'subtotal_servis' => $request->subtotal_servis[$i],
+                    'keterangan_servis' => 'Jasa ' . $currentService->nama,
                 ]);
             }
         }
@@ -149,6 +134,7 @@ class SaleController extends Controller
         elseif (count((array) $request->barang) > 0) {
             $request->validate([
                 'rincian_akun' => 'required|numeric|exists:account_details,id',
+                'rincian_akun_pembayaran' => 'required|numeric|exists:account_details,id',
                 'customer' => 'required|numeric|exists:customers,id',
                 'tanggal' => 'required|date',
                 'total_barang' => 'required|numeric',
@@ -161,20 +147,23 @@ class SaleController extends Controller
             $store = Sale::create([
                 'nomor_penjualan' => $code,
                 'account_detail_id' => $request->rincian_akun,
+                'account_detail_payment_id' => $request->rincian_akun_pembayaran,
                 'customer_id' => $request->customer,
                 'tanggal' => $request->tanggal,
-                'total_barang' => $request->total,
-                'total' => $request->total,
+                'total_barang' => $request->total_barang,
+                'total' => $request->total_barang,
             ]);
 
             for($i = 0; $i < count((array) $request->barang); $i++)
             {
+                $currentItem = Item::select('nama')->where('id', $request->barang[$i])->first();
                 $storeDetail = SaleDetail::create([
                     'sale_id' => $number,
                     'item_id' => $request->barang[$i],
                     'kuantitas_barang'  => $request->kuantitas[$i],
                     'harga_satuan_barang' => $request->harga_satuan[$i],
                     'subtotal_barang' => $request->subtotal[$i],
+                    'keterangan_barang' => 'Penjualan ' . $currentItem->nama,
                 ]);
             }
         }
@@ -182,7 +171,48 @@ class SaleController extends Controller
         else {
             abort(422, 'Mohon mengisi data penjualan servis atau barang!');
         }
-        return response()->json([$store, $storeDetail]);
+
+        if ($store && $storeDetail) {
+            $statementGeneralEntry = DB::select("show table status like 'general_entries'");
+            $numberGeneralEntry = $statementGeneralEntry[0]->Auto_increment;
+
+            $storeGeneralEntry = GeneralEntry::create([
+                'sale_id' => $number,
+                'nomor_transaksi' => $numberGeneralEntry,
+                'tanggal' => $request->tanggal,
+            ]);
+
+            if ($request->total !== null) {
+                $total = $request->total;
+            }
+
+            elseif ($request->total === null) {
+                if ($request->total_servis !== null) {
+                    $total = $request->total_servis;
+                }
+
+                else {
+                    $total = $request->total_barang;
+                }
+            }
+
+            $storeGeneralEntryDetail = GeneralEntryDetail::create([
+                'sale_id' => $number,
+                'account_detail_id' => $request->rincian_akun_pembayaran,
+                'general_entry_id' => $numberGeneralEntry,
+                'debit' => $total,
+                'kredit' => 0,
+            ]);
+
+            $storeGeneralEntryDetail = GeneralEntryDetail::create([
+                'sale_id' => $number,
+                'account_detail_id' => $request->rincian_akun,
+                'general_entry_id' => $numberGeneralEntry,
+                'debit' => 0,
+                'kredit' => $total,
+            ]);
+        }
+        return response()->json([$store, $storeDetail, $storeGeneralEntry, $storeGeneralEntryDetail]);
     }
 
     public function show(Sale $sale)
@@ -262,16 +292,32 @@ class SaleController extends Controller
     {
         $request->validate([
             'rincian_akun' => 'required|numeric|exists:account_details,id',
+            'rincian_akun_pembayaran' => 'required|numeric|exists:account_details,id',
             'customer' => 'required|numeric|exists:customers,id',
             'tanggal' => 'required|date',
         ]);
 
         $update = Sale::where('id', $request->id)->update([
             'account_detail_id' => $request->rincian_akun,
+            'account_detail_payment_id' => $request->rincian_akun_pembayaran,
             'customer_id' => $request->customer,
             'tanggal' => $request->tanggal,
         ]);
-        return response()->json($update);
+
+        if ($update) {
+            $updateGeneralEntry = GeneralEntry::where('sale_id', $request->id)->update([
+                'tanggal' => $request->tanggal,
+            ]);
+
+            $updateGeneralEntryDetail = GeneralEntryDetail::where('sale_id', $request->id)->where('kredit', 0)->update([
+                'account_detail_id' => $request->rincian_akun_pembayaran,
+            ]);
+
+            $updateGeneralEntryDetail = GeneralEntryDetail::where('sale_id', $request->id)->where('debit', 0)->update([
+                'account_detail_id' => $request->rincian_akun,
+            ]);
+        }
+        return response()->json([$update, $updateGeneralEntry, $updateGeneralEntryDetail]);
     }
 
     public function destroy(Sale $sale)

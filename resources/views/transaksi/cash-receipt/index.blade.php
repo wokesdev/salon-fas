@@ -7,8 +7,8 @@
                 <div class="card">
                     <div class="card-header">
                         <div class="d-flex align-items-center">
-                            <h4 class="card-title">Data Penjualan</h4>
-                            <button type="button" class="btn btn-primary btn-round ml-auto" id="addButton" data-toggle="modal" data-target="#chooseModal"><i class="fa fa-plus"></i> Tambah Penjualan</button>
+                            <h4 class="card-title">Data Penerimaan Kas</h4>
+                            <button type="button" class="btn btn-primary btn-round ml-auto text-white" id="addButton" data-toggle="modal" data-target="#addEditModal"><i class="fa fa-plus"></i> Tambah Penerimaan Kas</button>
                         </div>
                     </div>
                     <div class="card-body">
@@ -16,12 +16,11 @@
                             <table id="table" class="display table table-striped table-hover">
                                 <thead>
                                     <tr>
-                                        <th>Nomor Penjualan</th>
-                                        <th>Kode Pelanggan</th>
-                                        <th>Nama Pelanggan</th>
+                                        <th>Nomor Nota</th>
                                         <th>Nomor Rincian Akun</th>
                                         <th>Nama Rincian Akun</th>
-                                        <th>Total</th>
+                                        <th>Jumlah</th>
+                                        <th>Keterangan</th>
                                         <th>Tanggal</th>
                                         <th style="width: 10%">Action</th>
                                     </tr>
@@ -34,11 +33,8 @@
         </div>
     </div>
 </div>
-@include('transaksi.sale.chooseModal')
-@include('transaksi.sale.createModal')
-@include('transaksi.sale.showModal')
-@include('transaksi.sale.editDetailModal')
+@include('transaksi.cash-receipt.createModal')
 @endsection
 @section('contentScripts')
-    @include('transaksi.sale.scripts')
+    @include('transaksi.cash-receipt.scripts')
 @endsection

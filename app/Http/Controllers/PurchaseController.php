@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Account;
 use App\Models\Purchase;
 use App\Models\Supplier;
 use App\Models\AccountDetail;
+use App\Models\GeneralEntry;
+use App\Models\GeneralEntryDetail;
 use App\Models\PurchaseDetail;
 use App\Models\Item;
 use App\Models\Service;
@@ -20,41 +23,13 @@ class PurchaseController extends Controller
         $suppliers = Supplier::select('id', 'kode_supplier', 'nama')->orderBy('kode_supplier', 'ASC')->get();
         $items = Item::select('id', 'nama')->orderBy('nama', 'ASC')->get();
         if ($request->ajax()) {
-            $purchase = Purchase::query();
+            $purchase = Purchase::query()->with(['supplier', 'account_detail']);
             return DataTables::of($purchase)
                 ->addColumn('action', function($purchase) {
                     $button = '<div class="form-button-action"><button type="button" name="detail" data-toggle="tooltip" data-id="'.$purchase->id.'" data-original-title="Detail" class="detail btn btn-warning btn-sm">Detail</button>';
                     $button .= '&nbsp;&nbsp;&nbsp;<button type="button" name="edit" data-toggle="tooltip" data-id="'.$purchase->id.'" data-original-title="Edit" class="edit btn btn-primary btn-sm">Edit</button>';
                     $button .= '&nbsp;&nbsp;&nbsp;<button type="button" name="delete" id="'.$purchase->id.'" class="delete btn btn-danger btn-sm">Delete</button></div>';
                     return $button;
-                })
-                ->editColumn('kode_supplier', function($purchase) {
-                    if ($purchase->supplier_id == null) {
-                        return null;
-                    } else {
-                        return $purchase->supplier->kode_supplier;
-                    }
-                })
-                ->editColumn('nama_supplier', function($purchase) {
-                    if ($purchase->supplier_id == null) {
-                        return null;
-                    } else {
-                        return $purchase->supplier->nama;
-                    }
-                })
-                ->editColumn('nomor_rincian_akun', function($purchase) {
-                    if ($purchase->account_detail_id == null) {
-                        return null;
-                    } else {
-                        return $purchase->account_detail->nomor_rincian_akun;
-                    }
-                })
-                ->editColumn('nama_rincian_akun', function($purchase) {
-                    if ($purchase->account_detail_id == null) {
-                        return null;
-                    } else {
-                        return $purchase->account_detail->nama_rincian_akun;
-                    }
                 })
                 ->rawColumns(['action'])
                 ->make(true);
@@ -70,6 +45,7 @@ class PurchaseController extends Controller
 
         $request->validate([
             'rincian_akun' => 'required|numeric|exists:account_details,id',
+            'rincian_akun_pembayaran' => 'required|numeric|exists:account_details,id',
             'supplier' => 'required|numeric|exists:suppliers,id',
             'tanggal' => 'required|date',
             'total' => 'required|numeric',
@@ -82,6 +58,7 @@ class PurchaseController extends Controller
         $store = Purchase::create([
             'nomor_pembelian' => $code,
             'account_detail_id' => $request->rincian_akun,
+            'account_detail_payment_id' => $request->rincian_akun_pembayaran,
             'supplier_id' => $request->supplier,
             'tanggal' => $request->tanggal,
             'total' => $request->total,
@@ -89,15 +66,44 @@ class PurchaseController extends Controller
 
         for($i = 0; $i < count((array) $request->kuantitas); $i++)
         {
+            $currentItem = Item::select('nama')->where('id', $request->barang[$i])->first();
             $storeDetail = PurchaseDetail::create([
                 'purchase_id' => $number,
                 'item_id' => $request->barang[$i],
                 'kuantitas'  => $request->kuantitas[$i],
                 'harga_satuan' => $request->harga_satuan[$i],
                 'subtotal' => $request->subtotal[$i],
+                'keterangan' => 'Pembelian ' . $currentItem->nama,
             ]);
         }
-        return response()->json([$store, $storeDetail]);
+
+        if ($store && $storeDetail) {
+            $statementGeneralEntry = DB::select("show table status like 'general_entries'");
+            $numberGeneralEntry = $statementGeneralEntry[0]->Auto_increment;
+
+            $storeGeneralEntry = GeneralEntry::create([
+                'purchase_id' => $number,
+                'nomor_transaksi' => $numberGeneralEntry,
+                'tanggal' => $request->tanggal,
+            ]);
+
+            $storeGeneralEntryDetail = GeneralEntryDetail::create([
+                'purchase_id' => $number,
+                'account_detail_id' => $request->rincian_akun,
+                'general_entry_id' => $numberGeneralEntry,
+                'debit' => $request->total,
+                'kredit' => 0,
+            ]);
+
+            $storeGeneralEntryDetail2 = GeneralEntryDetail::create([
+                'purchase_id' => $number,
+                'account_detail_id' => $request->rincian_akun_pembayaran,
+                'general_entry_id' => $numberGeneralEntry,
+                'debit' => 0,
+                'kredit' => $request->total,
+            ]);
+        }
+        return response()->json([$store, $storeDetail, $storeGeneralEntry, $storeGeneralEntryDetail, $storeGeneralEntryDetail2]);
     }
 
     public function show(Purchase $purchase)
@@ -143,16 +149,33 @@ class PurchaseController extends Controller
     {
         $request->validate([
             'rincian_akun' => 'required|numeric|exists:account_details,id',
+            'rincian_akun_pembayaran' => 'required|numeric|exists:account_details,id',
             'supplier' => 'required|numeric|exists:suppliers,id',
             'tanggal' => 'required|date',
         ]);
 
         $update = Purchase::where('id', $request->id)->update([
             'account_detail_id' => $request->rincian_akun,
+            'account_detail_payment_id' => $request->rincian_akun_pembayaran,
             'supplier_id' => $request->supplier,
             'tanggal' => $request->tanggal,
         ]);
-        return response()->json($update);
+
+        if ($update) {
+            $updateGeneralEntry = GeneralEntry::where('purchase_id', $request->id)->update([
+                'tanggal' => $request->tanggal,
+            ]);
+
+            $updateGeneralEntryDetail = GeneralEntryDetail::where('purchase_id', $request->id)->where('kredit', 0)->update([
+                'account_detail_id' => $request->rincian_akun,
+            ]);
+
+            $updateGeneralEntryDetail = GeneralEntryDetail::where('purchase_id', $request->id)->where('debit', 0)->update([
+                'account_detail_id' => $request->rincian_akun_pembayaran,
+            ]);
+        }
+
+        return response()->json([$update, $updateGeneralEntry, $updateGeneralEntryDetail]);
     }
 
     public function destroy(Purchase $purchase)

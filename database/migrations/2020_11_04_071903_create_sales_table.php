@@ -17,11 +17,12 @@ class CreateSalesTable extends Migration
             $table->id();
             $table->foreignId('customer_id')->nullable()->constrained('customers')->onUpdate('cascade')->onDelete('set null');
             $table->foreignId('account_detail_id')->nullable()->constrained('account_details')->onUpdate('cascade')->onDelete('set null');
+            $table->foreignId('account_detail_payment_id')->nullable()->constrained('account_details')->onUpdate('cascade')->onDelete('set null');
             $table->string('nomor_penjualan')->unique();
-            $table->date('tanggal');
             $table->integer('total_barang')->nullable();
             $table->integer('total_servis')->nullable();
             $table->integer('total');
+            $table->date('tanggal');
             $table->timestamps();
         });
     }

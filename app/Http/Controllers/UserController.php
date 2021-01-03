@@ -14,20 +14,13 @@ class UserController extends Controller
     {
         $roles = Role::select('id', 'jabatan', 'level')->orderBy('level', 'ASC')->get();
         if ($request->ajax()) {
-            $users = User::query();
+            $users = User::query()->with('role');
             return DataTables::of($users)
                 ->addColumn('action', function($users) {
                     $button = '<div class="form-button-action"><button type="button" name="change-pass" data-id="'.$users->id.'" class="change-pass btn btn-warning btn-sm">Change Password</button>';
                     $button .= '&nbsp;&nbsp;&nbsp;<button type="button" name="edit" data-toggle="tooltip" data-id="'.$users->id.'" data-original-title="Edit" class="edit btn btn-primary btn-sm">Edit</button>';
                     $button .= '&nbsp;&nbsp;&nbsp;<button type="button" name="delete" id="'.$users->id.'" class="delete btn btn-danger btn-sm">Delete</button></div>';
                     return $button;
-                })
-                ->editColumn('jabatan', function($users) {
-                    if ($users->role_id == null) {
-                        return null;
-                    } else {
-                        return $users->role->jabatan;
-                    }
                 })
                 ->rawColumns(['action'])
                 ->make(true);

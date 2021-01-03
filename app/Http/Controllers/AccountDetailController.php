@@ -13,18 +13,12 @@ class AccountDetailController extends Controller
     {
         $accounts = Account::select('id', 'nomor_akun', 'nama_akun')->orderBy('nomor_akun', 'ASC')->get();
         if ($request->ajax()) {
-            $accountDetail = AccountDetail::query();
+            $accountDetail = AccountDetail::query()->with('account');
             return DataTables::of($accountDetail)
                 ->addColumn('action', function($accountDetail) {
                     $button = '<div class="form-button-action"><button type="button" name="edit" data-toggle="tooltip" data-id="'.$accountDetail->id.'" data-original-title="Edit" class="edit btn btn-primary btn-sm">Edit</button>';
                     $button .= '&nbsp;&nbsp;&nbsp;<button type="button" name="delete" id="'.$accountDetail->id.'" class="delete btn btn-danger btn-sm">Delete</button></div>';
                     return $button;
-                })
-                ->editColumn('nomor_akun', function($accountDetail) {
-                    return $accountDetail->account->nomor_akun;
-                })
-                ->editColumn('nama_akun', function($accountDetail) {
-                    return $accountDetail->account->nama_akun;
                 })
                 ->rawColumns(['action'])
                 ->make(true);

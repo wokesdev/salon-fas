@@ -13,8 +13,8 @@ $(document).ready(function () {
             url: "{{ route('account-detail.index') }}"
         },
         columns: [
-            { data: 'nomor_akun', orderable: false },
-            { data: 'nama_akun', orderable: false },
+            { data: 'account.nomor_akun', name: 'account.nomor_akun', orderable: false },
+            { data: 'account.nama_akun', name: 'account.nama_akun', orderable: false },
             { data: 'nomor_rincian_akun' },
             { data: 'nama_rincian_akun' },
             { data: 'action', name: 'action', orderable: false, searchable: false }

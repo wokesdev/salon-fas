@@ -10,13 +10,15 @@ $(document).ready(function () {
         processing: true,
         serverSide: true,
         ajax: {
-            url: "{{ route('user.index') }}"
+            url: "{{ route('cash-receipt.index') }}"
         },
         columns: [
-            { data: 'name' },
-            { data: 'username' },
-            { data: 'email' },
-            { data: 'role.jabatan', name: 'role.jabatan', orderable: false },
+            { data: 'nomor_nota' },
+            { data: 'account_detail.nomor_rincian_akun', name: 'account_detail.nomor_rincian_akun', orderable: false },
+            { data: 'account_detail.nama_rincian_akun', name: 'account_detail.nama_rincian_akun', orderable: false },
+            { data: 'jumlah', render: $.fn.dataTable.render.number('.', ',', 2, 'Rp') },
+            { data: 'keterangan' },
+            { data: 'tanggal' },
             { data: 'action', name: 'action', orderable: false, searchable: false }
         ],
         order: [
@@ -25,69 +27,37 @@ $(document).ready(function () {
     });
 
     $('#addButton').click(function(){
-        $('.modal-title').text('Tambah Admin');
+        $('.modal-title').text('Tambah Penerimaan Kas');
         $('#saveButton').val('Add');
         $('#action').val('Add');
-        $('#dataFields').prop('disabled', false);
-        $('#dataFields').prop('hidden', false);
-        $('#passwordFields').prop('disabled', false);
-        $('#passwordFields').prop('hidden', false);
         $('#addEditForm').trigger("reset");
         $('#addEditForm').validate().resetForm();
+        $('.jumlah').mask('000.000.000', {reverse: true});
         $('#addEditModal').on('shown.bs.modal', function() {
-            $('#name').trigger('focus');
-        });
-    });
-
-    $(document).on('click', '.change-pass', function(){
-        var id = $(this).data('id');
-        $.ajax({
-            url :"user/"+ id +"/edit",
-            dataType:"json",
-            success: function(data)
-            {
-                $('.modal-title').text('Change Password');
-                $('#saveButton').val('ChangePass');
-                $('#action').val('ChangePass');
-                $('#id').val(data.id);
-                $('#label-password').text('New Password');
-                $('#label-confirm-password').text('Confirm New Password');
-                $('#addEditModal').modal('show');
-                $('#passwordFields').prop('disabled', false);
-                $('#passwordFields').prop('hidden', false);
-                $('#dataFields').prop('disabled', true);
-                $('#dataFields').prop('hidden', true);
-                $('#addEditForm').validate().resetForm();
-                $('#addEditModal').on('shown.bs.modal', function() {
-                    $('#password').trigger('focus');
-                });
-            },
+            $('#rincian_akun').trigger('focus');
         });
     });
 
     $(document).on('click', '.edit', function(){
         var id = $(this).data('id');
         $.ajax({
-            url :"user/"+ id +"/edit",
+            url :"cash-receipt/"+ id +"/edit",
             dataType:"json",
             success: function(data)
             {
-                $('.modal-title').text('Edit Admin');
+                $('.modal-title').text('Edit Penerimaan Kas');
                 $('#saveButton').val('Update');
                 $('#action').val('Edit');
                 $('#id').val(data.id);
-                $('#name').val(data.name);
-                $('#username').val(data.username);
-                $('#email').val(data.email);
-                $('#jabatan').val(data.role_id);
-                $('#dataFields').prop('disabled', false);
-                $('#dataFields').prop('hidden', false);
-                $('#passwordFields').prop('disabled', true);
-                $('#passwordFields').prop('hidden', true);
+                $('#rincian_akun').val(data.account_detail_id);
+                $('#jumlah').val(data.jumlah);
+                $('#keterangan').val(data.keterangan);
+                $('#tanggal').val(data.tanggal);
                 $('#addEditModal').modal('show');
                 $('#addEditForm').validate().resetForm();
+                $('.jumlah').mask('000.000.000', {reverse: true});
                 $('#addEditModal').on('shown.bs.modal', function() {
-                    $('#name').trigger('focus');
+                    $('#rincian_akun').trigger('focus');
                 });
             },
         });
@@ -112,7 +82,7 @@ $(document).ready(function () {
         }).then((willDelete) => {
             if (willDelete) {
                 $.ajax({
-                    url: "user/" + dataId,
+                    url: "cash-receipt/" + dataId,
                     type: 'DELETE',
                     success: function (data) {
                         setTimeout(function () {
@@ -138,7 +108,7 @@ $(document).ready(function () {
                     error: function (data) {
                         swal({
                             title: "Data gagal dihapus!",
-                            text: "Terjadi masalah pada server! Silakan coba lagi!",
+                            text: "Terjadi masalah pada server!",
                             icon: "error",
                             buttons: {
                                 confirm: {
@@ -159,47 +129,26 @@ $(document).ready(function () {
     });
 
     if ($("#addEditForm").length > 0) {
-        $.validator.addMethod( "lettersOnly", function( value, element ) {
-            return this.optional( element ) || /^[a-zA-Z\s]+$/.test( value );
-        }, "Please enter letters only." );
-
-        $.validator.addMethod( "nowhitespace", function( value, element ) {
-            return this.optional( element ) || /^\S+$/i.test( value );
-        }, "Any spaces are not allowed." );
-
-        $.validator.addMethod( "alphanumeric", function( value, element ) {
-            return this.optional( element ) || /^\w+$/i.test( value );
-        }, "Please enter letters, numbers, and underscores only." );
-
         $("#addEditForm").validate({
             rules: {
-                name: { lettersOnly: true, maxlength: 255, },
-                username: { nowhitespace: true, alphanumeric: true, maxlength: 255, },
-                email: { maxlength: 255, },
-                password: { minlength: 8, },
-                password_confirmation: { equalTo: '#password', },
+                keterangan: { maxlength: 500, },
             },
 
             submitHandler: function (form) {
+                $(".jumlah").unmask();
+
                 if($('#action').val() == 'Add') {
-                    action_url = "{{ route('user.store') }}";
+                    action_url = "{{ route('cash-receipt.store') }}";
                     swal_title = "Berhasil!";
                     swal_text = "Data berhasil ditambahkan!";
                     swal_fail_title = "Data gagal ditambahkan!";
                 }
 
                 if($('#action').val() == 'Edit') {
-                    action_url = "{{ route('user.update') }}";
+                    action_url = "{{ route('cash-receipt.update') }}";
                     swal_title = "Berhasil!";
                     swal_text = "Data berhasil diperbarui!";
                     swal_fail_title = "Data gagal diperbarui!";
-                }
-
-                if($('#action').val() == 'ChangePass') {
-                    action_url = "{{ route('user.update') }}";
-                    swal_title = "Berhasil!";
-                    swal_text = "Password berhasil diperbarui!";
-                    swal_fail_title = "Password gagal diperbarui!";
                 }
 
                 $('#saveButton').html('Processing..');

@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreatePurchasesTable extends Migration
+class CreateCashPaymentsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,13 +13,12 @@ class CreatePurchasesTable extends Migration
      */
     public function up()
     {
-        Schema::create('purchases', function (Blueprint $table) {
+        Schema::create('cash_payments', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('supplier_id')->nullable()->constrained('suppliers')->onUpdate('cascade')->onDelete('set null');
             $table->foreignId('account_detail_id')->nullable()->constrained('account_details')->onUpdate('cascade')->onDelete('set null');
-            $table->foreignId('account_detail_payment_id')->nullable()->constrained('account_details')->onUpdate('cascade')->onDelete('set null');
-            $table->string('nomor_pembelian')->unique();
-            $table->integer('total');
+            $table->string('nomor_nota')->unique();
+            $table->integer('jumlah');
+            $table->text('keterangan');
             $table->date('tanggal');
             $table->timestamps();
         });
@@ -32,6 +31,6 @@ class CreatePurchasesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('purchases');
+        Schema::dropIfExists('cash_payments');
     }
 }
