@@ -21,6 +21,7 @@ class CreatePurchasesTable extends Migration
             $table->string('nomor_pembelian')->unique();
             $table->integer('total');
             $table->date('tanggal');
+            $table->string('keterangan');
             $table->timestamps();
         });
     }

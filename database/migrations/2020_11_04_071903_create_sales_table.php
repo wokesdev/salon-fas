@@ -23,6 +23,7 @@ class CreateSalesTable extends Migration
             $table->integer('total_servis')->nullable();
             $table->integer('total');
             $table->date('tanggal');
+            $table->string('keterangan');
             $table->timestamps();
         });
     }

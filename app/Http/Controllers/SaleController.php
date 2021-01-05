@@ -72,24 +72,21 @@ class SaleController extends Controller
                 'total_barang' => $request->total_barang,
                 'total_servis' => $request->total_servis,
                 'total' => $request->total_barang + $request->total_servis,
+                'keterangan' => 'Penjualan barang atau jasa',
             ]);
 
             for($i = 0; $i < count((array) $request->servis); $i++)
             {
-                $currentItem = Item::select('nama')->where('id', $request->barang[$i])->first();
-                $currentService = Service::select('nama')->where('id', $request->servis[$i])->first();
                 $storeDetail = SaleDetail::create([
                     'sale_id' => $number,
                     'item_id' => $request->barang[$i],
                     'kuantitas_barang'  => $request->kuantitas[$i],
                     'harga_satuan_barang' => $request->harga_satuan[$i],
                     'subtotal_barang' => $request->subtotal[$i],
-                    'keterangan_barang' => 'Penjualan ' . $currentItem->nama,
                     'service_id' => $request->servis[$i],
                     'kuantitas_servis'  => $request->kuantitas_servis[$i],
                     'harga_satuan_servis' => $request->harga_satuan_servis[$i],
                     'subtotal_servis' => $request->subtotal_servis[$i],
-                    'keterangan_servis' => 'Jasa ' . $currentService->nama,
                 ]);
             }
         }
@@ -119,14 +116,12 @@ class SaleController extends Controller
 
             for($i = 0; $i < count((array) $request->servis); $i++)
             {
-                $currentService = Service::select('nama')->where('id', $request->servis[$i])->first();
                 $storeDetail = SaleDetail::create([
                     'sale_id' => $number,
                     'service_id' => $request->servis[$i],
                     'kuantitas_servis'  => $request->kuantitas_servis[$i],
                     'harga_satuan_servis' => $request->harga_satuan_servis[$i],
                     'subtotal_servis' => $request->subtotal_servis[$i],
-                    'keterangan_servis' => 'Jasa ' . $currentService->nama,
                 ]);
             }
         }
@@ -156,14 +151,12 @@ class SaleController extends Controller
 
             for($i = 0; $i < count((array) $request->barang); $i++)
             {
-                $currentItem = Item::select('nama')->where('id', $request->barang[$i])->first();
                 $storeDetail = SaleDetail::create([
                     'sale_id' => $number,
                     'item_id' => $request->barang[$i],
                     'kuantitas_barang'  => $request->kuantitas[$i],
                     'harga_satuan_barang' => $request->harga_satuan[$i],
                     'subtotal_barang' => $request->subtotal[$i],
-                    'keterangan_barang' => 'Penjualan ' . $currentItem->nama,
                 ]);
             }
         }
@@ -239,19 +232,19 @@ class SaleController extends Controller
                         if ($sDetail->service_id != null && $sDetail->item_id != null) {
                             $response .= "<td>".$sDetail->service->nama."</td>";
                             $response .= "<td>".$sDetail->kuantitas_servis." kali</td>";
-                            $response .= "<td>Rp".number_format($sDetail->harga_satuan_servis,2,',','.')."</td>";
-                            $response .= "<td>Rp".number_format($sDetail->subtotal_servis,2,',','.')."</td>";
+                            $response .= "<td>Rp".number_format($sDetail->harga_satuan_servis, 2, '', '.').",-</td>";
+                            $response .= "<td>Rp".number_format($sDetail->subtotal_servis, 2, '', '.').",-</td>";
                             $response .= "<td>".$sDetail->item->nama."</td>";
                             $response .= "<td>".$sDetail->kuantitas_barang." pcs</td>";
-                            $response .= "<td>Rp".number_format($sDetail->harga_satuan_barang,2,',','.')."</td>";
-                            $response .= "<td>Rp".number_format($sDetail->subtotal_barang,2,',','.')."</td>";
+                            $response .= "<td>Rp".number_format($sDetail->harga_satuan_barang, 2, '', '.').",-</td>";
+                            $response .= "<td>Rp".number_format($sDetail->subtotal_barang, 2, '', '.').",-</td>";
                         }
 
                         elseif ($sDetail->service_id != null) {
                             $response .= "<td>".$sDetail->service->nama."</td>";
                             $response .= "<td>".$sDetail->kuantitas_servis." kali</td>";
-                            $response .= "<td>Rp".number_format($sDetail->harga_satuan_servis,2,',','.')."</td>";
-                            $response .= "<td>Rp".number_format($sDetail->subtotal_servis,2,',','.')."</td>";
+                            $response .= "<td>Rp".number_format($sDetail->harga_satuan_servis, 2, '', '.').",-</td>";
+                            $response .= "<td>Rp".number_format($sDetail->subtotal_servis, 2, '', '.').",-</td>";
                             $response .= "<td>-</td>";
                             $response .= "<td>-</td>";
                             $response .= "<td>-</td>";
@@ -265,8 +258,8 @@ class SaleController extends Controller
                             $response .= "<td>-</td>";
                             $response .= "<td>".$sDetail->item->nama."</td>";
                             $response .= "<td>".$sDetail->kuantitas_barang." pcs</td>";
-                            $response .= "<td>Rp".number_format($sDetail->harga_satuan_barang,2,',','.')."</td>";
-                            $response .= "<td>Rp".number_format($sDetail->subtotal_barang,2,',','.')."</td>";
+                            $response .= "<td>Rp".number_format($sDetail->harga_satuan_barang, 2, '', '.').",-</td>";
+                            $response .= "<td>Rp".number_format($sDetail->subtotal_barang, 2, '', '.').",-</td>";
                         }
 
                         $response .= '<td><div class="form-button-action"><button type="button" name="editDetailServis" data-toggle="tooltip" data-id="'.$sDetail->id.'" id="'.$sDetail->sale_id.'" data-original-title="EditDetailServis" class="editDetailServis btn btn-primary btn-sm">Edit Servis</button>';

@@ -31,8 +31,6 @@ class SaleDetailController extends Controller
             {
                 $serviceAlreadyExist = SaleDetail::where('service_id', $request->servis[$i])->where('sale_id', $request->id)->pluck('service_id')->toArray();
                 $itemAlreadyExist = SaleDetail::where('item_id', $request->barang[$i])->where('sale_id', $request->id)->pluck('item_id')->toArray();
-                $currentItem = Item::select('nama')->where('id', $request->barang[$i])->first();
-                $currentService = Service::select('nama')->where('id', $request->servis[$i])->first();
                 if (!in_array($request->barang[$i], $itemAlreadyExist) && !in_array($request->servis[$i], $serviceAlreadyExist)) {
                     $currentTotal = Sale::select('total_servis', 'total_barang', 'total')->where('id', $request->id)->first();
                     $store = SaleDetail::create([
@@ -41,12 +39,10 @@ class SaleDetailController extends Controller
                         'kuantitas_servis'  => $request->kuantitas_servis[$i],
                         'harga_satuan_servis' => $request->harga_satuan_servis[$i],
                         'subtotal_servis' => $request->subtotal_servis[$i],
-                        'keterangan_servis' => 'Jasa ' . $currentService->nama,
                         'item_id' => $request->barang[$i],
                         'kuantitas_barang'  => $request->kuantitas_barang[$i],
                         'harga_satuan_barang' => $request->harga_satuan_barang[$i],
                         'subtotal_barang' => $request->subtotal_barang[$i],
-                        'keterangan_barang' => 'Penjualan ' . $currentItem->nama,
                     ]);
 
                     $storeTotal = Sale::where('id', $request->id)->update([
@@ -72,7 +68,6 @@ class SaleDetailController extends Controller
             for($i = 0; $i < count((array) $request->servis); $i++)
             {
                 $serviceAlreadyExist = SaleDetail::where('service_id', $request->servis[$i])->where('sale_id', $request->id)->pluck('service_id')->toArray();
-                $currentService = Service::select('nama')->where('id', $request->servis[$i])->first();
                 if (!in_array($request->servis[$i], $serviceAlreadyExist)) {
                     $currentTotal = Sale::select('total_servis', 'total')->where('id', $request->id)->first();
                     $store = SaleDetail::create([
@@ -81,7 +76,6 @@ class SaleDetailController extends Controller
                         'kuantitas_servis'  => $request->kuantitas_servis[$i],
                         'harga_satuan_servis' => $request->harga_satuan_servis[$i],
                         'subtotal_servis' => $request->subtotal_servis[$i],
-                        'keterangan_servis' => 'Jasa ' . $currentService->nama,
                     ]);
 
                     $storeTotal = Sale::where('id', $request->id)->update([
@@ -106,7 +100,6 @@ class SaleDetailController extends Controller
             for($i = 0; $i < count((array) $request->barang); $i++)
             {
                 $itemAlreadyExist = SaleDetail::where('item_id', $request->barang[$i])->where('sale_id', $request->id)->pluck('item_id')->toArray();
-                $currentItem = Item::select('nama')->where('id', $request->barang[$i])->first();
                 if (!in_array($request->barang[$i], $itemAlreadyExist)) {
                     $currentTotal = Sale::select('total_barang', 'total')->where('id', $request->id)->first();
                     $store = SaleDetail::create([
@@ -115,7 +108,6 @@ class SaleDetailController extends Controller
                         'kuantitas_barang'  => $request->kuantitas[$i],
                         'harga_satuan_barang' => $request->harga_satuan[$i],
                         'subtotal_barang' => $request->subtotal[$i],
-                        'keterangan_barang' => 'Penjualan ' . $currentItem->nama,
                     ]);
 
                     $storeTotal = Sale::where('id', $request->id)->update([
@@ -159,7 +151,6 @@ class SaleDetailController extends Controller
         if ($request->detailServis != null) {
             $currentTotal = Sale::select('total_servis', 'total')->where('id', $request->saleId)->first();
             $currentSubtotal = $request->currentSubtotalServis != null ? $request->currentSubtotalServis : 0;
-            $currentService = Service::select('nama')->where('id', $request->detailServis)->first();
             $request->validate([
                 'saleId' => 'required|numeric|exists:sales,id',
                 'detailServis' => 'required|numeric|exists:services,id',
@@ -173,7 +164,6 @@ class SaleDetailController extends Controller
                 'kuantitas_servis' => $request->detailKuantitasServis,
                 'harga_satuan_servis' => $request->detailHargaSatuanServis,
                 'subtotal_servis' => $request->detailSubtotalServis,
-                'keterangan_servis' => 'Jasa ' . $currentService->nama,
             ]);
 
             $updateTotal = Sale::where('id', $request->saleId)->update([
@@ -185,7 +175,6 @@ class SaleDetailController extends Controller
         elseif ($request->detailBarang != null) {
             $currentTotal = Sale::select('total_barang', 'total')->where('id', $request->saleId)->first();
             $currentSubtotal = $request->currentSubtotalBarang != null ? $request->currentSubtotalBarang : 0;
-            $currentItem = Item::select('nama')->where('id', $request->detailBarang)->first();
             $request->validate([
                 'saleId' => 'required|numeric|exists:sales,id',
                 'detailBarang' => 'required|numeric|exists:items,id',
@@ -199,7 +188,6 @@ class SaleDetailController extends Controller
                 'kuantitas_barang' => $request->detailKuantitasBarang,
                 'harga_satuan_barang' => $request->detailHargaSatuanBarang,
                 'subtotal_barang' => $request->detailSubtotalBarang,
-                'keterangan_barang' => 'Penjualan ' . $currentItem->nama,
             ]);
 
             $updateTotal = Sale::where('id', $request->saleId)->update([

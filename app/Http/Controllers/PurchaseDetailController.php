@@ -24,7 +24,6 @@ class PurchaseDetailController extends Controller
         for($i = 0; $i < count((array) $request->kuantitas); $i++)
         {
             $itemAlreadyExist = PurchaseDetail::where('item_id', $request->barang[$i])->where('purchase_id', $request->id)->pluck('item_id')->toArray();
-            $currentItem = Item::select('nama')->where('id', $request->barang[$i])->first();
             if (!in_array($request->barang[$i], $itemAlreadyExist)) {
                 $currentTotal = Purchase::select('total')->where('id', $request->id)->first();
                 $store = PurchaseDetail::create([
@@ -33,7 +32,6 @@ class PurchaseDetailController extends Controller
                     'kuantitas'  => $request->kuantitas[$i],
                     'harga_satuan' => $request->harga_satuan[$i],
                     'subtotal' => $request->subtotal[$i],
-                    'keterangan' => 'Pembelian ' . $currentItem->nama,
                 ]);
 
                 $storeTotal = Purchase::where('id', $request->id)->update([
@@ -70,8 +68,6 @@ class PurchaseDetailController extends Controller
     public function update(Request $request, PurchaseDetail $purchaseDetail)
     {
         $currentTotal = Purchase::select('total')->where('id', $request->purchaseId)->first();
-        $currentItem = Item::select('nama')->where('id', $request->detailBarang)->first();
-
         $request->validate([
             'purchaseId' => 'required|numeric|exists:purchases,id',
             'detailBarang' => 'required|numeric|exists:items,id',
@@ -85,7 +81,6 @@ class PurchaseDetailController extends Controller
             'kuantitas' => $request->detailKuantitas,
             'harga_satuan' => $request->detailHargaSatuan,
             'subtotal' => $request->detailSubtotal,
-            'keterangan' => 'Pembelian ' . $currentItem->nama,
         ]);
 
         $updateTotal = Purchase::where('id', $request->purchaseId)->update([

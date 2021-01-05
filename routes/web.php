@@ -25,7 +25,7 @@ Route::middleware(['auth.one', 'auth'])->group(function () {
     Route::resource('cash-payment', 'CashPaymentController')->except('create', 'show', 'update');
     Route::resource('cash-receipt', 'CashReceiptController')->except('create', 'show', 'update');
     Route::resource('general-entry', 'GeneralEntryController');
-    Route::resource('general-entry-detail', 'GeneralEntryDetailController');
+    Route::resource('ledger', 'LedgerController');
 
     Route::post('account/update', 'AccountController@update')->name('account.update');
     Route::post('account-detail/update', 'AccountDetailController@update')->name('account-detail.update');

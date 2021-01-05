@@ -21,11 +21,9 @@ class CreateSaleDetailsTable extends Migration
             $table->integer('kuantitas_barang')->nullable();
             $table->integer('harga_satuan_barang')->nullable();
             $table->integer('subtotal_barang')->nullable();
-            $table->string('keterangan_barang')->nullable();
             $table->integer('kuantitas_servis')->nullable();
             $table->integer('harga_satuan_servis')->nullable();
             $table->integer('subtotal_servis')->nullable();
-            $table->string('keterangan_servis')->nullable();
             $table->timestamps();
         });
     }

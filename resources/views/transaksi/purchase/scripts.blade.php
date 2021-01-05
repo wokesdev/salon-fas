@@ -18,7 +18,7 @@ $(document).ready(function () {
             { data: 'supplier.nama', name: 'supplier.nama', orderable: false },
             { data: 'account_detail.nomor_rincian_akun', name: 'account_detail.nomor_rincian_akun', orderable: false },
             { data: 'account_detail.nama_rincian_akun', name: 'account_detail.nama_rincian_akun', orderable: false },
-            { data: 'total', render: $.fn.dataTable.render.number('.', ',', 2, 'Rp') },
+            { data: 'total', render: $.fn.dataTable.render.number('.', '', 0, 'Rp', ',-') },
             { data: 'tanggal' },
             { data: 'action', name: 'action', orderable: false, searchable: false }
         ],

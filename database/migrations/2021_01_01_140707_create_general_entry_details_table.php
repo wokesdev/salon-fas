@@ -21,6 +21,7 @@ class CreateGeneralEntryDetailsTable extends Migration
             $table->foreignId('cash_receipt_id')->nullable()->constrained('cash_receipts')->onUpdate('cascade')->onDelete('cascade');
             $table->foreignId('account_detail_id')->nullable()->constrained('account_details')->onUpdate('cascade')->onDelete('set null');
             $table->foreignId('general_entry_id')->nullable()->constrained('general_entries')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('ledger_id')->nullable()->constrained('ledgers')->onUpdate('cascade')->onDelete('cascade');
             $table->integer('debit');
             $table->integer('kredit');
             $table->timestamps();

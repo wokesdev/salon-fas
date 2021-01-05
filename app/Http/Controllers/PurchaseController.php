@@ -62,18 +62,17 @@ class PurchaseController extends Controller
             'supplier_id' => $request->supplier,
             'tanggal' => $request->tanggal,
             'total' => $request->total,
+            'keterangan' => 'Pembelian barang',
         ]);
 
         for($i = 0; $i < count((array) $request->kuantitas); $i++)
         {
-            $currentItem = Item::select('nama')->where('id', $request->barang[$i])->first();
             $storeDetail = PurchaseDetail::create([
                 'purchase_id' => $number,
                 'item_id' => $request->barang[$i],
                 'kuantitas'  => $request->kuantitas[$i],
                 'harga_satuan' => $request->harga_satuan[$i],
                 'subtotal' => $request->subtotal[$i],
-                'keterangan' => 'Pembelian ' . $currentItem->nama,
             ]);
         }
 
@@ -125,8 +124,8 @@ class PurchaseController extends Controller
                     $response .= "<tr>";
                         $response .= "<td>".$pDetail->item->nama."</td>";
                         $response .= "<td>".$pDetail->kuantitas." pcs</td>";
-                        $response .= "<td>Rp".number_format($pDetail->harga_satuan,2,',','.')."</td>";
-                        $response .= "<td>Rp".number_format($pDetail->subtotal,2,',','.')."</td>";
+                        $response .= "<td>Rp".number_format($pDetail->harga_satuan, 0, '', '.').",-</td>";
+                        $response .= "<td>Rp".number_format($pDetail->subtotal, 0, '', '.').",-</td>";
                         $response .= '<td><div class="form-button-action"><button type="button" name="editDetail" data-toggle="tooltip" data-id="'.$pDetail->id.'" id="'.$pDetail->purchase_id.'" data-original-title="EditDetail" class="editDetail btn btn-primary btn-sm">Edit</button>';
                         $response .= '&nbsp;&nbsp;&nbsp;<button type="button" name="deleteDetail" data-id="'.$pDetail->purchase_id.'" id="'.$pDetail->id.'" class="deleteDetail btn btn-danger btn-sm">Delete</button></div></td>';
                     $response .= "</tr>";

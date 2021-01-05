@@ -16,7 +16,7 @@ $(document).ready(function () {
             { data: 'nomor_nota' },
             { data: 'account_detail.nomor_rincian_akun', name: 'account_detail.nomor_rincian_akun', orderable: false },
             { data: 'account_detail.nama_rincian_akun', name: 'account_detail.nama_rincian_akun', orderable: false },
-            { data: 'jumlah', render: $.fn.dataTable.render.number('.', ',', 2, 'Rp') },
+            { data: 'jumlah', render: $.fn.dataTable.render.number('.', '', 0, 'Rp', ',-') },
             { data: 'keterangan' },
             { data: 'tanggal' },
             { data: 'action', name: 'action', orderable: false, searchable: false }

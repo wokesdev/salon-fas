@@ -20,4 +20,24 @@ class GeneralEntryDetail extends Model
     {
         return $this->belongsTo('App\Models\AccountDetail', 'account_detail_id');
     }
+
+    public function purchase()
+    {
+        return $this->belongsTo('App\Models\Purchase', 'purchase_id');
+    }
+
+    public function sale()
+    {
+        return $this->belongsTo('App\Models\Sale', 'sale_id');
+    }
+
+    public function cash_payment()
+    {
+        return $this->belongsTo('App\Models\CashPayment', 'cash_payment_id');
+    }
+
+    public function cash_receipt()
+    {
+        return $this->belongsTo('App\Models\CashReceipt', 'cash_receipt_id');
+    }
 }

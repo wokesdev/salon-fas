@@ -17,7 +17,7 @@ class GeneralEntryController extends Controller
             {
                 if ($request->from_date === $request->to_date) {
                     $from_date = $request->from_date;
-                    $generalEntryDetail = GeneralEntryDetail::query()->with(['account_detail', 'general_entry'])->whereHas('general_entry', function ($query) use($from_date) {
+                    $generalEntryDetail = GeneralEntryDetail::query()->orderBy('general_entry_details.id', 'ASC')->with(['account_detail', 'general_entry'])->whereHas('general_entry', function ($query) use($from_date) {
                         return $query->whereDate('tanggal', '=', $from_date);
                     })->get();
                 }
@@ -25,7 +25,7 @@ class GeneralEntryController extends Controller
                 else {
                     $from_date = $request->from_date;
                     $to_date = $request->to_date;
-                    $generalEntryDetail = GeneralEntryDetail::query()->with(['account_detail', 'general_entry'])->whereHas('general_entry', function ($query) use($from_date, $to_date) {
+                    $generalEntryDetail = GeneralEntryDetail::query()->orderBy('general_entry_details.id', 'ASC')->with(['account_detail', 'general_entry'])->whereHas('general_entry', function ($query) use($from_date, $to_date) {
                         return $query->whereBetween('general_entries.tanggal', array($from_date, $to_date));
                     })->get();
                 }
@@ -33,7 +33,7 @@ class GeneralEntryController extends Controller
 
             else
             {
-                $generalEntryDetail = GeneralEntryDetail::query()->with(['general_entry', 'account_detail']);
+                $generalEntryDetail = GeneralEntryDetail::query()->orderBy('general_entry_details.id', 'ASC')->with(['general_entry', 'account_detail']);
             }
             return DataTables::of($generalEntryDetail)->make(true);
         }
