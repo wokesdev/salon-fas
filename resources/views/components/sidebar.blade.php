@@ -31,11 +31,11 @@
                         <li class="nav-section"><span class="sidebar-mini-icon"><i class="fa fa-ellipsis-h"></i></span><h4 class="text-section">Laporan</h4></li>
                         <li class="nav-item"><a href="{{ route('general-entry.index') }}"><i class="fas fa-bookmark"></i><p>Jurnal Umum</p></a></li>
                         <li class="nav-item"><a href="{{ route('ledger.index') }}"><i class="fas fa-book-open"></i><p>Buku Besar</p></a></li>
+                        <li class="nav-item"><a href="{{ route('trial-balance.index') }}"><i class="fas fa-balance-scale"></i><p>Neraca Saldo</p></a></li>
                         <li class="nav-item"><a href="{{ route('purchase-report.index') }}"><i class="fas fa-file-invoice"></i><p>Laporan Pembelian</p></a></li>
                         <li class="nav-item"><a href="{{ route('sale-report.index') }}"><i class="fas fa-file-invoice-dollar"></i><p>Laporan Penjualan</p></a></li>
-                        <li class="nav-item"><a href="{{ route('account.index') }}"><i class="fas fa-chart-line"></i><p>Laporan Laba Rugi</p></a></li>
+                        <li class="nav-item"><a href="{{ route('income-statement.index') }}"><i class="fas fa-chart-line"></i><p>Laporan Laba Rugi</p></a></li>
                         <li class="nav-item"><a href="{{ route('account.index') }}"><i class="fas fa-stamp"></i><p>Laporan Posisi Keuangan</p></a></li>
-                        <li class="nav-item"><a href="{{ route('account.index') }}"><i class="fas fa-balance-scale"></i><p>Neraca Saldo</p></a></li>
                     @break
 
                     @case('2')

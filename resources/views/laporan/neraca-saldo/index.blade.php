@@ -7,7 +7,7 @@
                 <div class="card">
                     <div class="card-header">
                         <div class="d-flex align-items-center">
-                            <h4 class="card-title">Jurnal Umum</h4>
+                            <h4 class="card-title">Neraca Saldo</h4>
                             <div class="row input-daterange ml-auto">
                                 <div class="col-md-4">
                                     <input type="text" name="from_date" id="from_date" class="form-control" placeholder="Dari Tanggal" readonly>
@@ -31,8 +31,8 @@
                                 <thead>
                                     <tr>
                                         <th>Tanggal</th>
-                                        <th>Keterangan</th>
-                                        <th>Ref.</th>
+                                        <th>Nomor Rincian Akun</th>
+                                        <th>Nama Rincian Akun</th>
                                         <th>Debit</th>
                                         <th>Kredit</th>
                                     </tr>
@@ -56,5 +56,5 @@
 </div>
 @endsection
 @section('contentScripts')
-    @include('laporan.jurnal-umum.scripts')
+    @include('laporan.neraca-saldo.scripts')
 @endsection

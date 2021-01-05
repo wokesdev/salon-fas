@@ -59,21 +59,13 @@ class LedgerController extends Controller
                 ->editColumn('keterangan', function($generalEntryDetails){
                     if (!empty($generalEntryDetails->purchase_id)) {
                         return $generalEntryDetails->purchase->keterangan;
-                    }
-
-                    else if (!empty($generalEntryDetails->sale_id)) {
+                    } else if (!empty($generalEntryDetails->sale_id)) {
                         return $generalEntryDetails->sale->keterangan;
-                    }
-
-                    else if (!empty($generalEntryDetails->cash_payment_id)) {
+                    } else if (!empty($generalEntryDetails->cash_payment_id)) {
                         return $generalEntryDetails->cash_payment->keterangan;
-                    }
-
-                    else if (!empty($generalEntryDetails->cash_receipt_id)) {
+                    } else if (!empty($generalEntryDetails->cash_receipt_id)) {
                         return $generalEntryDetails->cash_receipt->keterangan;
-                    }
-
-                    else {
+                    } else {
                         return null;
                     }
                 })

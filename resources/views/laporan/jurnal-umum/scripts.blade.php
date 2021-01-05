@@ -57,23 +57,28 @@ $(document).ready(function () {
             buttons: [
                 {
                     extend: 'copy',
-                    messageTop: 'Jurnal Umum'
+                    messageTop: 'Jurnal Umum',
+                    footer: true
                 },
                 {
                     extend: 'csv',
-                    messageTop: 'Jurnal Umum'
+                    messageTop: 'Jurnal Umum',
+                    footer: true
                 },
                 {
                     extend: 'excel',
-                    messageTop: 'Jurnal Umum'
+                    messageTop: 'Jurnal Umum',
+                    footer: true
                 },
                 {
                     extend: 'pdf',
-                    messageTop: 'Jurnal Umum'
+                    messageTop: 'Jurnal Umum',
+                    footer: true
                 },
                 {
                     extend: 'print',
-                    messageTop: 'Jurnal Umum'
+                    messageTop: 'Jurnal Umum',
+                    footer: true
                 },
                 // 'pageLength'
             ],
@@ -93,6 +98,54 @@ $(document).ready(function () {
             order: [
                 [0, 'asc']
             ],
+            "footerCallback": function ( row, data, start, end, display ) {
+                var api = this.api(), data;
+
+                // Remove the formatting to get integer data for summation
+                var intVal = function ( i ) {
+                    return typeof i === 'string' ?
+                        i.replace(/[\$,]/g, '')*1 :
+                        typeof i === 'number' ?
+                            i : 0;
+                };
+
+                // Total over all pages
+                // total = api
+                //     .column( 5 )
+                //     .data()
+                //     .reduce( function (a, b) {
+                //         return intVal(a) + intVal(b);
+                //     }, 0 );
+
+                totalDebit = api
+                    .column( 3, { page: 'current'} )
+                    .data()
+                    .reduce( function (a, b) {
+                        return intVal(a) + intVal(b);
+                    }, 0 );
+
+                totalKredit = api
+                     .column( 4, { page: 'current'} )
+                     .data()
+                     .reduce( function (a, b) {
+                         return intVal(a) + intVal(b);
+                     }, 0 );
+
+                $( api.column( 3 ).footer() ).html( 'Rp' + new Intl.NumberFormat().format(totalDebit) + ',-' );
+                $( api.column( 4 ).footer() ).html( 'Rp' + new Intl.NumberFormat().format(totalKredit) + ',-' );
+
+                //  $('tr:eq(0) th:eq(1)', api.table().footer()).html(
+                //     'Rp' + new Intl.NumberFormat().format(totalDebit) + ',-'
+                //  );
+
+                //  $('tr:eq(0) th:eq(2)', api.table().footer()).html(
+                //     'Rp' + new Intl.NumberFormat().format(totalKredit) + ',-'
+                //  );
+
+                //  $('tr:eq(1) th:eq(1)', api.table().footer()).html(
+                //     'Rp' + new Intl.NumberFormat().format(totalDebit - totalKredit) + ',-'
+                //  );
+            },
         });
     }
 });

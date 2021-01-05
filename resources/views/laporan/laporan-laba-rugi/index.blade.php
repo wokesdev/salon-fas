@@ -7,7 +7,7 @@
                 <div class="card">
                     <div class="card-header">
                         <div class="d-flex align-items-center">
-                            <h4 class="card-title">Jurnal Umum</h4>
+                            <h4 class="card-title">Laporan Laba/Rugi</h4>
                             <div class="row input-daterange ml-auto">
                                 <div class="col-md-4">
                                     <input type="text" name="from_date" id="from_date" class="form-control" placeholder="Dari Tanggal" readonly>
@@ -31,10 +31,10 @@
                                 <thead>
                                     <tr>
                                         <th>Tanggal</th>
-                                        <th>Keterangan</th>
-                                        <th>Ref.</th>
-                                        <th>Debit</th>
-                                        <th>Kredit</th>
+                                        <th>Pendapatan</th>
+                                        <th>Nominal</th>
+                                        <th>Beban</th>
+                                        <th>Nominal</th>
                                     </tr>
                                 </thead>
                                 <tfoot>
@@ -42,7 +42,7 @@
                                         <th>Jumlah</th>
                                         <th></th>
                                         <th></th>
-                                        <th></th>
+                                        <th>Laba Bersih</th>
                                         <th></th>
                                     </tr>
                                 </tfoot>
@@ -56,5 +56,5 @@
 </div>
 @endsection
 @section('contentScripts')
-    @include('laporan.jurnal-umum.scripts')
+    @include('laporan.laporan-laba-rugi.scripts')
 @endsection
