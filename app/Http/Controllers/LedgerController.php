@@ -14,8 +14,6 @@ class LedgerController extends Controller
     public function index(Request $request)
     {
         $accountDetails = AccountDetail::select('id', 'nomor_rincian_akun', 'nama_rincian_akun')->get();
-        $totalDebit = 1;
-        $totalKredit = 1;
         if ($request->ajax()) {
             if(!empty($request->rincian_akun)) {
                 if(!empty($request->from_date))
@@ -49,9 +47,6 @@ class LedgerController extends Controller
                         ->where('account_detail_id', $request->rincian_akun)
                         ->with(['general_entry', 'account_detail', 'purchase', 'sale', 'cash_payment', 'cash_receipt'])
                         ->get();
-
-                    $totalDebit = GeneralEntryDetail::where('account_detail_id', $request->rincian_akun)->where('kredit', 0)->sum('debit');
-                    $totalKredit = GeneralEntryDetail::where('account_detail_id', $request->rincian_akun)->where('debit', 0)->sum('kredit');
                 }
             }
 
@@ -84,61 +79,6 @@ class LedgerController extends Controller
                 })
                 ->make(true);
         }
-        return view('laporan.buku-besar.index', compact('accountDetails', 'totalDebit', 'totalKredit'));
-    }
-
-    public function create()
-    {
-        //
-    }
-
-    public function store(Request $request)
-    {
-
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Ledger  $ledger
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Ledger $ledger)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Ledger  $ledger
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Ledger $ledger)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Ledger  $ledger
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Ledger $ledger)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Ledger  $ledger
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Ledger $ledger)
-    {
-        //
+        return view('laporan.buku-besar.index', compact('accountDetails'));
     }
 }

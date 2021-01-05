@@ -57,42 +57,68 @@ $(document).ready(function () {
             buttons: [
                 {
                     extend: 'copy',
-                    messageTop: 'Jurnal Umum'
+                    messageTop: 'Laporan Pembelian',
+                    footer: true,
                 },
                 {
                     extend: 'csv',
-                    messageTop: 'Jurnal Umum'
+                    messageTop: 'Laporan Pembelian',
+                    footer: true,
                 },
                 {
                     extend: 'excel',
-                    messageTop: 'Jurnal Umum'
+                    messageTop: 'Laporan Pembelian',
+                    footer: true,
                 },
                 {
                     extend: 'pdf',
-                    messageTop: 'Jurnal Umum'
+                    messageTop: 'Laporan Pembelian',
+                    footer: true,
                 },
                 {
                     extend: 'print',
-                    messageTop: 'Jurnal Umum'
+                    messageTop: 'Laporan Pembelian',
+                    footer: true,
                 },
                 // 'pageLength'
             ],
             processing: true,
             serverSide: true,
             ajax: {
-                url: "{{ route('general-entry.index') }}",
+                url: "{{ route('purchase-report.index') }}",
                 data: { from_date: from_date, to_date: to_date }
             },
             columns: [
-                { data: 'general_entry.tanggal', name: 'general_entry.tanggal' },
-                { data: 'account_detail.nama_rincian_akun', name: 'account_detail.nama_rincian_akun' },
-                { data: 'account_detail.nomor_rincian_akun', name: 'account_detail.nomor_rincian_akun' },
-                { data: 'debit', render: $.fn.dataTable.render.number('.', ',', 0, 'Rp', ',-') },
-                { data: 'kredit', render: $.fn.dataTable.render.number('.', ',', 0, 'Rp', ',-') },
+                { data: 'tanggal', name: 'tanggal' },
+                { data: 'nomor_pembelian', name: 'nomor_pembelian' },
+                { data: 'supplier.kode_supplier', name: 'supplier.kode_supplier' },
+                { data: 'supplier.nama', name: 'supplier.nama' },
+                { data: 'keterangan', name: 'keterangan' },
+                { defaultContent: 'IDR' },
+                { data: 'total', render: $.fn.dataTable.render.number('.', ',', 0, 'Rp', ',-') },
             ],
             order: [
                 [0, 'asc']
             ],
+
+            "footerCallback": function ( row, data, start, end, display ) {
+                var api = this.api(), data;
+                var intVal = function ( i ) {
+                    return typeof i === 'string' ?
+                        i.replace(/[\$,]/g, '')*1 :
+                        typeof i === 'number' ?
+                            i : 0;
+                };
+
+                total = api
+                    .column( 6, { page: 'current'} )
+                    .data()
+                    .reduce( function (a, b) {
+                        return intVal(a) + intVal(b);
+                    }, 0 );
+
+                $( api.column( 6 ).footer() ).html( 'Rp' + new Intl.NumberFormat().format(total) + ',-' );
+             },
         });
     }
 });

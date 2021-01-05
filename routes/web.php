@@ -24,8 +24,6 @@ Route::middleware(['auth.one', 'auth'])->group(function () {
     Route::resource('sale-detail', 'SaleDetailController')->except('index', 'create', 'show', 'update');
     Route::resource('cash-payment', 'CashPaymentController')->except('create', 'show', 'update');
     Route::resource('cash-receipt', 'CashReceiptController')->except('create', 'show', 'update');
-    Route::resource('general-entry', 'GeneralEntryController');
-    Route::resource('ledger', 'LedgerController');
 
     Route::post('account/update', 'AccountController@update')->name('account.update');
     Route::post('account-detail/update', 'AccountDetailController@update')->name('account-detail.update');
@@ -47,6 +45,11 @@ Route::middleware(['auth.one', 'auth'])->group(function () {
 
     Route::post('purchase/getServis', 'PurchaseController@getServis')->name('purchase.getServis');
     Route::get('purchase/{service}/getServisById', 'PurchaseController@getServisById')->name('purchase.getServisById');
+
+    Route::resource('general-entry', 'GeneralEntryController')->except('create', 'store', 'show', 'edit', 'update', 'destroy');
+    Route::resource('ledger', 'LedgerController')->except('create', 'store', 'show', 'edit', 'update', 'destroy');
+    Route::resource('purchase-report', 'PurchaseReportController')->except('create', 'store', 'show', 'edit', 'update', 'destroy');
+    Route::resource('sale-report', 'SaleReportController')->except('create', 'store', 'show', 'edit', 'update', 'destroy');
 });
 
 Route::middleware(['auth.two', 'auth'])->group(function () {

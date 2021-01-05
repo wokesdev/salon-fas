@@ -90,12 +90,12 @@ $(document).ready(function () {
         if ($)
 
         var table = $('#table').DataTable({
-            dom: 'Bfrtip',
-            lengthMenu: [
-                [ 10, 25, 50, -1 ],
-                [ '10 rows', '25 rows', '50 rows', 'Show all' ]
-            ],
-            buttons: ['copy', 'csv', 'excel', 'pdf', 'print', ],
+            dom: 'lBfrtip',
+            // lengthMenu: [
+            //     [ 10, 25, 50, -1 ],
+            //     [ '10 rows', '25 rows', '50 rows', 'Show all' ]
+            // ],
+            // buttons: ['copy', 'csv', 'excel', 'pdf', 'print', ],
             buttons: [
                 {
                     extend: 'copy',
@@ -122,7 +122,7 @@ $(document).ready(function () {
                     messageTop: 'Buku Besar',
                     footer: true,
                 },
-                'pageLength'
+                // 'pageLength'
             ],
             processing: true,
             serverSide: true,
@@ -143,15 +143,15 @@ $(document).ready(function () {
                 [0, 'asc']
             ],
             "footerCallback": function ( row, data, start, end, display ) {
-                 var api = this.api(), data;
+                var api = this.api(), data;
 
                 // Remove the formatting to get integer data for summation
-                 var intVal = function ( i ) {
-                     return typeof i === 'string' ?
-                         i.replace(/[\$,]/g, '')*1 :
-                         typeof i === 'number' ?
-                             i : 0;
-                 };
+                var intVal = function ( i ) {
+                    return typeof i === 'string' ?
+                        i.replace(/[\$,]/g, '')*1 :
+                        typeof i === 'number' ?
+                            i : 0;
+                };
 
                 // Total over all pages
                 // total = api
