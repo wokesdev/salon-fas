@@ -57,27 +57,22 @@ $(document).ready(function () {
             buttons: [
                 {
                     extend: 'copy',
-                    messageTop: 'Laporan Pembelian',
                     footer: true,
                 },
                 {
                     extend: 'csv',
-                    messageTop: 'Laporan Pembelian',
                     footer: true,
                 },
                 {
                     extend: 'excel',
-                    messageTop: 'Laporan Pembelian',
                     footer: true,
                 },
                 {
                     extend: 'pdf',
-                    messageTop: 'Laporan Pembelian',
                     footer: true,
                 },
                 {
                     extend: 'print',
-                    messageTop: 'Laporan Pembelian',
                     footer: true,
                 },
                 // 'pageLength'

@@ -57,27 +57,22 @@ $(document).ready(function () {
             buttons: [
                 {
                     extend: 'copy',
-                    messageTop: 'Laporan Laba/Rugi',
                     footer: true
                 },
                 {
                     extend: 'csv',
-                    messageTop: 'Laporan Laba/Rugi',
                     footer: true
                 },
                 {
                     extend: 'excel',
-                    messageTop: 'Laporan Laba/Rugi',
                     footer: true
                 },
                 {
                     extend: 'pdf',
-                    messageTop: 'Laporan Laba/Rugi',
                     footer: true
                 },
                 {
                     extend: 'print',
-                    messageTop: 'Laporan Laba/Rugi',
                     footer: true
                 },
                 // 'pageLength'
@@ -91,9 +86,9 @@ $(document).ready(function () {
             columns: [
                 { data: 'general_entry.tanggal', name: 'general_entry.tanggal' },
                 { data: 'altered_pendapatan', name: 'altered_pendapatan' },
-                { data: 'altered_nominal_pendapatan', name: 'altered_nominal_pendapatan', render: $.fn.dataTable.render.number('.', ',', 0, 'Rp', ',-') },
+                { data: 'sumKredit', name: 'sumKredit', render: $.fn.dataTable.render.number('.', ',', 0, 'Rp', ',-') },
                 { data: 'altered_beban', name: 'altered_beban' },
-                { data: 'altered_nominal_beban', name: 'altered_nominal_beban', render: $.fn.dataTable.render.number('.', ',', 0, 'Rp', ',-') },
+                { data: 'sumDebit', name: 'sumDebit', render: $.fn.dataTable.render.number('.', ',', 0, 'Rp', ',-') },
             ],
             order: [
                 [0, 'asc']

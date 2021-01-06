@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Buku Besar')
+@section('title', 'Laporan Posisi Keuangan')
 @section('content')
 <div class="content">
     <div class="page-inner">
@@ -8,7 +8,7 @@
                 <div class="card">
                     <div class="card-header">
                         <div class="d-flex align-items-center">
-                            <h4 class="card-title">Buku Besar</h4>
+                            <h4 class="card-title">Laporan Posisi Keuangan</h4>
                             <div class="row input-daterange ml-auto">
                                 <div class="col-md-4">
                                     <input type="text" name="from_date" id="from_date" class="form-control" placeholder="Dari Tanggal" readonly>
@@ -21,9 +21,9 @@
                                     <button type="button" name="refresh" id="refresh" class="btn btn-default">Refresh</button>
                                 </div>
                             </div>
-                            <div>
-                                <button type="button" class="btn btn-secondary" id="chooseAkun" data-toggle="modal" data-target="#chooseModal">Pilih Akun</button>
-                            </div>
+                        </div>
+                        <div class="d-flex">
+
                         </div>
                     </div>
                     <div class="card-body">
@@ -32,23 +32,22 @@
                                 <thead>
                                     <tr>
                                         <th>Tanggal</th>
-                                        <th>Nomor Rincian Akun</th>
-                                        <th>Nama Rincian Akun</th>
-                                        <th>Keterangan</th>
-                                        <th>Ref.</th>
-                                        <th>Debit</th>
-                                        <th>Kredit</th>
+                                        <th>Jenis Aktiva</th>
+                                        <th>Nama Aktiva</th>
+                                        <th>Nominal</th>
+                                        <th>Jenis Pasiva</th>
+                                        <th>Nama Pasiva</th>
+                                        <th>Nominal</th>
                                     </tr>
                                 </thead>
-                                <tbody></tbody>
                                 <tfoot>
                                     <tr>
-                                        <th>Jumlah</th>
+                                        <th>Total</th>
                                         <th></th>
                                         <th></th>
                                         <th></th>
                                         <th></th>
-                                        <th>Saldo</th>
+                                        <th></th>
                                         <th></th>
                                     </tr>
                                 </tfoot>
@@ -60,8 +59,7 @@
         </div>
     </div>
 </div>
-@include('laporan.buku-besar.chooseModal')
 @endsection
 @section('contentScripts')
-    @include('laporan.buku-besar.scripts')
+    @include('laporan.laporan-posisi-keuangan.scripts')
 @endsection

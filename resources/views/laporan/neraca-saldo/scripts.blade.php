@@ -57,27 +57,22 @@ $(document).ready(function () {
             buttons: [
                 {
                     extend: 'copy',
-                    messageTop: 'Neraca Saldo',
                     footer: true
                 },
                 {
                     extend: 'csv',
-                    messageTop: 'Neraca Saldo',
                     footer: true
                 },
                 {
                     extend: 'excel',
-                    messageTop: 'Neraca Saldo',
                     footer: true
                 },
                 {
                     extend: 'pdf',
-                    messageTop: 'Neraca Saldo',
                     footer: true
                 },
                 {
                     extend: 'print',
-                    messageTop: 'Neraca Saldo',
                     footer: true
                 },
                 // 'pageLength'

@@ -1,4 +1,5 @@
 @extends('layouts.app')
+@section('title', 'Data Servis')
 @section('content')
 <div class="content">
     <div class="page-inner">

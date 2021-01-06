@@ -99,27 +99,22 @@ $(document).ready(function () {
             buttons: [
                 {
                     extend: 'copy',
-                    messageTop: 'Buku Besar',
                     footer: true,
                 },
                 {
                     extend: 'csv',
-                    messageTop: 'Buku Besar',
                     footer: true,
                 },
                 {
                     extend: 'excel',
-                    messageTop: 'Buku Besar',
                     footer: true,
                 },
                 {
                     extend: 'pdf',
-                    messageTop: 'Buku Besar',
                     footer: true,
                 },
                 {
                     extend: 'print',
-                    messageTop: 'Buku Besar',
                     footer: true,
                 },
                 // 'pageLength'

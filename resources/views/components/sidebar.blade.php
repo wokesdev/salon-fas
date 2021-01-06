@@ -35,7 +35,7 @@
                         <li class="nav-item"><a href="{{ route('purchase-report.index') }}"><i class="fas fa-file-invoice"></i><p>Laporan Pembelian</p></a></li>
                         <li class="nav-item"><a href="{{ route('sale-report.index') }}"><i class="fas fa-file-invoice-dollar"></i><p>Laporan Penjualan</p></a></li>
                         <li class="nav-item"><a href="{{ route('income-statement.index') }}"><i class="fas fa-chart-line"></i><p>Laporan Laba Rugi</p></a></li>
-                        <li class="nav-item"><a href="{{ route('account.index') }}"><i class="fas fa-stamp"></i><p>Laporan Posisi Keuangan</p></a></li>
+                        <li class="nav-item"><a href="{{ route('statement-of-financial-position.index') }}"><i class="fas fa-stamp"></i><p>Laporan Posisi Keuangan</p></a></li>
                     @break
 
                     @case('2')

@@ -80,15 +80,17 @@ $(document).ready(function () {
             processing: true,
             serverSide: true,
             ajax: {
-                url: "{{ route('general-entry.index') }}",
+                url: "{{ route('statement-of-financial-position.index') }}",
                 data: { from_date: from_date, to_date: to_date }
             },
             columns: [
                 { data: 'general_entry.tanggal', name: 'general_entry.tanggal' },
-                { data: 'account_detail.nama_rincian_akun', name: 'account_detail.nama_rincian_akun' },
-                { data: 'account_detail.nomor_rincian_akun', name: 'account_detail.nomor_rincian_akun' },
-                { data: 'debit', render: $.fn.dataTable.render.number('.', ',', 0, 'Rp', ',-') },
-                { data: 'kredit', render: $.fn.dataTable.render.number('.', ',', 0, 'Rp', ',-') },
+                { data: 'altered_jenis_aktiva', name: 'altered_jenis_aktiva' },
+                { data: 'altered_aktiva', name: 'altered_aktiva' },
+                { data: 'altered_nominal_aktiva', name: 'altered_nominal_aktiva', render: $.fn.dataTable.render.number('.', ',', 0, 'Rp', ',-') },
+                { data: 'altered_jenis_kewajiban_modal', name: 'altered_jenis_kewajiban_modal' },
+                { data: 'altered_kewajiban_modal', name: 'altered_kewajiban_modal' },
+                { data: 'altered_nominal_kewajiban_modal', name: 'altered_nominal_kewajiban_modal', render: $.fn.dataTable.render.number('.', ',', 0, 'Rp', ',-') },
             ],
             order: [
                 [0, 'asc']
@@ -112,22 +114,22 @@ $(document).ready(function () {
                 //         return intVal(a) + intVal(b);
                 //     }, 0 );
 
-                totalDebit = api
+                totalAktiva = api
                     .column( 3, { page: 'current'} )
                     .data()
                     .reduce( function (a, b) {
                         return intVal(a) + intVal(b);
                     }, 0 );
 
-                totalKredit = api
-                     .column( 4, { page: 'current'} )
+                totalKewajibanModal = api
+                     .column( 6, { page: 'current'} )
                      .data()
                      .reduce( function (a, b) {
                          return intVal(a) + intVal(b);
                      }, 0 );
 
-                $( api.column( 3 ).footer() ).html( 'Rp' + new Intl.NumberFormat().format(totalDebit) + ',-' );
-                $( api.column( 4 ).footer() ).html( 'Rp' + new Intl.NumberFormat().format(totalKredit) + ',-' );
+                $( api.column( 3 ).footer() ).html( 'Rp' + new Intl.NumberFormat().format(totalAktiva) + ',-' );
+                $( api.column( 6 ).footer() ).html( 'Rp' + new Intl.NumberFormat().format(totalKewajibanModal) + ',-' );
 
                 //  $('tr:eq(0) th:eq(1)', api.table().footer()).html(
                 //     'Rp' + new Intl.NumberFormat().format(totalDebit) + ',-'

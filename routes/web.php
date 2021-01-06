@@ -52,6 +52,7 @@ Route::middleware(['auth.one', 'auth'])->group(function () {
     Route::resource('sale-report', 'SaleReportController')->except('create', 'store', 'show', 'edit', 'update', 'destroy');
     Route::resource('trial-balance', 'TrialBalanceController')->except('create', 'store', 'show', 'edit', 'update', 'destroy');
     Route::resource('income-statement', 'IncomeStatementController')->except('create', 'store', 'show', 'edit', 'update', 'destroy');
+    Route::resource('statement-of-financial-position', 'StatementOfFinancialPositionController')->except('create', 'store', 'show', 'edit', 'update', 'destroy');
 });
 
 Route::middleware(['auth.two', 'auth'])->group(function () {

@@ -57,27 +57,22 @@ $(document).ready(function () {
             buttons: [
                 {
                     extend: 'copy',
-                    messageTop: 'Laporan Penjualan',
                     footer: true,
                 },
                 {
                     extend: 'csv',
-                    messageTop: 'Laporan Penjualan',
                     footer: true,
                 },
                 {
                     extend: 'excel',
-                    messageTop: 'Laporan Penjualan',
                     footer: true,
                 },
                 {
                     extend: 'pdf',
-                    messageTop: 'Laporan Penjualan',
                     footer: true,
                 },
                 {
                     extend: 'print',
-                    messageTop: 'Laporan Penjualan',
                     footer: true,
                 },
                 // 'pageLength'
