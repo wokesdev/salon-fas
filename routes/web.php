@@ -53,6 +53,13 @@ Route::middleware(['auth.one', 'auth'])->group(function () {
     Route::resource('trial-balance', 'TrialBalanceController')->except('create', 'store', 'show', 'edit', 'update', 'destroy');
     Route::resource('income-statement', 'IncomeStatementController')->except('create', 'store', 'show', 'edit', 'update', 'destroy');
     Route::resource('statement-of-financial-position', 'StatementOfFinancialPositionController')->except('create', 'store', 'show', 'edit', 'update', 'destroy');
+
+    Route::get('dashboard-data-supplier', 'DashboardDataController@supplier')->name('dashboard-data.supplier');
+    Route::get('dashboard-data-customer', 'DashboardDataController@customer')->name('dashboard-data.customer');
+    Route::get('dashboard-data-purchase', 'DashboardDataController@purchase')->name('dashboard-data.purchase');
+    Route::get('dashboard-data-sale', 'DashboardDataController@sale')->name('dashboard-data.sale');
+    Route::get('dashboard-data-cash-payment', 'DashboardDataController@cash_payment')->name('dashboard-data.cash-payment');
+    Route::get('dashboard-data-cash-receipt', 'DashboardDataController@cash_receipt')->name('dashboard-data.cash-receipt');
 });
 
 Route::middleware(['auth.two', 'auth'])->group(function () {
