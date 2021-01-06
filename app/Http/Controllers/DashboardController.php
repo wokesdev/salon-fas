@@ -24,7 +24,7 @@ class DashboardController extends Controller
      */
     public function index()
     {
-        $userLevel = Auth::user()->role->level;
-        return view('dashboard', Compact('userLevel'));
+        // $userLevel = Auth::user()->role->level;
+        return view('dashboard');
     }
 }
