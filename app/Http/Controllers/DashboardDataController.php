@@ -15,7 +15,7 @@ class DashboardDataController extends Controller
     public function supplier(Request $request)
     {
         if ($request->ajax()) {
-            $supplier = Supplier::where('created_at', date("Y-m-d"))->count();
+            $supplier = Supplier::whereDate('created_at', '=', date('Y-m-d'))->count();
             if($supplier != null){
                 return response()->json($supplier);
             } else {
@@ -27,7 +27,7 @@ class DashboardDataController extends Controller
     public function customer(Request $request)
     {
         if ($request->ajax()) {
-            $customers = Customer::where('created_at', date("Y-m-d"))->count();
+            $customers = Customer::whereDate('created_at', '=', date('Y-m-d'))->count();
             if($customers != null){
                 return response()->json($customers);
             } else {
@@ -39,7 +39,7 @@ class DashboardDataController extends Controller
     public function purchase(Request $request)
     {
         if ($request->ajax()) {
-            $purchases = Purchase::where('tanggal', date("Y-m-d"))->count();
+            $purchases = Purchase::whereDate('tanggal', '=', date("Y-m-d"))->count();
             if($purchases != null){
                 return response()->json($purchases);
             } else {
@@ -51,7 +51,7 @@ class DashboardDataController extends Controller
     public function sale(Request $request)
     {
         if ($request->ajax()) {
-            $sales = Sale::where('tanggal', date("Y-m-d"))->count();
+            $sales = Sale::whereDate('tanggal', '=', date("Y-m-d"))->count();
             if($sales != null){
                 return response()->json($sales);
             } else {
@@ -63,7 +63,7 @@ class DashboardDataController extends Controller
     public function cash_payment(Request $request)
     {
         if ($request->ajax()) {
-            $cash_payment = CashPayment::where('tanggal', date("Y-m-d"))->count();
+            $cash_payment = CashPayment::whereDate('tanggal', '=', date("Y-m-d"))->count();
             if($cash_payment != null){
                 return response()->json($cash_payment);
             } else {
@@ -75,7 +75,7 @@ class DashboardDataController extends Controller
     public function cash_receipt(Request $request)
     {
         if ($request->ajax()) {
-            $cash_receipt = CashReceipt::where('tanggal', date("Y-m-d"))->count();
+            $cash_receipt = CashReceipt::whereDate('tanggal', '=', date("Y-m-d"))->count();
             if($cash_receipt != null){
                 return response()->json($cash_receipt);
             } else {
