@@ -67,12 +67,18 @@ class PurchaseController extends Controller
 
         for($i = 0; $i < count((array) $request->kuantitas); $i++)
         {
+            $currentStok = Item::select('stok')->where('id', $request->barang[$i])->first();
+
             $storeDetail = PurchaseDetail::create([
                 'purchase_id' => $number,
                 'item_id' => $request->barang[$i],
                 'kuantitas'  => $request->kuantitas[$i],
                 'harga_satuan' => $request->harga_satuan[$i],
                 'subtotal' => $request->subtotal[$i],
+            ]);
+
+            $storeStok = Item::where('id', $request->barang[$i])->update([
+                'stok' => $currentStok->stok + $request->kuantitas[$i],
             ]);
         }
 
@@ -102,7 +108,7 @@ class PurchaseController extends Controller
                 'kredit' => $request->total,
             ]);
         }
-        return response()->json([$store, $storeDetail, $storeGeneralEntry, $storeGeneralEntryDetail, $storeGeneralEntryDetail2]);
+        return response()->json([$store, $storeDetail, $storeGeneralEntry, $storeGeneralEntryDetail, $storeGeneralEntryDetail2, $storeStok]);
     }
 
     public function show(Purchase $purchase)

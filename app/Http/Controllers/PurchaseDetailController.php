@@ -26,12 +26,17 @@ class PurchaseDetailController extends Controller
             $itemAlreadyExist = PurchaseDetail::where('item_id', $request->barang[$i])->where('purchase_id', $request->id)->pluck('item_id')->toArray();
             if (!in_array($request->barang[$i], $itemAlreadyExist)) {
                 $currentTotal = Purchase::select('total')->where('id', $request->id)->first();
+                $currentStok = Item::select('stok')->where('id', $request->barang[$i])->first();
                 $store = PurchaseDetail::create([
                     'purchase_id' => $request->id,
                     'item_id' => $request->barang[$i],
                     'kuantitas'  => $request->kuantitas[$i],
                     'harga_satuan' => $request->harga_satuan[$i],
                     'subtotal' => $request->subtotal[$i],
+                ]);
+
+                $storeStok = Item::where('id', $request->barang[$i])->update([
+                    'stok' => $currentStok->stok + $request->kuantitas[$i],
                 ]);
 
                 $storeTotal = Purchase::where('id', $request->id)->update([
@@ -54,7 +59,7 @@ class PurchaseDetailController extends Controller
                 'kredit' => $currentSumSubtotal,
             ]);
         }
-        return response()->json([$store, $storeTotal, $updateGeneralEntryDetail]);
+        return response()->json([$store, $storeTotal, $updateGeneralEntryDetail, $storeStok]);
     }
 
     public function edit(PurchaseDetail $purchaseDetail)
@@ -68,6 +73,7 @@ class PurchaseDetailController extends Controller
     public function update(Request $request, PurchaseDetail $purchaseDetail)
     {
         $currentTotal = Purchase::select('total')->where('id', $request->purchaseId)->first();
+        $currentStok = Item::select('stok')->where('id', $request->detailBarang)->first();
         $request->validate([
             'purchaseId' => 'required|numeric|exists:purchases,id',
             'detailBarang' => 'required|numeric|exists:items,id',
@@ -81,6 +87,10 @@ class PurchaseDetailController extends Controller
             'kuantitas' => $request->detailKuantitas,
             'harga_satuan' => $request->detailHargaSatuan,
             'subtotal' => $request->detailSubtotal,
+        ]);
+
+        $updateStok = Item::where('id', $request->detailBarang)->update([
+            'stok' => $currentStok->stok + $request->detailKuantitas,
         ]);
 
         $updateTotal = Purchase::where('id', $request->purchaseId)->update([
@@ -97,15 +107,22 @@ class PurchaseDetailController extends Controller
                 'kredit' => $currentSumSubtotal,
             ]);
         }
-        return response()->json([$update, $updateTotal, $updateGeneralEntryDetail]);
+        return response()->json([$update, $updateTotal, $updateGeneralEntryDetail, $updateStok]);
     }
 
     public function destroy(PurchaseDetail $purchaseDetail)
     {
         $currentTotal = Purchase::select('total')->where('id', $purchaseDetail->purchase_id)->first();
+        $currentStok = Item::select('stok')->where('id', $purchaseDetail->item_id)->first();
+
+        $destroyStok = Item::where('id', $purchaseDetail->item_id)->update([
+            'stok' => $currentStok->stok - $purchaseDetail->kuantitas,
+        ]);
+
         $destroyTotal = Purchase::where('id', $purchaseDetail->purchase_id)->update([
             'total' => $currentTotal->total - $purchaseDetail->subtotal,
         ]);
+
         $destroy = PurchaseDetail::where('id', $purchaseDetail->id)->delete();
 
         if ($destroy && $destroyTotal) {
@@ -118,6 +135,6 @@ class PurchaseDetailController extends Controller
                 'kredit' => $currentSumSubtotal,
             ]);
         }
-        return response()->json([$destroy, $destroyTotal, $updateGeneralEntryDetail]);
+        return response()->json([$destroy, $destroyTotal, $updateGeneralEntryDetail, $destroyStok]);
     }
 }

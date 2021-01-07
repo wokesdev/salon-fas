@@ -33,6 +33,7 @@ class SaleDetailController extends Controller
                 $itemAlreadyExist = SaleDetail::where('item_id', $request->barang[$i])->where('sale_id', $request->id)->pluck('item_id')->toArray();
                 if (!in_array($request->barang[$i], $itemAlreadyExist) && !in_array($request->servis[$i], $serviceAlreadyExist)) {
                     $currentTotal = Sale::select('total_servis', 'total_barang', 'total')->where('id', $request->id)->first();
+                    $currentStok = Item::select('stok')->where('id', $request->barang[$i])->first();
                     $store = SaleDetail::create([
                         'sale_id' => $request->id,
                         'service_id' => $request->servis[$i],
@@ -40,9 +41,13 @@ class SaleDetailController extends Controller
                         'harga_satuan_servis' => $request->harga_satuan_servis[$i],
                         'subtotal_servis' => $request->subtotal_servis[$i],
                         'item_id' => $request->barang[$i],
-                        'kuantitas_barang'  => $request->kuantitas_barang[$i],
-                        'harga_satuan_barang' => $request->harga_satuan_barang[$i],
-                        'subtotal_barang' => $request->subtotal_barang[$i],
+                        'kuantitas_barang'  => $request->kuantitas[$i],
+                        'harga_satuan_barang' => $request->harga_satuan[$i],
+                        'subtotal_barang' => $request->subtotal[$i],
+                    ]);
+
+                    $storeStok = Item::where('id', $request->barang[$i])->update([
+                        'stok' => $currentStok->stok - $request->kuantitas[$i],
                     ]);
 
                     $storeTotal = Sale::where('id', $request->id)->update([
@@ -78,6 +83,8 @@ class SaleDetailController extends Controller
                         'subtotal_servis' => $request->subtotal_servis[$i],
                     ]);
 
+                    $storeStok = null;
+
                     $storeTotal = Sale::where('id', $request->id)->update([
                         'total_servis' => $currentTotal->total_servis + $request->subtotal_servis[$i],
                         'total' => $currentTotal->total + $request->subtotal_servis[$i],
@@ -102,12 +109,17 @@ class SaleDetailController extends Controller
                 $itemAlreadyExist = SaleDetail::where('item_id', $request->barang[$i])->where('sale_id', $request->id)->pluck('item_id')->toArray();
                 if (!in_array($request->barang[$i], $itemAlreadyExist)) {
                     $currentTotal = Sale::select('total_barang', 'total')->where('id', $request->id)->first();
+                    $currentStok = Item::select('stok')->where('id', $request->barang[$i])->first();
                     $store = SaleDetail::create([
                         'sale_id' => $request->id,
                         'item_id' => $request->barang[$i],
                         'kuantitas_barang'  => $request->kuantitas[$i],
                         'harga_satuan_barang' => $request->harga_satuan[$i],
                         'subtotal_barang' => $request->subtotal[$i],
+                    ]);
+
+                    $storeStok = Item::where('id', $request->barang[$i])->update([
+                        'stok' => $currentStok->stok - $request->kuantitas[$i],
                     ]);
 
                     $storeTotal = Sale::where('id', $request->id)->update([
@@ -135,7 +147,7 @@ class SaleDetailController extends Controller
                 'kredit' => $currentSumSubtotalServis + $currentSumSubtotalBarang,
             ]);
         }
-        return response()->json([$store, $storeTotal, $updateGeneralEntryDetail]);
+        return response()->json([$store, $storeTotal, $updateGeneralEntryDetail, $storeStok]);
     }
 
     public function edit(SaleDetail $saleDetail)
@@ -166,6 +178,8 @@ class SaleDetailController extends Controller
                 'subtotal_servis' => $request->detailSubtotalServis,
             ]);
 
+            $updateStok = null;
+
             $updateTotal = Sale::where('id', $request->saleId)->update([
                 'total_servis' => ($currentTotal->total_servis - $request->currentSubtotalServis) + $request->detailSubtotalServis,
                 'total' => ($currentTotal->total - $currentSubtotal) + $request->detailSubtotalServis,
@@ -175,6 +189,7 @@ class SaleDetailController extends Controller
         elseif ($request->detailBarang != null) {
             $currentTotal = Sale::select('total_barang', 'total')->where('id', $request->saleId)->first();
             $currentSubtotal = $request->currentSubtotalBarang != null ? $request->currentSubtotalBarang : 0;
+            $currentStok = Item::select('stok')->where('id', $request->detailBarang)->first();
             $request->validate([
                 'saleId' => 'required|numeric|exists:sales,id',
                 'detailBarang' => 'required|numeric|exists:items,id',
@@ -188,6 +203,10 @@ class SaleDetailController extends Controller
                 'kuantitas_barang' => $request->detailKuantitasBarang,
                 'harga_satuan_barang' => $request->detailHargaSatuanBarang,
                 'subtotal_barang' => $request->detailSubtotalBarang,
+            ]);
+
+            $updateStok = Item::where('id', $request->detailBarang)->update([
+                'stok' => $currentStok->stok - $request->detailKuantitasBarang,
             ]);
 
             $updateTotal = Sale::where('id', $request->saleId)->update([
@@ -207,18 +226,37 @@ class SaleDetailController extends Controller
                 'kredit' => $currentSumSubtotalServis + $currentSumSubtotalBarang,
             ]);
         }
-        return response()->json([$update, $updateTotal, $updateGeneralEntryDetail]);
+        return response()->json([$update, $updateTotal, $updateGeneralEntryDetail, $updateStok]);
     }
 
     public function destroy(SaleDetail $saleDetail)
     {
         $currentTotal = Sale::select('total', 'total_barang', 'total_servis')->where('id', $saleDetail->sale_id)->first();
-        $destroyTotal = Sale::where('id', $saleDetail->sale_id)->update([
-            'total_servis' => $currentTotal->total_servis - $saleDetail->subtotal_servis,
-            'total_barang' => $currentTotal->total_barang - $saleDetail->subtotal_barang,
-            'total' => $currentTotal->total - ($saleDetail->subtotal_barang + $saleDetail->subtotal_servis),
-        ]);
-        $destroy = SaleDetail::where('id', $saleDetail->id)->delete();
+        $currentStok = Item::select('stok')->where('id', $saleDetail->item_id)->first();
+
+        if ($currentStok !== null) {
+            $destroyStok = Item::where('id', $saleDetail->item_id)->update([
+                'stok' => $currentStok->stok + $saleDetail->kuantitas_barang,
+            ]);
+
+            $destroyTotal = Sale::where('id', $saleDetail->sale_id)->update([
+                'total_servis' => $currentTotal->total_servis - $saleDetail->subtotal_servis,
+                'total_barang' => $currentTotal->total_barang - $saleDetail->subtotal_barang,
+                'total' => $currentTotal->total - ($saleDetail->subtotal_barang + $saleDetail->subtotal_servis),
+            ]);
+
+            $destroy = SaleDetail::where('id', $saleDetail->id)->delete();
+        } else {
+            $destroyStok = null;
+
+            $destroyTotal = Sale::where('id', $saleDetail->sale_id)->update([
+                'total_servis' => $currentTotal->total_servis - $saleDetail->subtotal_servis,
+                'total_barang' => $currentTotal->total_barang - $saleDetail->subtotal_barang,
+                'total' => $currentTotal->total - ($saleDetail->subtotal_barang + $saleDetail->subtotal_servis),
+            ]);
+
+            $destroy = SaleDetail::where('id', $saleDetail->id)->delete();
+        }
 
         if ($destroy && $destroyTotal) {
             $currentSumSubtotalServis = SaleDetail::where('sale_id', $saleDetail->sale_id)->sum('subtotal_servis');
@@ -231,6 +269,6 @@ class SaleDetailController extends Controller
                 'kredit' => $currentSumSubtotalServis + $currentSumSubtotalBarang,
             ]);
         }
-        return response()->json([$destroy, $destroyTotal, $updateGeneralEntryDetail]);
+        return response()->json([$destroy, $destroyTotal, $updateGeneralEntryDetail, $destroyStok]);
     }
 }

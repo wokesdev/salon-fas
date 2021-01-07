@@ -77,6 +77,8 @@ class SaleController extends Controller
 
             for($i = 0; $i < count((array) $request->servis); $i++)
             {
+                $currentStok = Item::select('stok')->where('id', $request->barang[$i])->first();
+
                 $storeDetail = SaleDetail::create([
                     'sale_id' => $number,
                     'item_id' => $request->barang[$i],
@@ -87,6 +89,10 @@ class SaleController extends Controller
                     'kuantitas_servis'  => $request->kuantitas_servis[$i],
                     'harga_satuan_servis' => $request->harga_satuan_servis[$i],
                     'subtotal_servis' => $request->subtotal_servis[$i],
+                ]);
+
+                $storeStok = Item::where('id', $request->barang[$i])->update([
+                    'stok' => $currentStok->stok - $request->kuantitas[$i],
                 ]);
             }
         }
@@ -124,6 +130,8 @@ class SaleController extends Controller
                     'subtotal_servis' => $request->subtotal_servis[$i],
                 ]);
             }
+
+            $storeStok = null;
         }
 
         elseif (count((array) $request->barang) > 0) {
@@ -151,12 +159,18 @@ class SaleController extends Controller
 
             for($i = 0; $i < count((array) $request->barang); $i++)
             {
+                $currentStok = Item::select('stok')->where('id', $request->barang[$i])->first();
+
                 $storeDetail = SaleDetail::create([
                     'sale_id' => $number,
                     'item_id' => $request->barang[$i],
                     'kuantitas_barang'  => $request->kuantitas[$i],
                     'harga_satuan_barang' => $request->harga_satuan[$i],
                     'subtotal_barang' => $request->subtotal[$i],
+                ]);
+
+                $storeStok = Item::where('id', $request->barang[$i])->update([
+                    'stok' => $currentStok->stok - $request->kuantitas[$i],
                 ]);
             }
         }
@@ -205,7 +219,7 @@ class SaleController extends Controller
                 'kredit' => $total,
             ]);
         }
-        return response()->json([$store, $storeDetail, $storeGeneralEntry, $storeGeneralEntryDetail]);
+        return response()->json([$store, $storeDetail, $storeGeneralEntry, $storeGeneralEntryDetail, $storeStok]);
     }
 
     public function show(Sale $sale)
@@ -232,19 +246,19 @@ class SaleController extends Controller
                         if ($sDetail->service_id != null && $sDetail->item_id != null) {
                             $response .= "<td>".$sDetail->service->nama."</td>";
                             $response .= "<td>".$sDetail->kuantitas_servis." kali</td>";
-                            $response .= "<td>Rp".number_format($sDetail->harga_satuan_servis, 2, '', '.').",-</td>";
-                            $response .= "<td>Rp".number_format($sDetail->subtotal_servis, 2, '', '.').",-</td>";
+                            $response .= "<td>Rp".number_format($sDetail->harga_satuan_servis, 0, '', '.').",-</td>";
+                            $response .= "<td>Rp".number_format($sDetail->subtotal_servis, 0, '', '.').",-</td>";
                             $response .= "<td>".$sDetail->item->nama."</td>";
                             $response .= "<td>".$sDetail->kuantitas_barang." pcs</td>";
-                            $response .= "<td>Rp".number_format($sDetail->harga_satuan_barang, 2, '', '.').",-</td>";
-                            $response .= "<td>Rp".number_format($sDetail->subtotal_barang, 2, '', '.').",-</td>";
+                            $response .= "<td>Rp".number_format($sDetail->harga_satuan_barang, 0, '', '.').",-</td>";
+                            $response .= "<td>Rp".number_format($sDetail->subtotal_barang, 0, '', '.').",-</td>";
                         }
 
                         elseif ($sDetail->service_id != null) {
                             $response .= "<td>".$sDetail->service->nama."</td>";
                             $response .= "<td>".$sDetail->kuantitas_servis." kali</td>";
-                            $response .= "<td>Rp".number_format($sDetail->harga_satuan_servis, 2, '', '.').",-</td>";
-                            $response .= "<td>Rp".number_format($sDetail->subtotal_servis, 2, '', '.').",-</td>";
+                            $response .= "<td>Rp".number_format($sDetail->harga_satuan_servis, 0, '', '.').",-</td>";
+                            $response .= "<td>Rp".number_format($sDetail->subtotal_servis, 0, '', '.').",-</td>";
                             $response .= "<td>-</td>";
                             $response .= "<td>-</td>";
                             $response .= "<td>-</td>";
@@ -258,8 +272,8 @@ class SaleController extends Controller
                             $response .= "<td>-</td>";
                             $response .= "<td>".$sDetail->item->nama."</td>";
                             $response .= "<td>".$sDetail->kuantitas_barang." pcs</td>";
-                            $response .= "<td>Rp".number_format($sDetail->harga_satuan_barang, 2, '', '.').",-</td>";
-                            $response .= "<td>Rp".number_format($sDetail->subtotal_barang, 2, '', '.').",-</td>";
+                            $response .= "<td>Rp".number_format($sDetail->harga_satuan_barang, 0, '', '.').",-</td>";
+                            $response .= "<td>Rp".number_format($sDetail->subtotal_barang, 0, '', '.').",-</td>";
                         }
 
                         $response .= '<td><div class="form-button-action"><button type="button" name="editDetailServis" data-toggle="tooltip" data-id="'.$sDetail->id.'" id="'.$sDetail->sale_id.'" data-original-title="EditDetailServis" class="editDetailServis btn btn-primary btn-sm">Edit Servis</button>';
