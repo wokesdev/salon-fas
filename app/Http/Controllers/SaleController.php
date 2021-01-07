@@ -118,6 +118,7 @@ class SaleController extends Controller
                 'tanggal' => $request->tanggal,
                 'total_servis' => $request->total_servis,
                 'total' => $request->total_servis,
+                'keterangan' => 'Penjualan barang atau jasa',
             ]);
 
             for($i = 0; $i < count((array) $request->servis); $i++)
@@ -155,6 +156,7 @@ class SaleController extends Controller
                 'tanggal' => $request->tanggal,
                 'total_barang' => $request->total_barang,
                 'total' => $request->total_barang,
+                'keterangan' => 'Penjualan barang atau jasa',
             ]);
 
             for($i = 0; $i < count((array) $request->barang); $i++)
