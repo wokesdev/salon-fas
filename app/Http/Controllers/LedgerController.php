@@ -13,7 +13,7 @@ class LedgerController extends Controller
 {
     public function index(Request $request)
     {
-        $accountDetails = AccountDetail::select('id', 'nomor_rincian_akun', 'nama_rincian_akun')->get();
+        $accountDetails = AccountDetail::select('id', 'nomor_rincian_akun', 'nama_rincian_akun')->orderBy('nomor_rincian_akun', 'ASC')->get();
         if ($request->ajax()) {
             if(!empty($request->rincian_akun)) {
                 if(!empty($request->from_date))
