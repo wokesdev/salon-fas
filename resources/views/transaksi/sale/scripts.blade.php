@@ -540,6 +540,7 @@ $(document).ready(function () {
                 $('#detailHargaSatuanBarang').val(data.harga_satuan_barang);
                 $('#detailSubtotalBarang').val(data.subtotal_barang);
                 $('#currentSubtotalBarang').val(data.subtotal_barang);
+                $('#currentStok').val(data.kuantitas_barang);
             },
         });
 

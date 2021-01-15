@@ -9,6 +9,7 @@
                             <input type="hidden" name="detailId" id="detailId">
                             <input type="hidden" name="purchaseId" id="purchaseId">
                             <input type="hidden" name="currentSubtotal" id="currentSubtotal">
+                            <input type="hidden" name="currentStok" id="currentStok">
                             <input type="hidden" name="detailAction" id="detailAction" value="Add">
                             <div class="form-group">
                                 <label for="detailBarang" class="col-sm-12 control-label">Barang</label>

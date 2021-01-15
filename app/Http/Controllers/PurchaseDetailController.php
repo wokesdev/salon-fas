@@ -90,7 +90,7 @@ class PurchaseDetailController extends Controller
         ]);
 
         $updateStok = Item::where('id', $request->detailBarang)->update([
-            'stok' => $currentStok->stok + $request->detailKuantitas,
+            'stok' => ($currentStok->stok - $request->currentStok) + $request->detailKuantitas,
         ]);
 
         $updateTotal = Purchase::where('id', $request->purchaseId)->update([

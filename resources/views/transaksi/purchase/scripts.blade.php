@@ -255,6 +255,7 @@ $(document).ready(function () {
                 $('#detailHargaSatuan').val(data.harga_satuan);
                 $('#detailSubtotal').val(data.subtotal);
                 $('#currentSubtotal').val(data.subtotal);
+                $('#currentStok').val(data.kuantitas);
                 $('#detailBarang').prop('disabled', false);
                 $('#detailKuantitas').prop('disabled', false);
                 $('#detailHargaSatuan').prop('disabled', false);
@@ -526,7 +527,7 @@ $(document).ready(function () {
         $("#editDetailForm").validate({
             rules: {},
             submitHandler: function (form) {
-                var userId = $('.detail').data('id');
+                var userId = $('#purchaseId').val();
                 $('.modal-title').text('Rincian Pembelian');
                 $('#editDetailButton').html('Processing..');
 

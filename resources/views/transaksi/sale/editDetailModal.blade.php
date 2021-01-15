@@ -10,6 +10,7 @@
                             <input type="hidden" name="saleId" id="saleId">
                             <input type="hidden" name="currentSubtotalServis" id="currentSubtotalServis">
                             <input type="hidden" name="currentSubtotalBarang" id="currentSubtotalBarang">
+                            <input type="hidden" name="currentStok" id="currentStok">
                             <input type="hidden" name="detailAction" id="detailAction" value="Add">
                             <div id="servisField">
                                 <div class="form-group">

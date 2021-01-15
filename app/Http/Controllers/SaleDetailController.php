@@ -206,7 +206,7 @@ class SaleDetailController extends Controller
             ]);
 
             $updateStok = Item::where('id', $request->detailBarang)->update([
-                'stok' => $currentStok->stok - $request->detailKuantitasBarang,
+                'stok' => ($currentStok->stok + $request->currentStok) - $request->detailKuantitasBarang,
             ]);
 
             $updateTotal = Sale::where('id', $request->saleId)->update([
