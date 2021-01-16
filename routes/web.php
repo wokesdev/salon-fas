@@ -18,12 +18,6 @@ Route::middleware(['auth.one', 'auth'])->group(function () {
     Route::resource('supplier', 'SupplierController')->except('create', 'show', 'update');
     Route::resource('service', 'ServiceController')->except('create', 'show', 'update');
     Route::resource('item', 'ItemController')->except('create', 'show', 'update');
-    Route::resource('purchase', 'PurchaseController')->except('create', 'update');
-    Route::resource('purchase-detail', 'PurchaseDetailController')->except('index', 'create', 'show', 'update');
-    Route::resource('sale', 'SaleController')->except('create', 'update');
-    Route::resource('sale-detail', 'SaleDetailController')->except('index', 'create', 'show', 'update');
-    Route::resource('cash-payment', 'CashPaymentController')->except('create', 'show', 'update');
-    Route::resource('cash-receipt', 'CashReceiptController')->except('create', 'show', 'update');
 
     Route::post('account/update', 'AccountController@update')->name('account.update');
     Route::post('account-detail/update', 'AccountDetailController@update')->name('account-detail.update');
@@ -33,36 +27,9 @@ Route::middleware(['auth.one', 'auth'])->group(function () {
     Route::post('supplier/update', 'SupplierController@update')->name('supplier.update');
     Route::post('service/update', 'ServiceController@update')->name('service.update');
     Route::post('item/update', 'ItemController@update')->name('item.update');
-    Route::post('purchase/update', 'PurchaseController@update')->name('purchase.update');
-    Route::post('purchase-detail/update', 'PurchaseDetailController@update')->name('purchase-detail.update');
-    Route::post('sale/update', 'SaleController@update')->name('sale.update');
-    Route::post('sale-detail/update', 'SaleDetailController@update')->name('sale-detail.update');
-    Route::post('cash-payment/update', 'CashPaymentController@update')->name('cash-payment.update');
-    Route::post('cash-receipt/update', 'CashReceiptController@update')->name('cash-receipt.update');
-
-    Route::post('purchase/getBarang', 'PurchaseController@getBarang')->name('purchase.getBarang');
-    Route::get('purchase/{item}/getBarangById', 'PurchaseController@getBarangById')->name('purchase.getBarangById');
-
-    Route::post('purchase/getServis', 'PurchaseController@getServis')->name('purchase.getServis');
-    Route::get('purchase/{service}/getServisById', 'PurchaseController@getServisById')->name('purchase.getServisById');
-
-    Route::resource('general-entry', 'GeneralEntryController')->except('create', 'store', 'show', 'edit', 'update', 'destroy');
-    Route::resource('ledger', 'LedgerController')->except('create', 'store', 'show', 'edit', 'update', 'destroy');
-    Route::resource('purchase-report', 'PurchaseReportController')->except('create', 'store', 'show', 'edit', 'update', 'destroy');
-    Route::resource('sale-report', 'SaleReportController')->except('create', 'store', 'show', 'edit', 'update', 'destroy');
-    Route::resource('trial-balance', 'TrialBalanceController')->except('create', 'store', 'show', 'edit', 'update', 'destroy');
-    Route::resource('income-statement', 'IncomeStatementController')->except('create', 'store', 'show', 'edit', 'update', 'destroy');
-    Route::resource('statement-of-financial-position', 'StatementOfFinancialPositionController')->except('create', 'store', 'show', 'edit', 'update', 'destroy');
-
-    Route::get('dashboard-data-supplier', 'DashboardDataController@supplier')->name('dashboard-data.supplier');
-    Route::get('dashboard-data-customer', 'DashboardDataController@customer')->name('dashboard-data.customer');
-    Route::get('dashboard-data-purchase', 'DashboardDataController@purchase')->name('dashboard-data.purchase');
-    Route::get('dashboard-data-sale', 'DashboardDataController@sale')->name('dashboard-data.sale');
-    Route::get('dashboard-data-cash-payment', 'DashboardDataController@cash_payment')->name('dashboard-data.cash-payment');
-    Route::get('dashboard-data-cash-receipt', 'DashboardDataController@cash_receipt')->name('dashboard-data.cash-receipt');
 });
 
-Route::middleware(['auth.two', 'auth'])->group(function () {
+Route::middleware(['auth.one', 'auth.two', 'auth'])->group(function () {
     Route::resource('purchase', 'PurchaseController')->except('create', 'update');
     Route::resource('purchase-detail', 'PurchaseDetailController')->except('index', 'create', 'show', 'update');
     Route::resource('sale', 'SaleController')->except('create', 'update');
@@ -82,16 +49,9 @@ Route::middleware(['auth.two', 'auth'])->group(function () {
 
     Route::post('purchase/getServis', 'PurchaseController@getServis')->name('purchase.getServis');
     Route::get('purchase/{service}/getServisById', 'PurchaseController@getServisById')->name('purchase.getServisById');
-
-    Route::get('dashboard-data-supplier', 'DashboardDataController@supplier')->name('dashboard-data.supplier');
-    Route::get('dashboard-data-customer', 'DashboardDataController@customer')->name('dashboard-data.customer');
-    Route::get('dashboard-data-purchase', 'DashboardDataController@purchase')->name('dashboard-data.purchase');
-    Route::get('dashboard-data-sale', 'DashboardDataController@sale')->name('dashboard-data.sale');
-    Route::get('dashboard-data-cash-payment', 'DashboardDataController@cash_payment')->name('dashboard-data.cash-payment');
-    Route::get('dashboard-data-cash-receipt', 'DashboardDataController@cash_receipt')->name('dashboard-data.cash-receipt');
 });
 
-Route::middleware(['auth.three', 'auth'])->group(function () {
+Route::middleware(['auth.one', 'auth.three', 'auth'])->group(function () {
     Route::resource('general-entry', 'GeneralEntryController')->except('create', 'store', 'show', 'edit', 'update', 'destroy');
     Route::resource('ledger', 'LedgerController')->except('create', 'store', 'show', 'edit', 'update', 'destroy');
     Route::resource('purchase-report', 'PurchaseReportController')->except('create', 'store', 'show', 'edit', 'update', 'destroy');
@@ -99,7 +59,9 @@ Route::middleware(['auth.three', 'auth'])->group(function () {
     Route::resource('trial-balance', 'TrialBalanceController')->except('create', 'store', 'show', 'edit', 'update', 'destroy');
     Route::resource('income-statement', 'IncomeStatementController')->except('create', 'store', 'show', 'edit', 'update', 'destroy');
     Route::resource('statement-of-financial-position', 'StatementOfFinancialPositionController')->except('create', 'store', 'show', 'edit', 'update', 'destroy');
+});
 
+Route::middleware(['auth.one', 'auth.two', 'auth.three', 'auth'])->group(function () {
     Route::get('dashboard-data-supplier', 'DashboardDataController@supplier')->name('dashboard-data.supplier');
     Route::get('dashboard-data-customer', 'DashboardDataController@customer')->name('dashboard-data.customer');
     Route::get('dashboard-data-purchase', 'DashboardDataController@purchase')->name('dashboard-data.purchase');
