@@ -331,7 +331,28 @@ class SaleController extends Controller
 
     public function destroy(Sale $sale)
     {
-        $destroy = Sale::where('id', $sale->id)->delete();
-        return response()->json($destroy);
+        if (SaleDetail::where('sale_id', $sale->id)->count() !== 0) {
+            $currentSaleDetailCount = SaleDetail::where('sale_id', $sale->id)->count();
+            for ($i = 0; $i < $currentSaleDetailCount; $i++) {
+                $currentSaleDetail = SaleDetail::select('id', 'item_id', 'kuantitas_barang')->where('sale_id', $sale->id)->first();
+                $currentItem = Item::select('stok')->where('id', $currentSaleDetail->item_id)->first();
+
+                $destroyStok = Item::where('id', $currentSaleDetail->item_id)->update([
+                    'stok' => $currentItem->stok - $currentSaleDetail->kuantitas_barang,
+                ]);
+
+                $destroySaleDetail = SaleDetail::where('id', $currentSaleDetail->id)->delete();
+            }
+
+            if ($destroyStok && $destroySaleDetail) {
+                $destroy = Sale::where('id', $sale->id)->delete();
+            }
+        } else if (SaleDetail::where('sale_id', $sale->id)->count() === 0) {
+            $destroyStok = null;
+            $destroySaleDetail = null;
+            $destroy = Sale::where('id', $sale->id)->delete();
+        }
+
+        return response()->json([$destroy, $destroyStok, $destroySaleDetail]);
     }
 }

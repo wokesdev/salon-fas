@@ -185,8 +185,29 @@ class PurchaseController extends Controller
 
     public function destroy(Purchase $purchase)
     {
-        $destroy = Purchase::where('id', $purchase->id)->delete();
-        return response()->json($destroy);
+        if (PurchaseDetail::where('purchase_id', $purchase->id)->count() !== 0) {
+            $currentPurchaseDetailCount = PurchaseDetail::where('purchase_id', $purchase->id)->count();
+            for ($i = 0; $i < $currentPurchaseDetailCount; $i++) {
+                $currentPurchaseDetail = PurchaseDetail::select('id', 'item_id', 'kuantitas')->where('purchase_id', $purchase->id)->first();
+                $currentItem = Item::select('stok')->where('id', $currentPurchaseDetail->item_id)->first();
+
+                $destroyStok = Item::where('id', $currentPurchaseDetail->item_id)->update([
+                    'stok' => $currentItem->stok - $currentPurchaseDetail->kuantitas,
+                ]);
+
+                $destroyPurchaseDetail = PurchaseDetail::where('id', $currentPurchaseDetail->id)->delete();
+            }
+
+            if ($destroyStok && $destroyPurchaseDetail) {
+                $destroy = Purchase::where('id', $purchase->id)->delete();
+            }
+        } else if (PurchaseDetail::where('purchase_id', $purchase->id)->count() === 0) {
+            $destroyStok = null;
+            $destroyPurchaseDetail = null;
+            $destroy = Purchase::where('id', $purchase->id)->delete();
+        }
+
+        return response()->json([$destroy, $destroyStok, $destroyPurchaseDetail]);
     }
 
     public function getBarang()
