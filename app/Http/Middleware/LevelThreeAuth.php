@@ -18,7 +18,7 @@ class LevelThreeAuth
     public function handle(Request $request, Closure $next)
     {
         if (Auth::check()) {
-            if (Auth::user()->role->level == 3) {
+            if (Auth::user()->role->level == 3 || Auth::user()->role->level == 1) {
                 return $next($request);
             }
 

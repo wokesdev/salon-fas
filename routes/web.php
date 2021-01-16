@@ -29,7 +29,7 @@ Route::middleware(['auth.one', 'auth'])->group(function () {
     Route::post('item/update', 'ItemController@update')->name('item.update');
 });
 
-Route::middleware(['auth.one', 'auth.two', 'auth'])->group(function () {
+Route::middleware(['auth.two', 'auth'])->group(function () {
     Route::resource('purchase', 'PurchaseController')->except('create', 'update');
     Route::resource('purchase-detail', 'PurchaseDetailController')->except('index', 'create', 'show', 'update');
     Route::resource('sale', 'SaleController')->except('create', 'update');
@@ -51,7 +51,7 @@ Route::middleware(['auth.one', 'auth.two', 'auth'])->group(function () {
     Route::get('purchase/{service}/getServisById', 'PurchaseController@getServisById')->name('purchase.getServisById');
 });
 
-Route::middleware(['auth.one', 'auth.three', 'auth'])->group(function () {
+Route::middleware(['auth.three', 'auth'])->group(function () {
     Route::resource('general-entry', 'GeneralEntryController')->except('create', 'store', 'show', 'edit', 'update', 'destroy');
     Route::resource('ledger', 'LedgerController')->except('create', 'store', 'show', 'edit', 'update', 'destroy');
     Route::resource('purchase-report', 'PurchaseReportController')->except('create', 'store', 'show', 'edit', 'update', 'destroy');
@@ -61,7 +61,7 @@ Route::middleware(['auth.one', 'auth.three', 'auth'])->group(function () {
     Route::resource('statement-of-financial-position', 'StatementOfFinancialPositionController')->except('create', 'store', 'show', 'edit', 'update', 'destroy');
 });
 
-Route::middleware(['auth.one', 'auth.two', 'auth.three', 'auth'])->group(function () {
+Route::middleware(['auth'])->group(function () {
     Route::get('dashboard-data-supplier', 'DashboardDataController@supplier')->name('dashboard-data.supplier');
     Route::get('dashboard-data-customer', 'DashboardDataController@customer')->name('dashboard-data.customer');
     Route::get('dashboard-data-purchase', 'DashboardDataController@purchase')->name('dashboard-data.purchase');
