@@ -17,8 +17,11 @@ $(document).ready(function () {
     $('#filter').click(function () {
         var from_date = $('#from_date').val();
         var to_date = $('#to_date').val();
+
+        $('#from_date_pdf').val(from_date);
+        $('#to_date_pdf').val(to_date);
+
         if (from_date != '' && to_date != '') {
-            $('#table').DataTable().destroy();
             load_data(from_date, to_date);
         } else {
             swal({
@@ -39,111 +42,41 @@ $(document).ready(function () {
         }
     });
 
+    $('#makePDF').click(function () {
+        swal({
+            title: "Berhasil!",
+            text: "Silakan tunggu hingga PDF selesai di-download!",
+            icon: "success",
+            buttons: {
+                confirm: {
+                    text: "Oke",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-success",
+                    closeModal: true
+                }
+            },
+        });
+    });
+
     $('#refresh').click(function () {
         $('#from_date').val('');
         $('#to_date').val('');
-        $('#table').DataTable().destroy();
+        $('#from_date_pdf').val('');
+        $('#to_date_pdf').val('');
         load_data();
     });
 
     function load_data(from_date = '', to_date = '') {
-        $('#table').DataTable({
-            dom: 'lBfrtip',
-            // lengthMenu: [
-            //     [ 10, 25, 50, -1 ],
-            //     [ '10 rows', '25 rows', '50 rows', 'Show all' ]
-            // ],
-            // buttons: ['copy', 'csv', 'excel', 'pdf', 'print', ],
-            buttons: [
-                {
-                    extend: 'copy',
-                    footer: true
-                },
-                {
-                    extend: 'csv',
-                    footer: true
-                },
-                {
-                    extend: 'excel',
-                    footer: true
-                },
-                {
-                    extend: 'pdf',
-                    footer: true
-                },
-                {
-                    extend: 'print',
-                    footer: true
-                },
-                // 'pageLength'
-            ],
-            processing: true,
-            serverSide: true,
-            ajax: {
-                url: "{{ route('statement-of-financial-position.index') }}",
-                data: { from_date: from_date, to_date: to_date }
-            },
-            columns: [
-                { data: 'general_entry.tanggal', name: 'general_entry.tanggal' },
-                { data: 'altered_jenis_aktiva', name: 'altered_jenis_aktiva' },
-                { data: 'altered_aktiva', name: 'altered_aktiva' },
-                { data: 'altered_nominal_aktiva', name: 'altered_nominal_aktiva', render: $.fn.dataTable.render.number('.', ',', 0, 'Rp', ',-') },
-                { data: 'altered_jenis_kewajiban_modal', name: 'altered_jenis_kewajiban_modal' },
-                { data: 'altered_kewajiban_modal', name: 'altered_kewajiban_modal' },
-                { data: 'altered_nominal_kewajiban_modal', name: 'altered_nominal_kewajiban_modal', render: $.fn.dataTable.render.number('.', ',', 0, 'Rp', ',-') },
-            ],
-            order: [
-                [0, 'asc']
-            ],
-            "footerCallback": function ( row, data, start, end, display ) {
-                var api = this.api(), data;
-
-                // Remove the formatting to get integer data for summation
-                var intVal = function ( i ) {
-                    return typeof i === 'string' ?
-                        i.replace(/[\$,]/g, '')*1 :
-                        typeof i === 'number' ?
-                            i : 0;
-                };
-
-                // Total over all pages
-                // total = api
-                //     .column( 5 )
-                //     .data()
-                //     .reduce( function (a, b) {
-                //         return intVal(a) + intVal(b);
-                //     }, 0 );
-
-                totalAktiva = api
-                    .column( 3, { page: 'current'} )
-                    .data()
-                    .reduce( function (a, b) {
-                        return intVal(a) + intVal(b);
-                    }, 0 );
-
-                totalKewajibanModal = api
-                     .column( 6, { page: 'current'} )
-                     .data()
-                     .reduce( function (a, b) {
-                         return intVal(a) + intVal(b);
-                     }, 0 );
-
-                $( api.column( 3 ).footer() ).html( 'Rp' + new Intl.NumberFormat().format(totalAktiva) + ',-' );
-                $( api.column( 6 ).footer() ).html( 'Rp' + new Intl.NumberFormat().format(totalKewajibanModal) + ',-' );
-
-                //  $('tr:eq(0) th:eq(1)', api.table().footer()).html(
-                //     'Rp' + new Intl.NumberFormat().format(totalDebit) + ',-'
-                //  );
-
-                //  $('tr:eq(0) th:eq(2)', api.table().footer()).html(
-                //     'Rp' + new Intl.NumberFormat().format(totalKredit) + ',-'
-                //  );
-
-                //  $('tr:eq(1) th:eq(1)', api.table().footer()).html(
-                //     'Rp' + new Intl.NumberFormat().format(totalDebit - totalKredit) + ',-'
-                //  );
-            },
+        $.ajax({
+            url: "{{ route('statement-of-financial-position.getData') }}",
+            data: { from_date: from_date, to_date: to_date },
+            success: function(response){
+                $('tbody').html(response);
+            }
         });
     }
+
+
 });
 </script>

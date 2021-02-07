@@ -59,6 +59,11 @@ Route::middleware(['auth.three', 'auth'])->group(function () {
     Route::resource('trial-balance', 'TrialBalanceController')->except('create', 'store', 'show', 'edit', 'update', 'destroy');
     Route::resource('income-statement', 'IncomeStatementController')->except('create', 'store', 'show', 'edit', 'update', 'destroy');
     Route::resource('statement-of-financial-position', 'StatementOfFinancialPositionController')->except('create', 'store', 'show', 'edit', 'update', 'destroy');
+
+    Route::get('income-statement-getdata', 'IncomeStatementController@getData')->name('income-statement.getData');
+    Route::get('statement-of-financial-position-getdata', 'StatementOfFinancialPositionController@getData')->name('statement-of-financial-position.getData');
+    Route::post('income-statement-pdf', 'IncomeStatementController@makePDF')->name('income-statement.makePdf');
+    Route::post('statement-of-financial-position-pdf', 'StatementOfFinancialPositionController@makePDF')->name('statement-of-financial-position.makePdf');
 });
 
 Route::middleware(['auth'])->group(function () {

@@ -22,31 +22,30 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="d-flex">
-
-                        </div>
                     </div>
                     <div class="card-body">
+                        <div class="row ml-auto">
+                            <div class="col-md-4">
+                                <form action="{{ route('income-statement.makePdf') }}" method="POST">
+                                    @csrf
+                                    <input type="hidden" name="from_date_pdf" id="from_date_pdf">
+                                    <input type="hidden" name="to_date_pdf" id="to_date_pdf">
+                                    <button type="submit" name="makePDF" id="makePDF" class="btn btn-default">Export PDF</button>
+                                </form>
+                            </div>
+                        </div>
                         <div class="table-responsive">
-                            <table id="table" class="display table table-striped table-hover">
+                            <table id="table" class="display table">
                                 <thead>
                                     <tr>
-                                        <th>Tanggal</th>
-                                        <th>Pendapatan</th>
-                                        <th>Nominal</th>
-                                        <th>Beban</th>
+                                        <th>Nomor Akun</th>
+                                        <th>Nama Akun</th>
+                                        <th>Nomor Rincian Akun</th>
+                                        <th>Nama Rincian Akun</th>
                                         <th>Nominal</th>
                                     </tr>
                                 </thead>
-                                <tfoot>
-                                    <tr>
-                                        <th>Jumlah</th>
-                                        <th></th>
-                                        <th></th>
-                                        <th>Laba Bersih</th>
-                                        <th></th>
-                                    </tr>
-                                </tfoot>
+                                <tbody></tbody>
                             </table>
                         </div>
                     </div>
