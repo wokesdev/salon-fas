@@ -1,5 +1,28 @@
 ## Aplikasi Sistem Informasi Akuntansi Salon Berbasis Web
 
+### Silakan ikuti langkah-langkah di bawah ini untuk menginstall aplikasi ini pada server kalian.
+
+Instal semua packages dengan menggunakan composer, jika belum pernah menginstal composer, bisa download di https://getcomposer.org.
+
+    composer install
+    
+Salin file `.env.example`, lalu paste di folder yang sama, kemudian ganti nama file-nya menjadi `.env`.
+
+Edit file `.env` tersebut dan gantilah `APP_*`, `DB_*`, dan `MAIL_*` sesuai kebutuhan.
+
+Setelah itu, buat key baru untuk aplikasi ini.
+
+    php artisan key:generate
+    
+Terakhir, migrasikan seluruh tabel ke database-mu sesuai yang telah diatur di `.env` sebelumnya.
+
+    php artisan migrate
+    
+Setelah selesai, aplikasi sudah dapat digunakan.
+
+##
+### Di bawah ini adalah detail dari aplikasi ini.
+
 **Framework PHP: Laravel 8**<br>
 **Framework CSS: Bootstrap 4**<br>
 **Database: MySQL**<br>
@@ -52,4 +75,4 @@ Level 3:
 5. Dapat mengelola laporan posisi keuangan
 6. Dapat mengelola neraca saldo
 
-**Presented by Andy Kho.**
+**Developed by Andy Kho.**
