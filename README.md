@@ -18,7 +18,7 @@ Terakhir, migrasikan seluruh tabel ke database-mu sesuai yang telah diatur di `.
 
     php artisan migrate
     
-Setelah selesai, aplikasi sudah dapat digunakan.
+Setelah selesai, aplikasi sudah dapat digunakan dengan mengakses folder `public`.
 
 ##
 ### Di bawah ini adalah detail dari aplikasi ini.
