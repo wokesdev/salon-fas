@@ -75,4 +75,5 @@ Level 3:
 5. Dapat mengelola laporan posisi keuangan
 6. Dapat mengelola neraca saldo
 
-**Developed by Andy Kho.**
+##
+***Developed by Andy Kho.***
