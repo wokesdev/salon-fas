@@ -24,14 +24,14 @@ Setelah selesai, aplikasi sudah dapat digunakan dengan mengakses folder `public`
 ### Di bawah ini adalah detail dari aplikasi ini.
 
 **Framework PHP: Laravel 8**<br>
-**Framework CSS: Bootstrap 4**<br>
 **Database: MySQL**<br>
-**Template: Atlantis Lite Bootstrap Dashboard**
+**Front-End Template: Atlantis Lite Bootstrap Dashboard**
 
 Library:
-1. Yajra DataTables
-2. SweetAlert
-3. jQuery 3.2.1
+1. jQuery 3.2.1
+2. Bootstrap 4
+3. Yajra DataTables
+4. SweetAlert
 
 Fitur:
 1. Multilevel user
