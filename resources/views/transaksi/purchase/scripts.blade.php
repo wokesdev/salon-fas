@@ -88,7 +88,7 @@ $(document).ready(function () {
 
         $('#id').val(userId);
         $('.modal-title').text('Rincian Pembelian');
-        $('#showModal').modal('show')
+        $('#showModal').modal('show');
     });
 
     $(document).on('click', '.edit', function(){
